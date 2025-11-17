@@ -17,10 +17,12 @@ arch:
   - armv7
   - i386
 options:
+   api_key: Provided by CTA Webmaster
    trainsPerLine: Not Working. Output up to 10 different train runs on each line
    website_name: CTA Live Tracker
    init_commands: []
 schema:
+   api_key: str
    trainsPerLine: str  
    website_name: str
    init_commands:
