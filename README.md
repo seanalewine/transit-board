@@ -1,4 +1,4 @@
-# Live Train Tracker Serverfor CTA
+# Live Train Tracker Server for CTA
 
 This repository can be used as a "blueprint" for add-on development to help you get started.
 
