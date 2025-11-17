@@ -11,7 +11,7 @@ RUN \
 WORKDIR /data
 
 # Copy data for add-on
-COPY files /data
+COPY index.html /data/
 COPY run.sh /
 RUN chmod a+x /run.sh
 
