@@ -13,6 +13,7 @@ WORKDIR /data
 # Copy data for add-on
 COPY files/. /files/
 COPY run.sh /
+COPY pulldata.sh /
 RUN chmod a+x /run.sh
 RUN chmod a+x /pulldata.sh
 

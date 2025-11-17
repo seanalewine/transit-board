@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/with-contenv bashio
 
 # A script to fetch CTA train/bus position data for multiple rail lines
 # and save the data as separate JSON files.

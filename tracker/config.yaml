@@ -5,7 +5,7 @@ url: "https://github.com/seanalewine/cta-location-tracker/tree/main/tracker"
 version: "0.1.1"
 slug: tracker
 init: false
-ingress: true
+ingress: false
 map:
   - share:rw
   - media:rw
