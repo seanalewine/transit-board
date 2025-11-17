@@ -11,7 +11,7 @@ RUN \
 WORKDIR /share/htdocs
 
 # Copy data for add-on
-COPY files /share/htdocs
+COPY files /
 COPY run.sh /
 RUN chmod a+x /run.sh
 
