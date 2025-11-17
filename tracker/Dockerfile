@@ -8,10 +8,10 @@ RUN \
 
 # Python 3 HTTP Server serves the current working dir
 # So let's set it to our add-on persistent data directory.
-WORKDIR /data
+WORKDIR /share/htdocs
 
 # Copy data for add-on
-COPY files /
+COPY files /share/htdocs
 COPY run.sh /
 RUN chmod a+x /run.sh
 
