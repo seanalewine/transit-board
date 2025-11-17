@@ -2,7 +2,10 @@
 
 echo "Hello world!"
 
-python3 -m http.server 8000 --directory data
+cp -n files/index.html /data/index.html
+cp -n files/trainLoc.json /data/trainLoc.json
+
+python3 -m http.server 8000 data
 
 CONFIG_PATH=/data/options.json
 
