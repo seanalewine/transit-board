@@ -15,6 +15,20 @@ arch:
   - i386
 options:
    trainsPerLine: "*Not Working* Output up to 10 different train runs on each line"
+   beer: true
+   wine: true
+   liquor: false
+   name: "world"
+   year: 2017
+schema:
+   trainsPerLine: str  
+   beer: bool
+   wine: bool
+   liquor: bool
+   name: str
+   year: int
 schema:
   message: "str?"
+ports:
+  8000/tcp: 8000
 # image: "ghcr.io/home-assistant/{arch}-addon-example"   
