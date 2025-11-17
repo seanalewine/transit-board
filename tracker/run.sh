@@ -9,6 +9,6 @@ echo $(ls /data)
 
 python3 -m http.server 8000 &
 
-./pulldata.sh API_KEY
+source /pulldata.sh API_KEY
 
 wait
