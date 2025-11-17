@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bashio
 website_name=$(bashio::config 'website_name')
 
-cp -rnv /files/* /data/
+cp -rv /files/* /data/
 
 echo $(ls /data)
 
