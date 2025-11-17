@@ -74,4 +74,4 @@ done
 
 echo "--- All routes processed. ---"
 
-exit 0
+return
