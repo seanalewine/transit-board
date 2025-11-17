@@ -1,4 +1,4 @@
-# CTA Live Train Tracker Server
+# Live Train Tracker Server for CTA
 
 Tool for retrieving live train location data over CTA API and outputing an array of stations with trains due.
 
