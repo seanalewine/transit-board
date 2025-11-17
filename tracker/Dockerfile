@@ -12,7 +12,7 @@ RUN sed -i -r 's@Errorlog .*@Errorlog /dev/stderr@i' /etc/apache2/httpd.conf
 RUN echo "Transferlog /dev/stdout" >> /etc/apache2/httpd.conf
 
 # Copy data for add-on
-COPY index.html /share/htdocs/index.html
+COPY index.html /share/htdocs/
 COPY run.sh /
 RUN chmod a+x /run.sh
 
