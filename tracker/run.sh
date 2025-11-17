@@ -1,10 +1,18 @@
 #!/usr/bin/with-contenv bashio
 website_name=$(bashio::config 'website_name')
 
+touch /data/test_write.txt
+if [ $? -eq 0 ]; then
+    rm /data/test_write.txt
+    echo "SUCCESS: Write access verified."
+else
+    echo "ERROR: Permission denied to write to /data."
+fi
+
 cp -n /files/. /data/
 
-echo $(ls /files)
+echo $(ls /data)
 
-python3 -m http.server 8000
+python3 -m http.server 8000 &
 
-echo "Hello after python"
+echo "Hello after python executes"
