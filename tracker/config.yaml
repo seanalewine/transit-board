@@ -1,5 +1,5 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration#add-on-config
-name: Example add-on
+name: CTA Live Train Tracker Server
 version: "0.0.1"
 slug: tracker
 description: Tool for retrieving live train location data over CTA API and outputing an array of stations with trains due.
