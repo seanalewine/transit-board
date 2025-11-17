@@ -9,10 +9,12 @@ else
     echo "ERROR: Permission denied to write to /data."
 fi
 
-cp -n /files/. /data/
+cp -v /files/. /data/
 
 echo $(ls /data)
 
 python3 -m http.server 8000 &
 
-echo "Hello after python executes"
+#Insert Function to pull and collate train data
+
+wait
