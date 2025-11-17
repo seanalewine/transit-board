@@ -1,20 +1,20 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration#add-on-config
 name: CTA Live Train Tracker Server
-version: "0.0.2"
-slug: tracker
 description: Tool for retrieving live train location data over CTA API and outputing an array of stations with trains due.
 url: "https://github.com/seanalewine/cta-location-tracker/tree/main/tracker"
-arch:
-  - armhf
-  - armv7
-  - aarch64
-  - amd64
-  - i386
+version: "0.0.3"
+slug: tracker
 init: false
 map:
   - share:rw
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
 options:
-  message: "Further description for tracker"
+   trainsPerLine: "*Not Working* Output up to 10 different train runs on each line"
 schema:
   message: "str?"
-# image: "ghcr.io/home-assistant/{arch}-addon-example"
+# image: "ghcr.io/home-assistant/{arch}-addon-example"   
