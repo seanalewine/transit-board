@@ -2,16 +2,16 @@ ARG BUILD_FROM
 FROM $BUILD_FROM
 
 # Install requirements for add-on
-RUN \
-  apk add --no-cache \
-    python3
+RUN mkdir /run/apache2
 
-# Python 3 HTTP Server serves the current working dir
-# So let's set it to our add-on persistent data directory.
-WORKDIR /data
+RUN apk --no-cache add apache2 libxml2-dev apache2-utils apache2-mod-wsgi apache2-ssl
+
+#Configure Logging
+RUN sed -i -r 's@Errorlog .*@Errorlog /dev/stderr@i' /etc/apache2/httpd.conf
+RUN echo "Transferlog /dev/stdout" >> /etc/apache2/httpd.conf
 
 # Copy data for add-on
-COPY index.html /data/
+COPY index.html /
 COPY run.sh /
 RUN chmod a+x /run.sh
 

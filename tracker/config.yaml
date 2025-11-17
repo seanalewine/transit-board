@@ -5,7 +5,10 @@ url: "https://github.com/seanalewine/cta-location-tracker/tree/main/tracker"
 version: "0.1.1"
 slug: tracker
 init: false
+ingress: true
 map:
+  - share:rw
+  - media:rw
   - share:rw
 arch:
   - aarch64
@@ -14,21 +17,35 @@ arch:
   - armv7
   - i386
 options:
-   trainsPerLine: "Not Working Output up to 10 different train runs on each line"
-   beer: true
-   wine: true
-   liquor: false
-   name: "world"
-   year: 2017
+   trainsPerLine: Not Working. Output up to 10 different train runs on each line
+   document_root: /share/htdocs
+   default_conf: default
+   default_ssl_conf: default
+   website_name: null
+   ssl: false
+   certfile: fullchain.pem
+   keyfile: privkey.pem
+   init_commands: []
 schema:
    trainsPerLine: str  
    beer: bool
-   wine: bool
-   liquor: bool
-   name: str
-   year: int
+   document_root: str
+   default_conf: str
+   default_ssl_conf: str
+   website_name: str
+   username: str?
+   password: password?
+   ssl: bool
+   certfile: str
+   keyfile: str
+   init_commands:
+    - str?
 schema:
   message: "str?"
 ports:
-  8000/tcp: 8000
+   80/tcp: 80
+   443/tcp: 8324
+ports_description:
+   80/tcp: Web interface http
+   443/tcp: SSL Web interface
 # image: "ghcr.io/home-assistant/{arch}-addon-example"   
