@@ -1,4 +1,4 @@
 # https://developers.home-assistant.io/docs/add-ons/repository#repository-configuration
-name: Example Home Assistant add-on repository
-url: 'https://github.com/home-assistant/addons-example'
-maintainer: Awesome Maintainer <awesome@example.com>
+name: CTA Live Train Tracker Server
+url: 'https://github.com/seanalewine/cta-location-tracker/'
+maintainer: Sean Alewine <sean@seanalewine.app>
