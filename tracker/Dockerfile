@@ -3,6 +3,7 @@ FROM $BUILD_FROM
 
 # Install requirements for add-on
 RUN mkdir /run/apache2
+RUN mkdir -p /share/htdocs
 
 RUN apk --no-cache add apache2 libxml2-dev apache2-utils apache2-mod-wsgi apache2-ssl
 
@@ -11,7 +12,7 @@ RUN sed -i -r 's@Errorlog .*@Errorlog /dev/stderr@i' /etc/apache2/httpd.conf
 RUN echo "Transferlog /dev/stdout" >> /etc/apache2/httpd.conf
 
 # Copy data for add-on
-COPY index.html /data/
+COPY index.html /share/htdocs/index.html
 COPY run.sh /
 RUN chmod a+x /run.sh
 

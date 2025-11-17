@@ -18,7 +18,7 @@ arch:
   - i386
 options:
    trainsPerLine: Not Working. Output up to 10 different train runs on each line
-   document_root: /data
+   document_root: /share/htdocs
    default_conf: default
    default_ssl_conf: default
    website_name: CTA Live Tracker
