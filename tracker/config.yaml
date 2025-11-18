@@ -18,17 +18,18 @@ arch:
   - i386
 options:
    api_key: Provided by CTA Webmaster
-   trainsPerLine: Not Working. Output up to 10 different train runs on each line
-   website_name: CTA Live Tracker
+   trainsPerLine: 
+   bidirectional: true
    init_commands: []
 schema:
    api_key: str
-   trainsPerLine: str  
-   website_name: str
+   trainsPerLine: str?
+   bidirectional: bool
    init_commands:
     - str?
 ports:
    8000/tcp: 80
 ports_description:
    8000/tcp: Web interface http
+watchdog: tcp://[HOST]:[PORT:80]
 # image: "ghcr.io/home-assistant/{arch}-addon-example"   
