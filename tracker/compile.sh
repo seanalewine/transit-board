@@ -58,11 +58,6 @@ if [ -s "$TEMP_OUTPUT_FILE" ]; then
 
     echo "Successfully completed processing."
     echo "Output saved to $OUTPUT_FILE"
-    
-    # Display the first few lines of the output file for verification (optional)
-    echo -e "\n--- Start of $OUTPUT_FILE Snippet ---"
-    head -n 20 "$OUTPUT_FILE"
-    echo "--- End of $OUTPUT_FILE Snippet ---"
 else
     echo "--------------------------------------------------------"
     echo "Error: No data was processed. Check file paths and permissions."
