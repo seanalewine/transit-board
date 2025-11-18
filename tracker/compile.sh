@@ -33,6 +33,7 @@ for LINE_CODE in "${TRAIN_LINES[@]}"; do
     # The output is appended (>>) to the temporary file as a stream of JSON objects.
     jq '
     .ctatt.route[].train[] |
+    select(. != null) |
     {
         nextStaId: .nextStaId,
         trDr: .trDr,
