@@ -20,6 +20,8 @@ while true; do
     # The 'source' command is used to run the script in the current environment
     source /pulldata.sh "$API_KEY"
     echo "--- Data refresh complete."
+    source /compile.sh
+    echo "--- Data compilation complete."
 
     # Wait for 60 seconds before running again
     sleep 60
