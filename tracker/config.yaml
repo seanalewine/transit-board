@@ -5,7 +5,6 @@ url: "https://github.com/seanalewine/cta-location-tracker/tree/main/tracker"
 version: "0.1.4"
 slug: tracker
 init: false
-ingress: false
 map:
   - share:rw
   - media:rw
@@ -31,5 +30,4 @@ ports:
    8000/tcp: 80
 ports_description:
    8000/tcp: Web interface http
-watchdog: tcp://[HOST]:[PORT:80]
 # image: "ghcr.io/home-assistant/{arch}-addon-example"   
