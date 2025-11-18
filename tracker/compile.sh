@@ -36,10 +36,15 @@ for LINE_CODE in "${TRAIN_LINES[@]}"; do
     {
         nextStaId: .nextStaId,
         trDr: .trDr,
-        isApp: .isApp,
-        isDly: .isDly,
         # Dynamically set the line value using the shell variable
-        line: "'"${LINE_CODE}"'"
+        line: "'"${LINE_CODE}"'",
+        # Create the new "value" field with conditional logic
+        value: (
+            if .isDly == "1" then 2
+            elif .isApp == "1" then 1
+            else 0
+            end
+        )
     }
     ' "$INPUT_FILE" >> "$TEMP_OUTPUT_FILE"
 done
