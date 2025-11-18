@@ -32,8 +32,9 @@ for LINE_CODE in "${TRAIN_LINES[@]}"; do
     # Use 'jq' to parse the file for the current line
     # The output is appended (>>) to the temporary file as a stream of JSON objects.
     jq '
-    .ctatt.route[].train[] |
-    select(. != null) |
+    .ctatt.route[] |
+    select(.train) |
+    .train[] |
     {
         nextStaId: .nextStaId,
         trDr: .trDr,
