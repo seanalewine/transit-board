@@ -8,7 +8,7 @@ OUTPUT_FILE="/data/active_train_summary.json"
 
 # Initialize the output file with an empty JSON array, which jq will fill
 # We use a temporary file for the initial processed data before final wrapping.
-TEMP_OUTPUT_FILE="temp_$OUTPUT_FILE"
+TEMP_OUTPUT_FILE="/data/temp_train_summary.json"
 
 # Start by clearing the temporary output file
 > "$TEMP_OUTPUT_FILE"
