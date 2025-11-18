@@ -4,7 +4,7 @@
 TRAIN_LINES=("red" "blue" "brn" "g" "org" "p" "pink" "y")
 
 # Define the output file path
-OUTPUT_FILE="multi_line_trains_summary.json"
+OUTPUT_FILE="/data/active_train_summary.json"
 
 # Initialize the output file with an empty JSON array, which jq will fill
 # We use a temporary file for the initial processed data before final wrapping.
