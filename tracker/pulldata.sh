@@ -20,7 +20,7 @@ fetch_route_data() {
     local KEY="$2"
     local OUTPUT_FILE="$OUTPUT_DIR/$ROUTE_ID.json"
 
-    echo "--- Fetching Route: $ROUTE_ID ---"
+    echo "Fetching Route: $ROUTE_ID"
 
     # 1. Construct the API URL
     local API_URL="http://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=$KEY&rt=$ROUTE_ID&outputType=JSON"
@@ -60,7 +60,8 @@ if [ -z "$API_KEY" ]; then
     exit 1
 fi
 
-echo "--- CTA Multi-Route Position Fetcher Initialized ---"
+echo "Starting CTA Route Position Fetcher"
+echo "--------------------------------------------------------"
 echo "Target Directory: $OUTPUT_DIR"
 
 # Ensure the output directory exists once before the loop
@@ -72,6 +73,7 @@ for ROUTE in "${ROUTE_IDS[@]}"; do
     fetch_route_data "$ROUTE" "$API_KEY"
 done
 
-echo "--- All routes processed. ---"
+echo "All routes processed. "
+echo "--------------------------------------------------------"
 
 return
