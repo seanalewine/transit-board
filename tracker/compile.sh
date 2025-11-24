@@ -71,7 +71,7 @@ if [ -s "$TEMP_OUTPUT_FILE" ]; then
     # and use a temporary file for the *final* transformation before cleanup.
     TEMP_COLOR_FILE="/data/temp_colored_train_summary.json"
 
-    jq \
+jq \
         --arg RED "$RED_COLOR" \
         --arg BLUE "$BLUE_COLOR" \
         --arg BROWN "$BROWN_COLOR" \
@@ -81,17 +81,17 @@ if [ -s "$TEMP_OUTPUT_FILE" ]; then
         --arg PINK "$PINK_COLOR" \
         --arg YELLOW "$YELLOW_COLOR" \
         '
-        .line = (
-            if   .line == "red"  then $RED
-            elif .line == "blue" then $BLUE
-            elif .line == "brn"  then $BROWN
-            elif .line == "g"    then $GREEN
-            elif .line == "org"  then $ORANGE
-            elif .line == "p"    then $PURPLE
-            elif .line == "pink" then $PINK
-            elif .line == "y"    then $YELLOW
-            else .line # Keep the original value if no match is found
-        )
+        .line |= 
+            if   . == "red"  then $RED
+            elif . == "blue" then $BLUE
+            elif . == "brn"  then $BROWN
+            elif . == "g"    then $GREEN
+            elif . == "org"  then $ORANGE
+            elif . == "p"    then $PURPLE
+            elif . == "pink" then $PINK
+            elif . == "y"    then $YELLOW
+            else .
+            end
         ' "$TEMP_OUTPUT_FILE" > "$TEMP_COLOR_FILE"
 
     echo "Wrapping data and saving final output to ${OUTPUT_FILE}"
