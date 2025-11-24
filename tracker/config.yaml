@@ -2,7 +2,7 @@
 name: Live Train Tracker Server for CTA
 description: Tool for retrieving live train location data over CTA API and outputing an array of stations with trains due.
 url: "https://github.com/seanalewine/cta-location-tracker/tree/main/tracker"
-version: "0.1.9"
+version: "0.1.10"
 slug: tracker
 init: false
 map:
