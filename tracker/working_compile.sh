@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bashio
 
-# Define train line colors from config.yaml
+#Define train line colors from config.yaml
 RED_COLOR=$(bashio::config 'red_line_color')
 PINK_COLOR=$(bashio::config 'pink_line_color')
 ORANGE_COLOR=$(bashio::config 'orange_line_color')
@@ -10,11 +10,6 @@ BLUE_COLOR=$(bashio::config 'blue_line_color')
 PURPLE_COLOR=$(bashio::config 'purple_line_color')
 BROWN_COLOR=$(bashio::config 'brown_line_color')
 
-# --- NEW FEATURE DEFINITIONS ---
-CTA_STATION_LIST="/data/ctastationlist.csv"
-MAP_FILE="/data/station_id_map.json"
-# --- END NEW FEATURE DEFINITIONS ---
-
 # Define the array of train line abbreviations
 TRAIN_LINES=("red" "blue" "brn" "g" "org" "p" "pink" "y")
 
@@ -22,48 +17,14 @@ TRAIN_LINES=("red" "blue" "brn" "g" "org" "p" "pink" "y")
 OUTPUT_FILE="/data/active_train_summary.json"
 
 # Initialize the output file with an empty JSON array, which jq will fill
+# We use a temporary file for the initial processed data before final wrapping.
 TEMP_OUTPUT_FILE="/data/temp_train_summary.json"
-TEMP_COLOR_FILE="/data/temp_colored_train_summary.json"
-TEMP_MAPPED_FILE="/data/temp_mapped_train_summary.json" # New temp file for ID mapping
 
 # Start by clearing the temporary output file
 > "$TEMP_OUTPUT_FILE"
 
 echo "Starting processing of CTA Train Lines: ${TRAIN_LINES[@]}"
 echo "--------------------------------------------------------"
-
-# 🚉 NEW FEATURE: Create a JSON map from the CSV file
-if [ ! -f "$CTA_STATION_LIST" ]; then
-    echo "Fatal Error: CSV station list not found at $CTA_STATION_LIST. Cannot map station IDs."
-    exit 1
-fi
-
-echo "Creating station ID lookup map from $CTA_STATION_LIST..."
-
-# Use awk to process the CSV, skipping the header (NR>1), and outputting a jq-readable map.
-# Column 1 = nextStaId, Column 2 = unifiedId (based on standard CTA list format)
-# This creates a map like: {"12345": "U101", "12346": "U102", ...}
-awk -F',' '
-BEGIN {
-    print "{"
-}
-NR > 1 {
-    # Print the key-value pair, removing any carriage returns with sub
-    sub(/\r$/, "", $1);
-    sub(/\r$/, "", $2);
-    if (NR > 2) {
-        printf ",\n"
-    }
-    printf "    \"%s\": \"%s\"", $1, $2
-}
-END {
-    print "\n}"
-}
-' "$CTA_STATION_LIST" > "$MAP_FILE"
-
-echo "Map created at $MAP_FILE"
-echo "--------------------------------------------------------"
-
 
 # Loop through each train line abbreviation
 for LINE_CODE in "${TRAIN_LINES[@]}"; do
@@ -79,13 +40,17 @@ for LINE_CODE in "${TRAIN_LINES[@]}"; do
     fi
 
     # Use 'jq' to parse the file for the current line
+    # The output is appended (>>) to the temporary file as a stream of JSON objects.
     jq '
     .ctatt.route[] |
     select(.train) |
     .train[] |
     {
         nextStaId: .nextStaId,
+        #trDr: .trDr,
+        # Dynamically set the output_color value using the shell variable
         output_color: "'"${LINE_CODE}"'",
+        # Create the new "value" field with conditional logic
         value: (
             if .isDly == "1" then 2
             elif .isApp == "1" then 1
@@ -99,11 +64,14 @@ done
 # Check if the temporary file has content before final processing
 if [ -s "$TEMP_OUTPUT_FILE" ]; then
     echo "--------------------------------------------------------"
-
-    # --- STEP 1: Apply color codes ---
     echo "Applying color codes to 'output_color' field in ${TEMP_OUTPUT_FILE}"
 
-    jq \
+    # Use 'jq' to perform the conditional replacement on the 'output_color' field
+    # We pass the shell variables as jq arguments ($RED, $BLUE, etc.)
+    # and use a temporary file for the *final* transformation before cleanup.
+    TEMP_COLOR_FILE="/data/temp_colored_train_summary.json"
+
+jq \
         --arg RED "$RED_COLOR" \
         --arg BLUE "$BLUE_COLOR" \
         --arg BROWN "$BROWN_COLOR" \
@@ -126,30 +94,15 @@ if [ -s "$TEMP_OUTPUT_FILE" ]; then
             end
         ' "$TEMP_OUTPUT_FILE" > "$TEMP_COLOR_FILE"
 
-
-    # --- STEP 2: Map nextStaId to unifiedId ---
-    echo "Mapping 'nextStaId' to 'unifiedId' using map file $MAP_FILE"
-
-    # Read the JSON map into a jq variable ($id_map) and use it for lookup.
-    jq --slurpfile id_map "$MAP_FILE" '
-        # The map is the first element of the slurpfile array
-        ($id_map[0]) as $map |
-        # Use the nextStaId as the key for the lookup
-        .nextStaId = ($map[.nextStaId] // .nextStaId)
-    ' "$TEMP_COLOR_FILE" > "$TEMP_MAPPED_FILE"
-
-
-    # --- STEP 3: Final wrapping and cleanup ---
     echo "Wrapping data and saving final output to ${OUTPUT_FILE}"
 
-    # Use 'jq -s' to "slurp" all objects into a single array and wrap it.
-    jq -s '{trains: .}' "$TEMP_MAPPED_FILE" > "$OUTPUT_FILE"
+    # Use 'jq -s' to "slurp" all objects in the temporary colored file into a single array
+    # and then wrap that array with the final parent object {"trains": ...}.
+    jq -s '{trains: .}' "$TEMP_COLOR_FILE" > "$OUTPUT_FILE"
 
-    # Clean up temporary files
+    # Clean up both temporary files
     rm "$TEMP_OUTPUT_FILE"
     rm "$TEMP_COLOR_FILE"
-    rm "$TEMP_MAPPED_FILE"
-    rm "$MAP_FILE" # Remove the generated map file
 
     echo "Successfully completed processing."
     echo "Output saved to $OUTPUT_FILE"
