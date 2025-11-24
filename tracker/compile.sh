@@ -32,7 +32,7 @@ TEMP_MAPPED_FILE="/data/temp_mapped_train_summary.json" # New temp file for ID m
 echo "Starting processing of CTA Train Lines: ${TRAIN_LINES[@]}"
 echo "--------------------------------------------------------"
 
-# 🚉 NEW FEATURE: Create a JSON map from the CSV file
+# Create a JSON map from the CSV file
 if [ ! -f "$CTA_STATION_LIST" ]; then
     echo "Fatal Error: CSV station list not found at $CTA_STATION_LIST. Cannot map station IDs."
     exit 1
