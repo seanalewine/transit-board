@@ -142,7 +142,10 @@ if [ -s "$TEMP_OUTPUT_FILE" ]; then
         # The map is the first element of the slurpfile array
         ($id_map[0]) as $map |
         # Use the nextStaId as the key for the lookup
-        .nextStaId = ($map[.nextStaId] // .nextStaId)
+        .nextStaId = (
+            ($map[.nextStaId] // .nextStaId) 
+            | tonumber
+        )
     ' "$TEMP_COLOR_FILE" > "$TEMP_MAPPED_FILE"
 
 
