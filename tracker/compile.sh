@@ -48,13 +48,20 @@ BEGIN {
     print "{"
 }
 NR > 1 {
-    # Print the key-value pair, removing any carriage returns with sub
-    sub(/\r$/, "", $1);
-    sub(/\r$/, "", $2);
+    # CRITICAL FIX: Aggressively remove carriage returns and other control characters
+    # from the fields before printing.
+    gsub(/\r/, "", $1);
+    gsub(/[[:cntrl:]]/, "", $1);
+    gsub(/\r/, "", $2);
+    gsub(/[[:cntrl:]]/, "", $2);
+
     if (NR > 2) {
         printf ",\n"
     }
-    printf "    \"%s\": \"%s\"", $1, $2
+    # Ensure fields are non-empty before printing.
+    if ($1 != "" && $2 != "") {
+        printf "    \"%s\": \"%s\"", $1, $2
+    }
 }
 END {
     print "\n}"
