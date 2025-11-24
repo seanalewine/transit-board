@@ -15,7 +15,7 @@ arch:
 options:
    api_key: Provided by CTA Webmaster
    light_board: light.exampleentity
-   trainsPerLine: 
+   trainsPerLine: 10
    bidirectional: true
    init_commands: []
    red_line_color: 198, 12, 48
@@ -29,7 +29,7 @@ options:
 schema:
    api_key: str
    light_board: str
-   trainsPerLine: str?
+   trainsPerLine: int(1,20)
    bidirectional: bool
    red_line_color: str
    pink_line_color: str
