@@ -2,7 +2,7 @@
 name: Live Train Tracker Server for CTA
 description: Tool for retrieving live train location data over CTA API and outputing an array of stations with trains due.
 url: "https://github.com/seanalewine/cta-location-tracker/tree/main/tracker"
-version: "0.1.4"
+version: "0.1.0"
 slug: tracker
 init: false
 map:
@@ -17,13 +17,33 @@ arch:
   - i386
 options:
    api_key: Provided by CTA Webmaster
+   light_board_entity:
    trainsPerLine: 
    bidirectional: true
    init_commands: []
+   red_line_color: 198, 12, 48
+   pink_line_color: 226, 126, 166
+   orange_line_color: 249, 70, 28
+   yellow_line_color: 249, 227, 0
+   green_line_color: 0, 155, 58
+   blue_line_color: 0, 161, 222
+   purple_line_color: 82, 35, 152
+   brown_line_color: 8, 54, 27
 schema:
    api_key: str
+   light_board_entity:
+    type: entity
+    domain: light
    trainsPerLine: str?
    bidirectional: bool
+   red_line_color: str
+   pink_line_color: str
+   orange_line_color: str
+   yellow_line_color: str
+   green_line_color: str
+   blue_line_color: str
+   purple_line_color: str
+   brown_line_color: str
    init_commands:
     - str?
 ports:

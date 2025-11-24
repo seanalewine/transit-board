@@ -1,7 +1,6 @@
 #!/usr/bin/with-contenv bashio
-website_name=$(bashio::config 'website_name')
+#Define API Key from config.yaml
 API_KEY=$(bashio::config 'api_key')
-ROUTE_ID="red"
 
 cp -rv /files/* /data/
 

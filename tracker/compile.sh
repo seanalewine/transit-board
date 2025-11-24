@@ -1,5 +1,15 @@
 #!/usr/bin/with-contenv bashio
 
+#Define train line colors from config.yaml
+RED_COLOR=$(bashio::config 'red_line_color')
+PINK_COLOR=$(bashio::config 'pink_line_color')
+ORANGE_COLOR=$(bashio::config 'orange_line_color')
+YELLOW_COLOR=$(bashio::config 'yellow_line_color')
+GREEN_COLOR=$(bashio::config 'green_line_color')
+BLUE_COLOR=$(bashio::config 'blue_line_color')
+PURPLE_COLOR=$(bashio::config 'purple_line_color')
+BROWN_COLOR=$(bashio::config 'brown_line_color')
+
 # Define the array of train line abbreviations
 TRAIN_LINES=("red" "blue" "brn" "g" "org" "p" "pink" "y")
 
@@ -54,17 +64,49 @@ done
 # Check if the temporary file has content before final processing
 if [ -s "$TEMP_OUTPUT_FILE" ]; then
     echo "--------------------------------------------------------"
+    echo "Applying color codes to 'line' field in ${TEMP_OUTPUT_FILE}"
+
+    # Use 'jq' to perform the conditional replacement on the 'line' field
+    # We pass the shell variables as jq arguments ($RED, $BLUE, etc.)
+    # and use a temporary file for the *final* transformation before cleanup.
+    TEMP_COLOR_FILE="/data/temp_colored_train_summary.json"
+
+    jq \
+        --arg RED "$RED_COLOR" \
+        --arg BLUE "$BLUE_COLOR" \
+        --arg BROWN "$BROWN_COLOR" \
+        --arg GREEN "$GREEN_COLOR" \
+        --arg ORANGE "$ORANGE_COLOR" \
+        --arg PURPLE "$PURPLE_COLOR" \
+        --arg PINK "$PINK_COLOR" \
+        --arg YELLOW "$YELLOW_COLOR" \
+        '
+        .line = (
+            if   .line == "red"  then $RED
+            elif .line == "blue" then $BLUE
+            elif .line == "brn"  then $BROWN
+            elif .line == "g"    then $GREEN
+            elif .line == "org"  then $ORANGE
+            elif .line == "p"    then $PURPLE
+            elif .line == "pink" then $PINK
+            elif .line == "y"    then $YELLOW
+            else .line # Keep the original value if no match is found
+        )
+        ' "$TEMP_OUTPUT_FILE" > "$TEMP_COLOR_FILE"
+
     echo "Wrapping data and saving final output to ${OUTPUT_FILE}"
 
-    # Use 'jq -s' to "slurp" all objects in the temporary file into a single array
+    # Use 'jq -s' to "slurp" all objects in the temporary colored file into a single array
     # and then wrap that array with the final parent object {"trains": ...}.
-    jq -s '{trains: .}' "$TEMP_OUTPUT_FILE" > "$OUTPUT_FILE"
+    jq -s '{trains: .}' "$TEMP_COLOR_FILE" > "$OUTPUT_FILE"
 
-    # Clean up the temporary file
+    # Clean up both temporary files
     rm "$TEMP_OUTPUT_FILE"
+    rm "$TEMP_COLOR_FILE"
 
     echo "Successfully completed processing."
     echo "Output saved to $OUTPUT_FILE"
+
 else
     echo "--------------------------------------------------------"
     echo "Error: No data was processed. Check file paths and permissions."
