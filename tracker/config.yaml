@@ -17,7 +17,7 @@ arch:
   - i386
 options:
    api_key: Provided by CTA Webmaster
-   light_board_entity:
+   light_board:
    trainsPerLine: 
    bidirectional: true
    init_commands: []
@@ -31,9 +31,7 @@ options:
    brown_line_color: 8, 54, 27
 schema:
    api_key: str
-   light_board_entity:
-    type: entity
-    domain: light
+   light_board: device
    trainsPerLine: str?
    bidirectional: bool
    red_line_color: str
