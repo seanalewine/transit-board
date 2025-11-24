@@ -12,12 +12,9 @@ map:
 arch:
   - aarch64
   - amd64
-  - armhf
-  - armv7
-  - i386
 options:
    api_key: Provided by CTA Webmaster
-   light_board:
+   light_board: light.exampleentity
    trainsPerLine: 
    bidirectional: true
    init_commands: []
@@ -31,7 +28,7 @@ options:
    brown_line_color: 8, 54, 27
 schema:
    api_key: str
-   light_board: device
+   light_board: str
    trainsPerLine: str?
    bidirectional: bool
    red_line_color: str
