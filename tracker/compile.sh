@@ -115,7 +115,7 @@ if [ -s "$TEMP_OUTPUT_FILE" ]; then
     echo "Mapping 'nextStaId' and 'line_code' to 'unifiedId' using map file $MAP_FILE"
 
     # Read the JSON map into a jq variable ($id_map) and use it for lookup.
-    jq --slurpfile id_map "$MAP_FILE" '
+    jq --slurpfile id_map "$MAP_FILE" -f - "$TEMP_OUTPUT_FILE" > "$TEMP_MAPPED_FILE" <<'EOF'
         # The map is the first element of the slurpfile array
         ($id_map[0]) as $map |
         # Construct the key as "nextStaId:line_code"
@@ -125,10 +125,13 @@ if [ -s "$TEMP_OUTPUT_FILE" ]; then
         # Then, remove the temporary 'line_code' field.
         .nextStaId = (
             ($map[$lookup_key] // .nextStaId)
-            | tonumber
+            # The nextStaId from the input JSON is already a string, so we convert it 
+            # to a number to match the CSV column structure for unifiedId.
+            # If the output .nextStaId must be a string, remove 'tonumber'.
+            | tonumber 
         )
         | del(.line_code)
-    ' "$TEMP_OUTPUT_FILE" > "$TEMP_MAPPED_FILE"
+EOF "$TEMP_OUTPUT_FILE" > "$TEMP_MAPPED_FILE"
 
 
     # --- STEP 2 (NEW): Apply color codes ---
