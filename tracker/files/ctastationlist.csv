@@ -1,6 +1,6 @@
 nextStaId,line,unifiedId
 40830,pink,0
-41120,org,1
+41120,g,1
 40120,org,2
 41270,g,3
 41080,g,4
@@ -59,6 +59,7 @@ nextStaId,line,unifiedId
 40380,pink,57
 40430,blue,58
 41160,g,59
+41160,pink,190
 41670,g,60
 40230,blue,61
 40090,brn,62
