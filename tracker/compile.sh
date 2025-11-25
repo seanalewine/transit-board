@@ -16,7 +16,7 @@ INPUT_DIR="/data/position"
 OUTPUT_FILE="/data/active_train_summary.json"
 # --- END DEFINITIONS ---
 
-PYTHON_SCRIPT="/data/processor.py
+PYTHON_SCRIPT="/data/processor.py"
 
 echo "Starting data processing using Python..."
 echo "--------------------------------------------------------"
