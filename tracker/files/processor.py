@@ -5,7 +5,7 @@ import glob
 import argparse
 
 # 1. Configuration (Reads colors from environment variables set by Bash wrapper)
-# The default values are now also set to the requested "R, G, B" string format.
+# The default values are set to the requested "R, G, B" string format.
 COLORS = {
     "red": os.environ.get("RED_COLOR", "255, 0, 0"),
     "blue": os.environ.get("BLUE_COLOR", "0, 0, 255"),
@@ -100,22 +100,25 @@ def process_train_data(input_dir, station_map):
                 # --- Step 1: ID Mapping and 'tonumber' conversion ---
                 lookup_key = f"{next_sta_id_str}:{line_code}"
                 
-                # Get mapped ID (integer) or fall back to the original ID (string)
-                unified_id = station_map.get(lookup_key, next_sta_id_str) 
+                # Check if the key exists in the map
+                if lookup_key in station_map:
+                    unified_id = station_map[lookup_key]
+                else:
+                    # Value not found in map. Fallback to original ID and print warning.
+                    unified_id = next_sta_id_str
+                    print(f"Warning: Could not find unified ID for key '{lookup_key}'. Using original nextStaId: {unified_id}")
 
                 # CRITICAL: Match jq's '| tonumber' behavior: the output field MUST be a JSON number.
                 try:
                     unified_id = int(unified_id)
                 except (TypeError, ValueError):
-                    # If conversion fails, use the original string as a fallback, though this may
-                    # cause issues for the downstream app if it strictly expects a number.
-                    print(f"Warning: Could not convert station ID '{unified_id}' to number. Using original string.")
+                    # If conversion fails, use the original string as a fallback.
+                    pass # Keep unified_id as the string value it already is.
                 
                 # --- Step 2: Determine Status Value ---
                 value = 2 if is_delay else (1 if is_approach else 0)
 
                 # --- Step 3: Apply Color ---
-                # This directly uses the "R, G, B" string from the COLORS dictionary (env vars or default)
                 output_color = COLORS.get(line_code, line_code) 
                 
                 all_trains.append({
