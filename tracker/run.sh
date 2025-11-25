@@ -18,6 +18,7 @@ while true; do
     # The 'source' command is used to run the script in the current environment
     source /pulldata.sh "$API_KEY"
     source /compile.sh
+    source /testStateChange.sh
 
     # Wait for 60 seconds before running again
     sleep 60
