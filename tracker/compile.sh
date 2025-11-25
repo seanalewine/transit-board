@@ -114,6 +114,7 @@ if [ -s "$TEMP_OUTPUT_FILE" ]; then
     # --- STEP 1 (NEW): Map nextStaId and line_code to unifiedId ---
     echo "Mapping 'nextStaId' and 'line_code' to 'unifiedId' using map file $MAP_FILE"
 
+    # Fix: Use the Heredoc only to feed the jq script, and keep the input/output redirection separate.
     # Read the JSON map into a jq variable ($id_map) and use it for lookup.
     jq --slurpfile id_map "$MAP_FILE" -f - "$TEMP_OUTPUT_FILE" > "$TEMP_MAPPED_FILE" <<'EOF'
         # The map is the first element of the slurpfile array
@@ -131,7 +132,7 @@ if [ -s "$TEMP_OUTPUT_FILE" ]; then
             | tonumber 
         )
         | del(.line_code)
-EOF "$TEMP_OUTPUT_FILE" > "$TEMP_MAPPED_FILE"
+EOF
 
 
     # --- STEP 2 (NEW): Apply color codes ---
