@@ -16,8 +16,8 @@ COPY run.sh /
 COPY compile.sh /
 COPY pulldata.sh /
 COPY push_to_device.sh /
-COPY testStateChane.sh /
-RUN chmod a+x /testStateChane.sh
+COPY testStateChange.sh /
+RUN chmod a+x /testStateChange.sh
 RUN chmod a+x /push_to_device.sh
 RUN chmod a+x /run.sh
 RUN chmod a+x /pulldata.sh
