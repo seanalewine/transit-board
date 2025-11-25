@@ -89,3 +89,5 @@ else
     echo "Error Response: ${CURL_RESPONSE}"
     exit 1
 fi
+
+return
