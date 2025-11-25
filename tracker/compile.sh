@@ -115,24 +115,26 @@ if [ -s "$TEMP_OUTPUT_FILE" ]; then
     echo "Mapping 'nextStaId' and 'line_code' to 'unifiedId' using map file $MAP_FILE"
 
     # FIX: Write the jq filter to a temporary file, then execute it. 
-    # This solves both the shell quoting crash and the standard input conflict.
+    # The filter content is slightly adjusted to remove leading spaces 
+    # that could be interpreted as part of the jq script.
     JQ_FILTER_FILE="/tmp/jq_map_filter.jq"
 
+    # CRITICAL FIX: Ensure the EOD delimiter is the very first character on its closing line.
     cat > "$JQ_FILTER_FILE" <<'EOD'
-        # The map is the first element of the slurpfile array
-        ($id_map[0]) as $map |
-        # Construct the key as "nextStaId:line_code"
-        ($(.nextStaId) + ":" + .line_code) as $lookup_key |
-        
-        # Use the lookup key to find the unifiedId, default to original nextStaId if not found
-        # Then, remove the temporary 'line_code' field.
-        .nextStaId = (
-            ($map[$lookup_key] // .nextStaId)
-            # The nextStaId from the input JSON is already a string, so we convert it 
-            # to a number to match the CSV column structure for unifiedId.
-            | tonumber 
-        )
-        | del(.line_code)
+# The map is the first element of the slurpfile array
+($id_map[0]) as $map |
+# Construct the key as "nextStaId:line_code"
+($(.nextStaId) + ":" + .line_code) as $lookup_key |
+
+# Use the lookup key to find the unifiedId, default to original nextStaId if not found
+# Then, remove the temporary 'line_code' field.
+.nextStaId = (
+    ($map[$lookup_key] // .nextStaId)
+    # The nextStaId from the input JSON is already a string, so we convert it 
+    # to a number to match the CSV column structure for unifiedId.
+    | tonumber 
+)
+| del(.line_code)
 EOD
     
     # Execute jq, piping the data and using the filter file (-f).
