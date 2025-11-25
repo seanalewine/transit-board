@@ -114,9 +114,11 @@ if [ -s "$TEMP_OUTPUT_FILE" ]; then
     # --- STEP 1 (NEW): Map nextStaId and line_code to unifiedId ---
     echo "Mapping 'nextStaId' and 'line_code' to 'unifiedId' using map file $MAP_FILE"
 
-    # FIX: Define the multi-line jq filter safely using a Heredoc into a shell variable.
-    # This prevents the shell from misinterpreting the parentheses.
-    read -r -d '' JQ_FILTER <<'EOD'
+    # FIX: Write the jq filter to a temporary file, then execute it. 
+    # This solves both the shell quoting crash and the standard input conflict.
+    JQ_FILTER_FILE="/tmp/jq_map_filter.jq"
+
+    cat > "$JQ_FILTER_FILE" <<'EOD'
         # The map is the first element of the slurpfile array
         ($id_map[0]) as $map |
         # Construct the key as "nextStaId:line_code"
@@ -132,9 +134,13 @@ if [ -s "$TEMP_OUTPUT_FILE" ]; then
         )
         | del(.line_code)
 EOD
-    # Now execute jq, piping the data and using the shell variable for the filter.
-    cat "$TEMP_OUTPUT_FILE" | jq --slurpfile id_map "$MAP_FILE" "$JQ_FILTER" > "$TEMP_MAPPED_FILE"
+    
+    # Execute jq, piping the data and using the filter file (-f).
+    cat "$TEMP_OUTPUT_FILE" | jq --slurpfile id_map "$MAP_FILE" -f "$JQ_FILTER_FILE" > "$TEMP_MAPPED_FILE"
 
+    # Clean up the filter file immediately after use.
+    rm "$JQ_FILTER_FILE"
+    # --- END STEP 1 FIX ---
 
     # --- STEP 2 (NEW): Apply color codes ---
     echo "Applying color codes to 'output_color' field in ${TEMP_MAPPED_FILE}"
