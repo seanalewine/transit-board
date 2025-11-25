@@ -17,8 +17,8 @@ set -euo pipefail
 
 # --- Configuration ---
 # HA_URL points to the internal supervisor endpoint, which acts as a proxy to the HA Core API.
-readonly HA_URL="http://supervisor/core/api"
-readonly API_ENDPOINT="${HA_URL}/services"
+HA_URL="http://supervisor/core/api"
+API_ENDPOINT="${HA_URL}/services"
 
 # --- Environment Variable Validation ---
 
