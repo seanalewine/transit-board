@@ -11,7 +11,7 @@ JSON_FILE="/data/active_train_summary.json"
 
 # The Home Assistant API endpoint for calling services
 # Using 'supervisor/core/api' for communication within the add-on environment is often the most reliable method.
-HA_API_URL="http://supervisor/core/api/services/light/turn_on"
+HA_API_URL="http://supervisor/core/api/services/light/addressable_set"
 
 # The Home Assistant entity ID for your addressable light strip
 LIGHT_ENTITY_ID=$(bashio::config 'light_board')
