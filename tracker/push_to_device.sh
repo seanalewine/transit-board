@@ -4,7 +4,7 @@
 # The total number of individually addressable LEDs on your strip.
 # IMPORTANT: Adjust this value to match your actual hardware and HA configuration (e.g., 200 for 200 LEDs).
 # Assuming 1-based indexing (LEDs 1 to TOTAL_LEDS). Adjust range in 'Inactive Lights' section if 0-based.
-TOTAL_LEDS=192
+TOTAL_LEDS=64
 
 # The full path to your JSON data file
 JSON_FILE="/data/active_train_summary.json"
