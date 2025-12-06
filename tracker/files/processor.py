@@ -4,6 +4,49 @@ import os
 import glob
 import argparse
 
+# --- UPDATED FEATURE: Color Conversion Function ---
+def parse_and_convert_rgb(rgb_string):
+    """
+    Parses a comma-separated RGB string (0-255 values) and converts 
+    each channel to a rounded percentage (0-100), appending the '%' sign.
+
+    Args:
+        rgb_string (str): A string of color values like "R, G, B".
+
+    Returns:
+        tuple: A tuple containing (R_pct_str, G_pct_str, B_pct_str) on success, 
+               or ("0%", "0%", "0%") on failure.
+    """
+    try:
+        # 1. Parse R, G, B (0-255)
+        channels_255 = []
+        for c in rgb_string.split(','):
+            val = int(c.strip())
+            # Basic validation
+            if not 0 <= val <= 255:
+                raise ValueError("Channel value outside 0-255 range.")
+            channels_255.append(val)
+        
+        if len(channels_255) != 3:
+             raise ValueError("RGB string does not contain three channels.")
+
+        # 2. Calculate Percentage, Round to the ones place (integer), and format as string with '%'
+        channels_pct_str = []
+        for val in channels_255:
+            # Formula: (value / 255) * 100
+            # Rounding to 0 decimal places (ones place)
+            percent = round((val / 255.0) * 100) 
+            # Format as string with '%' appended
+            channels_pct_str.append(f"{percent}%")
+
+        # Return the three percentage strings
+        return (channels_pct_str[0], channels_pct_str[1], channels_pct_str[2])
+
+    except Exception as e:
+        print(f"Warning: Failed to process color string '{rgb_string}'. Error: {e}")
+        # Return a tuple of "0%" strings on failure
+        return ("0%", "0%", "0%")
+
 # 1. Configuration (Reads colors from environment variables set by Bash wrapper)
 # The default values are set to the requested "R, G, B" string format.
 COLORS = {
@@ -16,6 +59,8 @@ COLORS = {
     "pink": os.environ.get("PINK_COLOR", "255, 105, 180"),
     "y": os.environ.get("YELLOW_COLOR", "255, 255, 0"),
 }
+
+# --- Rest of the script remains the same until process_train_data ---
 
 def load_station_map(csv_file_path):
     """
@@ -84,6 +129,12 @@ def process_train_data(input_dir, station_map):
         if not routes or not isinstance(routes, list):
             continue
 
+        # 1. Get the color string and convert it once per line
+        rgb_255_string = COLORS.get(line_code, "0, 0, 0") 
+        
+        # --- NEW FEATURE INTEGRATION (returns percentage strings) ---
+        (r_pct, g_pct, b_pct) = parse_and_convert_rgb(rgb_255_string)
+
         for route in routes:
             trains = route.get('train')
             if not trains or not isinstance(trains, list):
@@ -100,30 +151,27 @@ def process_train_data(input_dir, station_map):
                 # --- Step 1: ID Mapping and 'tonumber' conversion ---
                 lookup_key = f"{next_sta_id_str}:{line_code}"
                 
-                # Check if the key exists in the map
                 if lookup_key in station_map:
                     unified_id = station_map[lookup_key]
                 else:
-                    # Value not found in map. Fallback to original ID and print warning.
                     unified_id = next_sta_id_str
                     print(f"Warning: Could not find unified ID for key '{lookup_key}'. Using original nextStaId: {unified_id}")
 
-                # CRITICAL: Match jq's '| tonumber' behavior: the output field MUST be a JSON number.
                 try:
                     unified_id = int(unified_id)
                 except (TypeError, ValueError):
-                    # If conversion fails, use the original string as a fallback.
-                    pass # Keep unified_id as the string value it already is.
+                    pass
                 
                 # --- Step 2: Determine Status Value ---
                 value = 2 if is_delay else (1 if is_approach else 0)
 
-                # --- Step 3: Apply Color ---
-                output_color = COLORS.get(line_code, line_code) 
-                
+                # --- Step 3: Apply Percentage Color Channels (as strings with '%') ---
                 all_trains.append({
                     "nextStaId": unified_id,
-                    "output_color": output_color,
+                    # Percentage Values (0-100) are now strings with '%'
+                    "red": r_pct,
+                    "green": g_pct,
+                    "blue": b_pct,
                     "value": value
                 })
                 
