@@ -57,8 +57,6 @@ set_light_color() {
         echo "⚠️ Warning: Brightness value (${BRIGHTNESS}) is over 100. Capped at 100%." >&2
     fi
 
-    echo "💡 Setting ${entity_id} to color: ${color_rgb}, and brightness: ${safe_brightness}%"
-
     # Prepare data payload for the Home Assistant API call
     IFS=',' read -r R G B <<< "$color_rgb"
     
@@ -119,9 +117,6 @@ fi
 # 1. READ CURRENT STATE
 # This variable will now ONLY contain the space-separated light IDs.
 PREVIOUSLY_ON_IDS_STRING=$(get_on_lights)
-
-echo "Currently ON light IDs (before processing): ${PREVIOUSLY_ON_IDS_STRING}"
-echo "------------------------------------------------"
 
 echo "## Processing Active Trains and Collecting IDs"
 
