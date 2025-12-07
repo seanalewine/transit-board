@@ -18,9 +18,6 @@ OUTPUT_FILE="/data/active_train_summary.json"
 
 PYTHON_SCRIPT="/data/processor.py"
 
-echo "Starting data processing using Python..."
-echo "--------------------------------------------------------"
-
 # Execute the Python script, passing paths as arguments
 python3 "$PYTHON_SCRIPT" \
     --station-list "$CTA_STATION_LIST" \
@@ -32,7 +29,7 @@ if [ $? -eq 0 ]; then
     echo "Successfully completed processing. Output saved to $OUTPUT_FILE"
 else
     echo "--------------------------------------------------------"
-    echo "Error: Python script failed. Check logs for details."
+    echo "Error: Python script failed."
 fi
 
 return

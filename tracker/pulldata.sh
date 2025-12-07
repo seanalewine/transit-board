@@ -20,7 +20,6 @@ fetch_route_data() {
     local KEY="$2"
     local OUTPUT_FILE="$OUTPUT_DIR/$ROUTE_ID.json"
 
-    echo "Fetching Route: $ROUTE_ID"
 
     # 1. Construct the API URL
     local API_URL="http://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=$KEY&rt=$ROUTE_ID&outputType=JSON"
@@ -36,7 +35,7 @@ fetch_route_data() {
 
     # 3. Check the HTTP response status code
     if [ "$HTTP_CODE" -eq 200 ]; then
-        echo "Success! Data saved to $OUTPUT_FILE (HTTP $HTTP_CODE)."
+        #echo "Success! Data saved to $OUTPUT_FILE (HTTP $HTTP_CODE)."
     else
         # Handle non-200 responses or network errors
         echo "Error: API request failed for Route $ROUTE_ID with HTTP status code $HTTP_CODE."
