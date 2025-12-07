@@ -3,8 +3,6 @@
 ## 0.2.1
 - Disable web interface.
 
-- Stable!
-
 ## 0.2.0
 
 - Stable!
