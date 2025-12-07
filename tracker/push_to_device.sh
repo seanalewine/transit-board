@@ -23,7 +23,7 @@ set_light_color() {
     echo "💡 Setting ${entity_id} to color: ${color_rgb}"
 
     # Prepare data payload for the Home Assistant API call
-    
+
     IFS=',' read -r R G B <<< "$color_rgb"
     
     # Check if B is empty, which means only R and G were read (e.g., "198, 12")
@@ -80,35 +80,38 @@ if [ ! -f "$JSON_FILE" ]; then
     exit 1
 fi
 
-# Array to hold the IDs of the lights that ARE active (present in the JSON)
-declare -a ACTIVE_LIGHT_IDS=()
-
-echo "## Processing Active Trains from JSON"
-# Use 'jq' to extract nextStaId and output_color for each train
-# The -r flag is important to output raw strings
+# 1. Use a standard 'while read' loop to process data and set colors
+# 2. In the same loop, echo the active sta_id to the temporary file
 jq -r '.trains[] | "\(.nextStaId) \(.output_color)"' "$JSON_FILE" | while IFS=' ' read -r sta_id color; do
     
-    # Check if sta_id is a valid number (0-255)
     if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 255 )); then
-        # 1. Set the color for the active train light
+        # Set the color for the active train light
         set_light_color "$sta_id" "$color"
         
-        # 2. Record the ID as active
-        ACTIVE_LIGHT_IDS+=("$sta_id")
+        # Write the active ID to a file, which is accessible outside the subshell
+        echo "$sta_id" >> "$TEMP_ACTIVE_IDS_FILE"
     else
         echo "⚠️ Warning: Invalid nextStaId found: ${sta_id}. Skipping."
     fi
 done
 
-echo "--- Identifying and Turning Off Inactive Lights ---"
+# 3. Read the IDs from the temporary file into the array in the main script
+# The `mapfile` command is the most efficient way to do this.
+mapfile -t ACTIVE_LIGHT_IDS < "$TEMP_ACTIVE_IDS_FILE"
 
-# Create a list of all possible light IDs (0 to 255)
-# This is a good way to handle the requirement to turn off lights 0-255
+# Clean up the temporary file immediately
+rm -f "$TEMP_ACTIVE_IDS_FILE"
+
+echo "--- Identifying and Turning Off Inactive Lights (0-255) ---"
+
+# Convert the array to a space-separated string for efficient checking
+ACTIVE_IDS_STRING=" ${ACTIVE_LIGHT_IDS[*]} "
+
+# 4. Loop through all possible light IDs (0 to 255)
 for i in $(seq 0 255); do
     
-    # Check if the current light ID is NOT in the ACTIVE_LIGHT_IDS array
-    # The '[[ ! " ${array[*]} " =~ " $element " ]]' pattern is a robust Bash check
-    if ! printf ' %s ' "${ACTIVE_LIGHT_IDS[@]}" | grep -q " ${i} "; then
+    # Check if the current light ID is NOT present in the recorded active string
+    if [[ ! "$ACTIVE_IDS_STRING" =~ " $i " ]]; then
         # The light is not active, so turn it off
         turn_off_light "$i"
     fi
