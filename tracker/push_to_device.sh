@@ -46,7 +46,7 @@ set_light_color() {
     # Construct the JSON data (rest of your logic is here)
     DATA="{\"entity_id\": \"${entity_id}\", \"rgb_color\": [${R}, ${G}, ${B}], \"brightness\": ${BRIGHTNESS}}"
 
-    curl -X POST \
+    curl -s -X POST \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
         -d "${DATA}" \
@@ -59,11 +59,9 @@ turn_off_light() {
     local sta_id=$1
     local entity_id="light.esp_train_tracker_${sta_id}"
     
-    echo "⚫ Turning off ${entity_id}"
-    
     DATA="{\"entity_id\": \"${entity_id}\"}"
     
-    curl -X POST \
+    curl -s -X POST \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
         -d "${DATA}" \
@@ -126,6 +124,7 @@ for i in $(seq 0 255); do
         # The light is not active, so turn it off
         turn_off_light "$i"
     fi
+    echo "Lights turned off"
 done
 
 echo "--- Script Finished Successfully ---"
