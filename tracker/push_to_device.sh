@@ -135,7 +135,7 @@ jq -r '.trains[] | "\(.nextStaId) \(.output_color)"' "$JSON_FILE" | while IFS=' 
         echo "$sta_id" >> "$TEMP_ACTIVE_IDS_FILE"
     else
         echo "⚠️ Warning: Invalid nextStaId found: ${sta_id}. Skipping."
-    }
+    fi
 done
 
 # 3. Read the IDs from the temporary file into the array
