@@ -18,23 +18,23 @@ HA_URL="${HA_URL:-http://supervisor/core/api}" # Default for Add-ons
 set_light_color() {
     local sta_id=$1
     local color_rgb=$2
-    local entity_id="${LIGHT_BOARD_BASE}_${sta_id}"
+    local entity_id="light.esp_train_tracker_${sta_id}"
 
     echo "💡 Setting ${entity_id} to color: ${color_rgb}"
 
     # Prepare data payload for the Home Assistant API call
-    # The 'rgb_color' array is derived from the "R, G, B" string
+    
     IFS=',' read -r R G B <<< "$color_rgb"
     
-    # Check if the color is "R, G, B" and not "R, G, B, A" or similar
-    if [ -z "$B" ] || [ -n "$4" ]; then
-        echo "⚠️ Error parsing color string: ${color_rgb}"
+    # Check if B is empty, which means only R and G were read (e.g., "198, 12")
+    if [ -z "$B" ]; then
+        echo "⚠️ Error parsing color string: ${color_rgb}. Expected R,G,B format."
         return
     fi
     
-    # Construct the JSON data
+    # Construct the JSON data (rest of your logic is here)
     DATA="{\"entity_id\": \"${entity_id}\", \"rgb_color\": [${R}, ${G}, ${B}], \"brightness_pct\": 100}"
-    
+
     curl -X POST \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
