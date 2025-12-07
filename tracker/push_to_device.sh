@@ -7,95 +7,112 @@
 LIGHT_BOARD_BASE=$(bashio::config 'light_board')
 
 
-# Your Home Assistant URL/IP and port
-HA_URL="http://homeassistant.local:8123"
 
-# Path to the input JSON file (as specified in the prompt)
+# Configuration
 JSON_FILE="/data/active_train_summary.json"
+HA_TOKEN="${HA_TOKEN}"
+HA_URL="${HA_URL:-http://supervisor/core/api}" # Default for Add-ons
 
-# Total number of LEDs to check for turning off (from 0 to MAX_LED_INDEX)
-MAX_LED_INDEX=255
-# -------------------------------------------------------------------
+# --- Utility Functions ---
 
-# Set up the cURL headers
-CURL_HEADERS=(-H "Authorization: Bearer ${SUPERVISOR_TOKEN}" -H "Content-Type: application/json")
+# Function to turn on a light with a specific color
+set_light_color() {
+    local sta_id=$1
+    local color_rgb=$2
+    local entity_id="${LIGHT_BOARD_BASE}_${sta_id}"
 
-# 1. Parse JSON and Turn ON Lights
-echo "🚂 Processing active trains and setting LED colors..."
-echo "----------------------------------------------------"
-echo "Using Light Board Base Entity: ${LIGHT_BOARD_BASE}"
+    echo "💡 Setting ${entity_id} to color: ${color_rgb}"
 
-# Initialize an associative array to track which LEDs are active
-declare -A active_leds
-
-# Use 'jq' to process the JSON file. It extracts the necessary fields
-train_data=$(jq -r '.trains[] | "\(.nextStaId) \(.red) \(.green) \(.blue)"' "${JSON_FILE}" | sed 's/%//g')
-
-# Read the data line by line
-while read -r sta_id red_percent green_percent blue_percent; do
-    if [[ -z "$sta_id" ]]; then
-        continue
+    # Prepare data payload for the Home Assistant API call
+    # The 'rgb_color' array is derived from the "R, G, B" string
+    IFS=',' read -r R G B <<< "$color_rgb"
+    
+    # Check if the color is "R, G, B" and not "R, G, B, A" or similar
+    if [ -z "$B" ] || [ -n "$4" ]; then
+        echo "⚠️ Error parsing color string: ${color_rgb}"
+        return
     fi
     
-    # Convert percentage to 0-255 range: round((percent / 100) * 255)
-    red_value=$(echo "scale=0; (${red_percent} / 100) * 255" | bc -l)
-    green_value=$(echo "scale=0; (${green_percent} / 100) * 255" | bc -l)
-    blue_value=$(echo "scale=0; (${blue_percent} / 100) * 255" | bc -l)
-
-    # Ensure integer values and limit to 255
-    red_value=$(($red_value > 255 ? 255 : $red_value))
-    green_value=$(($green_value > 255 ? 255 : $green_value))
-    blue_value=$(($blue_value > 255 ? 255 : $blue_value))
-
-    # --- UPDATED ENTITY_ID ---
-    # Construct the final ENTITY_ID using the configured base and the station ID
-    ENTITY_ID="${LIGHT_BOARD_BASE}_${sta_id}"
+    # Construct the JSON data
+    DATA="{\"entity_id\": \"${entity_id}\", \"rgb_color\": [${R}, ${G}, ${B}], \"brightness_pct\": 100}"
     
-    SERVICE_DATA=$(jq -n \
-        --arg entity "${ENTITY_ID}" \
-        --argjson r "$red_value" \
-        --argjson g "$green_value" \
-        --argjson b "$blue_value" \
-        '{ "entity_id": $entity, "rgb_color": [$r, $g, $b] }')
+    curl -X POST \
+        -H "Authorization: Bearer ${HA_TOKEN}" \
+        -H "Content-Type: application/json" \
+        -d "${DATA}" \
+        "${HA_URL}/services/light/turn_on"
 
-    echo "  -> Setting ${ENTITY_ID} to RGB(${red_value}, ${green_value}, ${blue_value})"
+}
 
-    # Call the Home Assistant API to turn the light ON
-    curl -s -X POST "http://supervisor/core/api/services/light/turn_on" \
-        "${CURL_HEADERS[@]}" \
-        -d "${SERVICE_DATA}" > /dev/null
+# Function to turn off a light
+turn_off_light() {
+    local sta_id=$1
+    local entity_id="light.esp_train_tracker_${sta_id}"
+    
+    echo "⚫ Turning off ${entity_id}"
+    
+    DATA="{\"entity_id\": \"${entity_id}\"}"
+    
+    curl -X POST \
+        -H "Authorization: Bearer ${HA_TOKEN}" \
+        -H "Content-Type: application/json" \
+        -d "${DATA}" \
+        "${HA_URL}/services/light/turn_off"
+    
+}
 
-    # Mark this LED as active
-    active_leds["$sta_id"]=1
+# --- Main Logic ---
 
-done <<< "$train_data"
+echo "--- Starting Light Control Script ---"
 
-echo "----------------------------------------------------"
-echo "✅ Finished setting active train lights."
+# Check for required dependencies
+if ! command -v jq &> /dev/null; then
+    echo "❌ Error: 'jq' is not installed. Please install it in your Add-on environment."
+    exit 1
+fi
 
-# ---
+if [ -z "$HA_TOKEN" ]; then
+    echo "❌ Error: HA_TOKEN environment variable is not set."
+    exit 1
+fi
 
-# 2. Turn OFF Unused Lights (0-255)
-echo "Turning OFF lights that are not listed in the summary (0-${MAX_LED_INDEX})..."
-echo "----------------------------------------------------"
+if [ ! -f "$JSON_FILE" ]; then
+    echo "❌ Error: JSON file not found at ${JSON_FILE}"
+    exit 1
+}
 
-# Loop through all possible LED indices (0 to MAX_LED_INDEX)
-for (( i=0; i<=$MAX_LED_INDEX; i++ )); do
-    # Check if this index was NOT in the active_leds array
-    if [[ -z "${active_leds[$i]:-}" ]]; then
-        # --- UPDATED ENTITY_ID ---
-        ENTITY_ID="${LIGHT_BOARD_BASE}_${i}"
+# Array to hold the IDs of the lights that ARE active (present in the JSON)
+declare -a ACTIVE_LIGHT_IDS=()
+
+echo "## Processing Active Trains from JSON"
+# Use 'jq' to extract nextStaId and output_color for each train
+# The -r flag is important to output raw strings
+jq -r '.trains[] | "\(.nextStaId) \(.output_color)"' "$JSON_FILE" | while IFS=' ' read -r sta_id color; do
+    
+    # Check if sta_id is a valid number (0-255)
+    if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 255 )); then
+        # 1. Set the color for the active train light
+        set_light_color "$sta_id" "$color"
         
-        SERVICE_DATA=$(jq -n --arg entity "${ENTITY_ID}" '{ "entity_id": $entity }')
-
-        echo "  -> Turning off ${ENTITY_ID}"
-
-        # Call the Home Assistant API to turn the light OFF
-        curl -s -X POST "${HA_URL}/api/services/light/turn_off" \
-            "${CURL_HEADERS[@]}" \
-            -d "${SERVICE_DATA}" > /dev/null
+        # 2. Record the ID as active
+        ACTIVE_LIGHT_IDS+=("$sta_id")
+    else
+        echo "⚠️ Warning: Invalid nextStaId found: ${sta_id}. Skipping."
     fi
 done
 
-echo "----------------------------------------------------"
-echo "Train light update complete!"
+echo "--- Identifying and Turning Off Inactive Lights ---"
+
+# Create a list of all possible light IDs (0 to 255)
+# This is a good way to handle the requirement to turn off lights 0-255
+for i in $(seq 0 255); do
+    
+    # Check if the current light ID is NOT in the ACTIVE_LIGHT_IDS array
+    # The '[[ ! " ${array[*]} " =~ " $element " ]]' pattern is a robust Bash check
+    if ! printf ' %s ' "${ACTIVE_LIGHT_IDS[@]}" | grep -q " ${i} "; then
+        # The light is not active, so turn it off
+        turn_off_light "$i"
+    fi
+done
+
+echo "--- Script Finished Successfully ---"
