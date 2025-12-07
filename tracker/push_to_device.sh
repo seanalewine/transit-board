@@ -2,7 +2,8 @@
 
 # --- Configuration: Read from Add-on Config ---
 LIGHT_BOARD_BASE=$(bashio::config 'light_board')
-BRIGHTNESS=$(bashio::config 'brightness') 
+BRIGHTNESS=$(bashio::config 'brightness')
+SLEEP_TIME=$(bashio::config 'light_refresh_delay')
 
 # Configuration
 JSON_FILE="/data/active_train_summary.json"
@@ -75,7 +76,7 @@ set_light_color() {
         -H "Content-Type: application/json" \
         -d "${DATA}" \
         "${HA_URL}/services/light/turn_on" > /dev/null
-    sleep 0.25
+    sleep "${SLEEP_TIME:-0.02}"
 }
 
 # Function to turn off a light
@@ -95,7 +96,7 @@ turn_off_light() {
         -d "${DATA}" \
         "${HA_URL}/services/light/turn_off" > /dev/null
     
-    sleep 0.25
+    sleep "${SLEEP_TIME:-0.02}"
 }
 
 # --- Main Logic ---
