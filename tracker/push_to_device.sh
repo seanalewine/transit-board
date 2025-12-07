@@ -1,96 +1,106 @@
 #!/usr/bin/with-contenv bashio
-# --- Configuration ---
+#!/bin/bash
 
-# The total number of individually addressable LEDs on your strip.
-# IMPORTANT: Adjust this value to match your actual hardware and HA configuration (e.g., 200 for 200 LEDs).
-# Assuming 1-based indexing (LEDs 1 to TOTAL_LEDS). Adjust range in 'Inactive Lights' section if 0-based.
-TOTAL_LEDS=64
+# Load the Home Assistant Add-on library for accessing configuration
+# This is crucial for bashio::config to work.
+source /usr/lib/bashio/bashio
 
-# Use a long-lived access token or the SUPERVISOR_TOKEN if available in your add-on.
-# If SUPERVISOR_TOKEN is available, use: TOKEN="${SUPERVISOR_TOKEN}"
-# Otherwise, replace YOUR_LONG_LIVED_ACCESS_TOKEN with your actual token.
-# To get a long-lived token: Home Assistant -> Profile -> Create Token (at the bottom).
-TOKEN="${SUPERVISOR_TOKEN}"
+# --- Configuration: Replace the HA_TOKEN and HA_URL Placeholders ---
+# Read the base entity name from the Add-on's configuration (config.json)
+# If your config.json has "light_board": "light.my_train_lights", 
+# then LIGHT_BOARD_BASE will be "light.my_train_lights".
+LIGHT_BOARD_BASE=$(bashio::config 'light_board')
 
-# --- Configuration ---
-# Internal Home Assistant API endpoint for Add-ons
-HA_URL="http://supervisor/core/api"
-# The token is automatically provided as an environment variable in HA Add-ons
-HA_TOKEN="${SUPERVISOR_TOKEN}"
-# Path to the input JSON file
-INPUT_FILE="/data/active_train_summary.json"
-# ESPHome Service and Target Entity
-SERVICE_DOMAIN="esphome"
-SERVICE_NAME="update_train_lights"
-TARGET_ENTITY_ID=$(bashio::config 'light_board')
 
-# --- Pre-flight Checks ---
+# Your Home Assistant URL/IP and port
+HA_URL="http://homeassistant.local:8123"
 
-# Check if the token is available
-if [ -z "$HA_TOKEN" ]; then
-    echo "Error: SUPERVISOR_TOKEN environment variable is not set." >&2
-    exit 1
-fi
+# Path to the input JSON file (as specified in the prompt)
+JSON_FILE="/data/active_train_summary.json"
 
-# Check if the input file exists
-if [ ! -f "$INPUT_FILE" ]; then
-    echo "Error: Input file not found at $INPUT_FILE" >&2
-    exit 1
-fi
+# Total number of LEDs to check for turning off (from 0 to MAX_LED_INDEX)
+MAX_LED_INDEX=255
+# -------------------------------------------------------------------
 
-# Check for required tools
-if ! command -v jq &> /dev/null; then
-    echo "Error: 'jq' is required but not installed. Please add it to your Add-on's Dockerfile." >&2
-    exit 1
-fi
+# Set up the cURL headers
+CURL_HEADERS=(-H "Authorization: Bearer ${SUPERVISOR_TOKEN}" -H "Content-Type: application/json")
 
-# --- Main Logic ---
+# 1. Parse JSON and Turn ON Lights
+echo "🚂 Processing active trains and setting LED colors..."
+echo "----------------------------------------------------"
+echo "Using Light Board Base Entity: ${LIGHT_BOARD_BASE}"
 
-echo "Reading data from $INPUT_FILE..."
+# Initialize an associative array to track which LEDs are active
+declare -A active_leds
 
-# 1. Read the entire JSON file as a raw string and embed it into the API payload.
-# jq -Rs: Read the input file as a Raw String (R) and output as a single JSON string literal (s).
-# The expression then builds the final service call payload.
-API_PAYLOAD=$(jq -Rs \
-  --arg entity_id "$TARGET_ENTITY_ID" \
-  '{"entity_id": $entity_id, "train_data_json": .}' \
-  "$INPUT_FILE")
+# Use 'jq' to process the JSON file. It extracts the necessary fields
+train_data=$(jq -r '.trains[] | "\(.nextStaId) \(.red) \(.green) \(.blue)"' "${JSON_FILE}" | sed 's/%//g')
 
-# Check if payload generation was successful
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to generate API payload using jq." >&2
-    exit 1
-fi
+# Read the data line by line
+while read -r sta_id red_percent green_percent blue_percent; do
+    if [[ -z "$sta_id" ]]; then
+        continue
+    fi
+    
+    # Convert percentage to 0-255 range: round((percent / 100) * 255)
+    red_value=$(echo "scale=0; (${red_percent} / 100) * 255" | bc -l)
+    green_value=$(echo "scale=0; (${green_percent} / 100) * 255" | bc -l)
+    blue_value=$(echo "scale=0; (${blue_percent} / 100) * 255" | bc -l)
 
-# 2. Call the Home Assistant Core API endpoint
-API_ENDPOINT="${HA_URL}/services/${SERVICE_DOMAIN}/${SERVICE_NAME}"
-echo "Calling HA API at $API_ENDPOINT..."
+    # Ensure integer values and limit to 255
+    red_value=$(($red_value > 255 ? 255 : $red_value))
+    green_value=$(($green_value > 255 ? 255 : $green_value))
+    blue_value=$(($blue_value > 255 ? 255 : $blue_value))
 
-RESPONSE=$(
-    curl -s -X POST \
-    -H "Authorization: Bearer ${HA_TOKEN}" \
-    -H "Content-Type: application/json" \
-    -d "$API_PAYLOAD" \
-    "$API_ENDPOINT"
-)
+    # --- UPDATED ENTITY_ID ---
+    # Construct the final ENTITY_ID using the configured base and the station ID
+    ENTITY_ID="${LIGHT_BOARD_BASE}_${sta_id}"
+    
+    SERVICE_DATA=$(jq -n \
+        --arg entity "${ENTITY_ID}" \
+        --argjson r "$red_value" \
+        --argjson g "$green_value" \
+        --argjson b "$blue_value" \
+        '{ "entity_id": $entity, "rgb_color": [$r, $g, $b] }')
 
-# 3. Check curl exit status and API response for success
-CURL_STATUS=$?
+    echo "  -> Setting ${ENTITY_ID} to RGB(${red_value}, ${green_value}, ${blue_value})"
 
-if [ $CURL_STATUS -ne 0 ]; then
-    echo "Error: curl failed with exit status $CURL_STATUS" >&2
-    exit 1
-fi
+    # Call the Home Assistant API to turn the light ON
+    curl -s -X POST "http://supervisor/core/api/services/light/turn_on" \
+        "${CURL_HEADERS[@]}" \
+        -d "${SERVICE_DATA}" > /dev/null
 
-# A successful API call returns an array of entity states (e.g., [{"entity_id": ...}]).
-# An unsuccessful call (e.g., 400, 500) returns an error JSON object.
-if echo "$RESPONSE" | jq -e '.[].entity_id' &> /dev/null; then
-    echo "Success: ESPHome light service called successfully."
-else
-    # Output the full response for debugging if it's not the expected successful format
-    echo "Error: API call failed. Response from Home Assistant:" >&2
-    echo "$RESPONSE" | jq . >&2
-    exit 1
-fi
+    # Mark this LED as active
+    active_leds["$sta_id"]=1
 
-exit 0
+done <<< "$train_data"
+
+echo "----------------------------------------------------"
+echo "✅ Finished setting active train lights."
+
+# ---
+
+# 2. Turn OFF Unused Lights (0-255)
+echo "Turning OFF lights that are not listed in the summary (0-${MAX_LED_INDEX})..."
+echo "----------------------------------------------------"
+
+# Loop through all possible LED indices (0 to MAX_LED_INDEX)
+for (( i=0; i<=$MAX_LED_INDEX; i++ )); do
+    # Check if this index was NOT in the active_leds array
+    if [[ -z "${active_leds[$i]}" ]]; then
+        # --- UPDATED ENTITY_ID ---
+        ENTITY_ID="${LIGHT_BOARD_BASE}_${i}"
+        
+        SERVICE_DATA=$(jq -n --arg entity "${ENTITY_ID}" '{ "entity_id": $entity }')
+
+        echo "  -> Turning off ${ENTITY_ID}"
+
+        # Call the Home Assistant API to turn the light OFF
+        curl -s -X POST "${HA_URL}/api/services/light/turn_off" \
+            "${CURL_HEADERS[@]}" \
+            -d "${SERVICE_DATA}" > /dev/null
+    fi
+done
+
+echo "----------------------------------------------------"
+echo "Train light update complete!"
