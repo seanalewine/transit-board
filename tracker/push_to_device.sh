@@ -54,7 +54,7 @@ set_light_color() {
     local color_rgb=$2
     local entity_id="light.esp_train_tracker_${sta_id}"
 
-    echo "💡 Setting ${entity_id} to color: ${color_rgb}, and brightness: ${BRIGHTNESS}%"
+    echo "💡 Setting ${entity_id} to color: ${color_rgb}, and brightness_pct: ${BRIGHTNESS}%"
 
     # Prepare data payload for the Home Assistant API call
 
