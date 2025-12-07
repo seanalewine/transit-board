@@ -12,7 +12,7 @@ TEMP_ACTIVE_IDS_FILE=$(mktemp)
 
 # --- Cleanup Function and Trap ---
 cleanup() {
-    echo "🧹 Cleaning up temporary file: ${TEMP_ACTIVE_IDS_FILE}"
+    echo "🧹 Cleaning up temporary file: ${TEMP_ACTIVE_IDS_FILE}" >&2 # Redirect log to stderr
     rm -f "$TEMP_ACTIVE_IDS_FILE"
 }
 # Trap ensures the cleanup function runs when the script exits (normally or via error)
@@ -22,7 +22,8 @@ trap cleanup EXIT
 
 # Returns a space-separated string of IDs (e.g., "5 12 42")
 get_on_lights() {
-    echo "Fetching current state of all light entities..."
+    # 🌟 FIXED: Redirecting log messages to stderr (>&2) so they aren't captured by the variable assignment
+    echo "Fetching current state of all light entities..." >&2 
     
     # Call the Home Assistant API to get all states
     local states_json
@@ -38,6 +39,7 @@ get_on_lights() {
         sed 's/light\.esp_train_tracker_//g' | \
         tr '\n' ' ')
         
+    # Only the IDs are printed to stdout
     echo "$on_ids"
 }
 
@@ -51,7 +53,7 @@ set_light_color() {
     local safe_brightness="${BRIGHTNESS}"
     if (( safe_brightness > 100 )); then
         safe_brightness=100
-        echo "⚠️ Warning: Brightness value (${BRIGHTNESS}) is over 100. Capped at 100%."
+        echo "⚠️ Warning: Brightness value (${BRIGHTNESS}) is over 100. Capped at 100%." >&2
     fi
 
     echo "💡 Setting ${entity_id} to color: ${color_rgb}, and brightness: ${safe_brightness}%"
@@ -61,18 +63,18 @@ set_light_color() {
     
     # Check if B is empty
     if [ -z "$B" ]; then
-        echo "⚠️ Error parsing color string: ${color_rgb}. Expected R,G,B format."
+        echo "⚠️ Error parsing color string: ${color_rgb}. Expected R,G,B format." >&2
         return
     fi
     
-    # FIXED: Using 'brightness_pct'
+    # Using 'brightness_pct'
     DATA="{\"entity_id\": \"${entity_id}\", \"rgb_color\": [${R}, ${G}, ${B}], \"brightness_pct\": ${safe_brightness}}"
 
     curl -s -X POST \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
         -d "${DATA}" \
-        "${HA_URL}/services/light/turn_on" > /dev/null # Suppress server response
+        "${HA_URL}/services/light/turn_on" > /dev/null
     sleep 0.1
 }
 
@@ -81,42 +83,43 @@ turn_off_light() {
     local sta_id=$1
     local entity_id="light.esp_train_tracker_${sta_id}"
     
-    #  ADDED ECHO BACK: This should appear in your logs before a failed curl.
-    echo "⚫ Attempting to turn off ${entity_id}"
+    # Added echo back for troubleshooting the 400 Bad Request error
+    echo "⚫ Attempting to turn off ${entity_id}" >&2
 
     DATA="{\"entity_id\": \"${entity_id}\"}"
     
-    # MODIFIED: Redirect server response to /dev/null to clean up logs
+    # Redirect server response to /dev/null to clean up logs
     curl -s -X POST \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
         -d "${DATA}" \
         "${HA_URL}/services/light/turn_off" > /dev/null
     
-    sleep 0.02
+    sleep 0.05
 }
 
 # --- Main Logic ---
 
 echo "--- Starting Light Control Script ---"
 
-# Check for required dependencies
+# Check for required dependencies (jq)
 if ! command -v jq &> /dev/null; then
-    echo "❌ Error: 'jq' is not installed. Please install it in your Add-on environment."
+    echo "❌ Error: 'jq' is not installed. Please install it in your Add-on environment." >&2
     exit 1
 fi
 
 if [ -z "$SUPERVISOR_TOKEN" ]; then
-    echo "❌ Error: SUPERVISOR_TOKEN environment variable is not set."
+    echo "❌ Error: SUPERVISOR_TOKEN environment variable is not set." >&2
     exit 1
 fi
 
 if [ ! -f "$JSON_FILE" ]; then
-    echo "❌ Error: JSON file not found at ${JSON_FILE}"
+    echo "❌ Error: JSON file not found at ${JSON_FILE}" >&2
     exit 1
 fi
 
 # 1. READ CURRENT STATE
+# This variable will now ONLY contain the space-separated light IDs.
 PREVIOUSLY_ON_IDS_STRING=$(get_on_lights)
 
 echo "Currently ON light IDs (before processing): ${PREVIOUSLY_ON_IDS_STRING}"
@@ -134,7 +137,7 @@ jq -r '.trains[] | "\(.nextStaId) \(.output_color)"' "$JSON_FILE" | while IFS=' 
         # Write the active ID to the file
         echo "$sta_id" >> "$TEMP_ACTIVE_IDS_FILE"
     else
-        echo "⚠️ Warning: Invalid nextStaId found: ${sta_id}. Skipping."
+        echo "⚠️ Warning: Invalid nextStaId found: ${sta_id}. Skipping." >&2
     fi
 done
 
