@@ -1,6 +1,11 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
 
+## 0.2.0
 
+- Stable!
+- Controls W2812 Light Strip
+- Features include setting the entity root id, setting the light refresh delay between LEDs, brightness, 
+- Imports live data, processes it, and directs ESPHome Light entity to change colors.
 
 ## 0.1.0
 

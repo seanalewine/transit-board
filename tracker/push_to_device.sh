@@ -40,8 +40,6 @@ get_on_lights() {
         sed 's/light\.esp_train_tracker_//g' | \
         tr '\n' ' ')
         
-    # Only the IDs are printed to stdout
-    echo "$on_ids"
 }
 
 # Function to turn on a light with a specific color
@@ -56,8 +54,6 @@ set_light_color() {
         safe_brightness=100
         echo "⚠️ Warning: Brightness value (${BRIGHTNESS}) is over 100. Capped at 100%." >&2
     fi
-
-    echo "💡 Setting ${entity_id} to color: ${color_rgb}, and brightness: ${safe_brightness}%"
 
     # Prepare data payload for the Home Assistant API call
     IFS=',' read -r R G B <<< "$color_rgb"
@@ -84,8 +80,6 @@ turn_off_light() {
     local sta_id=$1
     local entity_id="light.esp_train_tracker_${sta_id}"
     
-    # Added echo back for troubleshooting the 400 Bad Request error
-    echo "⚫ Attempting to turn off ${entity_id}" >&2
 
     DATA="{\"entity_id\": \"${entity_id}\"}"
     
