@@ -1,13 +1,8 @@
 #!/usr/bin/with-contenv bashio
 
-# --- Configuration: Replace the HA_URL Placeholders ---
-# Read the base entity name from the Add-on's configuration (config.json)
-# If your config.json has "light_board": "light.my_train_lights", 
-# then LIGHT_BOARD_BASE will be "light.my_train_lights".
+# --- Configuration: Read from Add-on Config ---
 LIGHT_BOARD_BASE=$(bashio::config 'light_board')
-BRIGHTNESS=$(bashio::config 'brightness')
-
-
+BRIGHTNESS=$(bashio::config 'brightness') 
 
 # Configuration
 JSON_FILE="/data/active_train_summary.json"
@@ -36,9 +31,7 @@ get_on_lights() {
         -H "Content-Type: application/json" \
         "${HA_URL}/states")
 
-    # Use jq to filter for 'light.esp_train_tracker_' entities that are 'on'.
-    # 1. Selects the entity_id
-    # 2. Pipes the entity_id to grep and sed for robust numerical extraction.
+    # Use jq to filter entities and sed to safely extract the numerical ID
     local on_ids
     on_ids=$(echo "$states_json" | \
         jq -r '.[] | select(.entity_id | startswith("light.esp_train_tracker_")) | select(.state == "on") | .entity_id' | \
@@ -54,27 +47,33 @@ set_light_color() {
     local color_rgb=$2
     local entity_id="light.esp_train_tracker_${sta_id}"
 
-    echo "💡 Setting ${entity_id} to color: ${color_rgb}, and brightness_pct: ${BRIGHTNESS}%"
+    # Normalize BRIGHTNESS: HA brightness_pct must be between 1 and 100. 
+    local safe_brightness="${BRIGHTNESS}"
+    if (( safe_brightness > 100 )); then
+        safe_brightness=100
+        echo "⚠️ Warning: Brightness value (${BRIGHTNESS}) is over 100. Capped at 100%."
+    fi
+
+    echo "💡 Setting ${entity_id} to color: ${color_rgb}, and brightness: ${safe_brightness}%"
 
     # Prepare data payload for the Home Assistant API call
-
     IFS=',' read -r R G B <<< "$color_rgb"
     
-    # Check if B is empty, which means only R and G were read (e.g., "198, 12")
+    # Check if B is empty
     if [ -z "$B" ]; then
         echo "⚠️ Error parsing color string: ${color_rgb}. Expected R,G,B format."
         return
     fi
     
-    # Construct the JSON data (rest of your logic is here)
-    DATA="{\"entity_id\": \"${entity_id}\", \"rgb_color\": [${R}, ${G}, ${B}], \"brightness\": ${BRIGHTNESS}}"
+    # FIXED: Using 'brightness_pct'
+    DATA="{\"entity_id\": \"${entity_id}\", \"rgb_color\": [${R}, ${G}, ${B}], \"brightness_pct\": ${safe_brightness}}"
 
     curl -s -X POST \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
         -d "${DATA}" \
-        "${HA_URL}/services/light/turn_on"
-    sleep 0.02
+        "${HA_URL}/services/light/turn_on" > /dev/null # Suppress server response
+    sleep 0.1
 }
 
 # Function to turn off a light
@@ -82,13 +81,18 @@ turn_off_light() {
     local sta_id=$1
     local entity_id="light.esp_train_tracker_${sta_id}"
     
+    #  ADDED ECHO BACK: This should appear in your logs before a failed curl.
+    echo "⚫ Attempting to turn off ${entity_id}"
+
     DATA="{\"entity_id\": \"${entity_id}\"}"
     
+    # MODIFIED: Redirect server response to /dev/null to clean up logs
     curl -s -X POST \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
         -d "${DATA}" \
-        "${HA_URL}/services/light/turn_off"
+        "${HA_URL}/services/light/turn_off" > /dev/null
+    
     sleep 0.02
 }
 
@@ -113,7 +117,6 @@ if [ ! -f "$JSON_FILE" ]; then
 fi
 
 # 1. READ CURRENT STATE
-# Get a space-separated string of IDs of lights currently ON
 PREVIOUSLY_ON_IDS_STRING=$(get_on_lights)
 
 echo "Currently ON light IDs (before processing): ${PREVIOUSLY_ON_IDS_STRING}"
@@ -122,7 +125,6 @@ echo "------------------------------------------------"
 echo "## Processing Active Trains and Collecting IDs"
 
 # 2. PROCESS TRAINS AND TURN ON LIGHTS
-# Use 'jq' and pipe to 'while read'
 jq -r '.trains[] | "\(.nextStaId) \(.output_color)"' "$JSON_FILE" | while IFS=' ' read -r sta_id color; do
     
     if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 255 )); then
@@ -133,7 +135,7 @@ jq -r '.trains[] | "\(.nextStaId) \(.output_color)"' "$JSON_FILE" | while IFS=' 
         echo "$sta_id" >> "$TEMP_ACTIVE_IDS_FILE"
     else
         echo "⚠️ Warning: Invalid nextStaId found: ${sta_id}. Skipping."
-    fi
+    }
 done
 
 # 3. Read the IDs from the temporary file into the array
@@ -145,9 +147,13 @@ ACTIVE_IDS_STRING=" ${ACTIVE_LIGHT_IDS[*]} "
 echo "--- Identifying and Turning Off Lights ---"
 
 # 4. LOOP THROUGH PREVIOUSLY ON LIGHTS AND TURN OFF INACTIVES
-# Loop through the IDs that were ON before the script ran
 for i in $PREVIOUSLY_ON_IDS_STRING; do
     
+    # Sanity check to ensure $i is not empty or malformed
+    if [[ -z "$i" ]]; then
+        continue 
+    fi
+
     # Check if the current ID (i) is NOT present in the list of lights we just set (ACTIVE_IDS_STRING)
     if [[ ! "$ACTIVE_IDS_STRING" =~ " $i " ]]; then
         # The light was ON but was NOT activated by the train data, so turn it off
