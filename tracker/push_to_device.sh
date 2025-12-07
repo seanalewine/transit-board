@@ -1,9 +1,4 @@
 #!/usr/bin/with-contenv bashio
-#!/bin/bash
-
-# Load the Home Assistant Add-on library for accessing configuration
-# This is crucial for bashio::config to work.
-source /usr/lib/bashio/bashio
 
 # --- Configuration: Replace the HA_TOKEN and HA_URL Placeholders ---
 # Read the base entity name from the Add-on's configuration (config.json)
