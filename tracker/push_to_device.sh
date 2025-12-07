@@ -83,9 +83,6 @@ set_light_color() {
 turn_off_light() {
     local sta_id=$1
     local entity_id="light.esp_train_tracker_${sta_id}"
-    
-    # Added echo back for troubleshooting the 400 Bad Request error
-    echo "⚫ Attempting to turn off ${entity_id}" >&2
 
     DATA="{\"entity_id\": \"${entity_id}\"}"
     
