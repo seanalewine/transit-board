@@ -5,12 +5,23 @@
 # If your config.json has "light_board": "light.my_train_lights", 
 # then LIGHT_BOARD_BASE will be "light.my_train_lights".
 LIGHT_BOARD_BASE=$(bashio::config 'light_board')
+BRIGHTNESS=$(bashio::config 'brightniess')
 
 
 
 # Configuration
 JSON_FILE="/data/active_train_summary.json"
 HA_URL="${HA_URL:-http://supervisor/core/api}" # Default for Add-ons
+
+TEMP_ACTIVE_IDS_FILE=$(mktemp)
+
+# --- Cleanup Function and Trap ---
+cleanup() {
+    echo "🧹 Cleaning up temporary file: ${TEMP_ACTIVE_IDS_FILE}"
+    rm -f "$TEMP_ACTIVE_IDS_FILE"
+}
+# Trap ensures the cleanup function runs when the script exits (normally or via error)
+trap cleanup EXIT
 
 # --- Utility Functions ---
 
@@ -80,34 +91,34 @@ if [ ! -f "$JSON_FILE" ]; then
     exit 1
 fi
 
-# 1. Use a standard 'while read' loop to process data and set colors
-# 2. In the same loop, echo the active sta_id to the temporary file
+echo "## Processing Active Trains and Collecting IDs"
+
+# 1. Use 'jq' and pipe to 'while read'
 jq -r '.trains[] | "\(.nextStaId) \(.output_color)"' "$JSON_FILE" | while IFS=' ' read -r sta_id color; do
     
     if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 255 )); then
         # Set the color for the active train light
         set_light_color "$sta_id" "$color"
         
-        # Write the active ID to a file, which is accessible outside the subshell
+        # Write the active ID to the file
         echo "$sta_id" >> "$TEMP_ACTIVE_IDS_FILE"
     else
         echo "⚠️ Warning: Invalid nextStaId found: ${sta_id}. Skipping."
     fi
 done
 
-# 3. Read the IDs from the temporary file into the array in the main script
-# The `mapfile` command is the most efficient way to do this.
+# 2. Read the IDs from the temporary file into the array
 mapfile -t ACTIVE_LIGHT_IDS < "$TEMP_ACTIVE_IDS_FILE"
 
-# Clean up the temporary file immediately
-rm -f "$TEMP_ACTIVE_IDS_FILE"
+# NOTE: Line 92 (rm -f "$TEMP_ACTIVE_IDS_FILE") is now REMOVED
+# because the 'trap' command handles cleanup automatically.
 
 echo "--- Identifying and Turning Off Inactive Lights (0-255) ---"
 
 # Convert the array to a space-separated string for efficient checking
 ACTIVE_IDS_STRING=" ${ACTIVE_LIGHT_IDS[*]} "
 
-# 4. Loop through all possible light IDs (0 to 255)
+# 3. Loop through all possible light IDs (0 to 255)
 for i in $(seq 0 255); do
     
     # Check if the current light ID is NOT present in the recorded active string
