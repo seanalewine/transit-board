@@ -95,7 +95,7 @@ turn_off_light() {
         -d "${DATA}" \
         "${HA_URL}/services/light/turn_off" > /dev/null
     
-    sleep 0.05
+    sleep 0.1
 }
 
 # --- Main Logic ---
