@@ -82,7 +82,7 @@ echo "----------------------------------------------------"
 # Loop through all possible LED indices (0 to MAX_LED_INDEX)
 for (( i=0; i<=$MAX_LED_INDEX; i++ )); do
     # Check if this index was NOT in the active_leds array
-    if [[ -z "${active_leds[$i]}" ]]; then
+    if [[ -z "${active_leds[$i]:-}" ]]; then
         # --- UPDATED ENTITY_ID ---
         ENTITY_ID="${LIGHT_BOARD_BASE}_${i}"
         
