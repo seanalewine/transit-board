@@ -25,6 +25,30 @@ trap cleanup EXIT
 
 # --- Utility Functions ---
 
+# Returns a space-separated string of IDs (e.g., "5 12 42")
+get_on_lights() {
+    echo "Fetching current state of all light entities..."
+    
+    # Call the Home Assistant API to get all states
+    local states_json
+    states_json=$(curl -s -X GET \
+        -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
+        -H "Content-Type: application/json" \
+        "${HA_URL}/states")
+
+    # Use jq to filter for 'light.esp_train_tracker_' entities that are 'on'.
+    # 1. Select entities with 'light.esp_train_tracker_' prefix
+    # 2. Select those where 'state' is 'on'
+    # 3. Extract the entity_id
+    # 4. Use sed/grep to extract only the numeric ID (X from light.esp_train_tracker_X)
+    local on_ids
+    on_ids=$(echo "$states_json" | \
+        jq -r '.[] | select(.entity_id | startswith("light.esp_train_tracker_")) | select(.state == "on") | .entity_id' | \
+        grep -oP 'light\.esp_train_tracker_\K[0-9]+' | tr '\n' ' ')
+        
+    echo "$on_ids"
+}
+
 # Function to turn on a light with a specific color
 set_light_color() {
     local sta_id=$1
@@ -89,9 +113,17 @@ if [ ! -f "$JSON_FILE" ]; then
     exit 1
 fi
 
+# 1. READ CURRENT STATE
+# Get a space-separated string of IDs of lights currently ON
+PREVIOUSLY_ON_IDS_STRING=$(get_on_lights)
+
+echo "Currently ON light IDs (before processing): ${PREVIOUSLY_ON_IDS_STRING}"
+echo "------------------------------------------------"
+
 echo "## Processing Active Trains and Collecting IDs"
 
-# 1. Use 'jq' and pipe to 'while read'
+# 2. PROCESS TRAINS AND TURN ON LIGHTS
+# Use 'jq' and pipe to 'while read'
 jq -r '.trains[] | "\(.nextStaId) \(.output_color)"' "$JSON_FILE" | while IFS=' ' read -r sta_id color; do
     
     if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 255 )); then
@@ -105,26 +137,23 @@ jq -r '.trains[] | "\(.nextStaId) \(.output_color)"' "$JSON_FILE" | while IFS=' 
     fi
 done
 
-# 2. Read the IDs from the temporary file into the array
+# 3. Read the IDs from the temporary file into the array
 mapfile -t ACTIVE_LIGHT_IDS < "$TEMP_ACTIVE_IDS_FILE"
-
-# NOTE: Line 92 (rm -f "$TEMP_ACTIVE_IDS_FILE") is now REMOVED
-# because the 'trap' command handles cleanup automatically.
-
-echo "--- Identifying and Turning Off Inactive Lights (0-255) ---"
 
 # Convert the array to a space-separated string for efficient checking
 ACTIVE_IDS_STRING=" ${ACTIVE_LIGHT_IDS[*]} "
 
-# 3. Loop through all possible light IDs (0 to 255)
-for i in $(seq 0 255); do
+echo "--- Identifying and Turning Off Lights ---"
+
+# 4. LOOP THROUGH PREVIOUSLY ON LIGHTS AND TURN OFF INACTIVES
+# Loop through the IDs that were ON before the script ran
+for i in $PREVIOUSLY_ON_IDS_STRING; do
     
-    # Check if the current light ID is NOT present in the recorded active string
+    # Check if the current ID (i) is NOT present in the list of lights we just set (ACTIVE_IDS_STRING)
     if [[ ! "$ACTIVE_IDS_STRING" =~ " $i " ]]; then
-        # The light is not active, so turn it off
+        # The light was ON but was NOT activated by the train data, so turn it off
         turn_off_light "$i"
     fi
-    echo "Lights turned off"
 done
 
 echo "--- Script Finished Successfully ---"
