@@ -5,7 +5,7 @@
 # If your config.json has "light_board": "light.my_train_lights", 
 # then LIGHT_BOARD_BASE will be "light.my_train_lights".
 LIGHT_BOARD_BASE=$(bashio::config 'light_board')
-BRIGHTNESS=$(bashio::config 'brightniess')
+BRIGHTNESS=$(bashio::config 'brightness')
 
 
 
@@ -31,7 +31,7 @@ set_light_color() {
     local color_rgb=$2
     local entity_id="light.esp_train_tracker_${sta_id}"
 
-    echo "💡 Setting ${entity_id} to color: ${color_rgb}"
+    echo "💡 Setting ${entity_id} to color: ${color_rgb}, and brightness: ${BRIGHTNESS}%"
 
     # Prepare data payload for the Home Assistant API call
 
@@ -44,7 +44,7 @@ set_light_color() {
     fi
     
     # Construct the JSON data (rest of your logic is here)
-    DATA="{\"entity_id\": \"${entity_id}\", \"rgb_color\": [${R}, ${G}, ${B}], \"brightness_pct\": 100}"
+    DATA="{\"entity_id\": \"${entity_id}\", \"rgb_color\": [${R}, ${G}, ${B}], \"brightness\": ${BRIGHTNESS}}"
 
     curl -X POST \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
