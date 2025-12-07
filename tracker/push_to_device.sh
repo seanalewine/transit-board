@@ -75,7 +75,7 @@ set_light_color() {
         -H "Content-Type: application/json" \
         -d "${DATA}" \
         "${HA_URL}/services/light/turn_on" > /dev/null
-    sleep 0.1
+    sleep 0.25
 }
 
 # Function to turn off a light
@@ -95,7 +95,7 @@ turn_off_light() {
         -d "${DATA}" \
         "${HA_URL}/services/light/turn_off" > /dev/null
     
-    sleep 0.1
+    sleep 0.25
 }
 
 # --- Main Logic ---
