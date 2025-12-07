@@ -37,14 +37,13 @@ get_on_lights() {
         "${HA_URL}/states")
 
     # Use jq to filter for 'light.esp_train_tracker_' entities that are 'on'.
-    # 1. Select entities with 'light.esp_train_tracker_' prefix
-    # 2. Select those where 'state' is 'on'
-    # 3. Extract the entity_id
-    # 4. Use sed/grep to extract only the numeric ID (X from light.esp_train_tracker_X)
+    # 1. Selects the entity_id
+    # 2. Pipes the entity_id to grep and sed for robust numerical extraction.
     local on_ids
     on_ids=$(echo "$states_json" | \
         jq -r '.[] | select(.entity_id | startswith("light.esp_train_tracker_")) | select(.state == "on") | .entity_id' | \
-        grep -oP 'light\.esp_train_tracker_\K[0-9]+' | tr '\n' ' ')
+        sed 's/light\.esp_train_tracker_//g' | \
+        tr '\n' ' ')
         
     echo "$on_ids"
 }
