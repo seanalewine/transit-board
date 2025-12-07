@@ -33,21 +33,21 @@ fetch_route_data() {
     # Extract the numerical status code (it's the last line printed by curl -w)
     HTTP_CODE=$(echo "$CURL_STATUS" | tail -n 1)
 
-    # 3. Check the HTTP response status code
-    if [ "$HTTP_CODE" -eq 200 ]; then
-        #echo "Success! Data saved to $OUTPUT_FILE (HTTP $HTTP_CODE)."
-    else
-        # Handle non-200 responses or network errors
-        echo "Error: API request failed for Route $ROUTE_ID with HTTP status code $HTTP_CODE."
-        echo "Request URL: $API_URL"
-        
-        # Remove the potentially incomplete/erroneous file
-        if [ -f "$OUTPUT_FILE" ]; then
-            rm "$OUTPUT_FILE"
-            echo "Removed potentially erroneous file: $OUTPUT_FILE"
-        fi
-        # Continue to the next route even if one fails
+# 3. Check the HTTP response status code
+if [ "$HTTP_CODE" -eq 200 ]; then
+    : 
+else
+    # Handle non-200 responses or network errors (logging the failure)
+    echo "Error: API request failed for Route $ROUTE_ID with HTTP status code $HTTP_CODE."
+    echo "Request URL: $API_URL"
+    
+    # Remove the potentially incomplete/erroneous file
+    if [ -f "$OUTPUT_FILE" ]; then
+        rm "$OUTPUT_FILE"
+        echo "Removed potentially erroneous file: $OUTPUT_FILE"
     fi
+    # Continue to the next route even if one fails
+fi
 }
 
 # --- Main Logic ---
