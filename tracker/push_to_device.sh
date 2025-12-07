@@ -78,7 +78,7 @@ fi
 if [ ! -f "$JSON_FILE" ]; then
     echo "❌ Error: JSON file not found at ${JSON_FILE}"
     exit 1
-}
+fi
 
 # Array to hold the IDs of the lights that ARE active (present in the JSON)
 declare -a ACTIVE_LIGHT_IDS=()
