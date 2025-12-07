@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bashio
 
-# --- Configuration: Replace the HA_TOKEN and HA_URL Placeholders ---
+# --- Configuration: Replace the HA_URL Placeholders ---
 # Read the base entity name from the Add-on's configuration (config.json)
 # If your config.json has "light_board": "light.my_train_lights", 
 # then LIGHT_BOARD_BASE will be "light.my_train_lights".
@@ -10,7 +10,6 @@ LIGHT_BOARD_BASE=$(bashio::config 'light_board')
 
 # Configuration
 JSON_FILE="/data/active_train_summary.json"
-HA_TOKEN="${HA_TOKEN}"
 HA_URL="${HA_URL:-http://supervisor/core/api}" # Default for Add-ons
 
 # --- Utility Functions ---
@@ -37,7 +36,7 @@ set_light_color() {
     DATA="{\"entity_id\": \"${entity_id}\", \"rgb_color\": [${R}, ${G}, ${B}], \"brightness_pct\": 100}"
     
     curl -X POST \
-        -H "Authorization: Bearer ${HA_TOKEN}" \
+        -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
         -d "${DATA}" \
         "${HA_URL}/services/light/turn_on"
@@ -54,7 +53,7 @@ turn_off_light() {
     DATA="{\"entity_id\": \"${entity_id}\"}"
     
     curl -X POST \
-        -H "Authorization: Bearer ${HA_TOKEN}" \
+        -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
         -d "${DATA}" \
         "${HA_URL}/services/light/turn_off"
@@ -71,8 +70,8 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
-if [ -z "$HA_TOKEN" ]; then
-    echo "❌ Error: HA_TOKEN environment variable is not set."
+if [ -z "$SUPERVISOR_TOKEN" ]; then
+    echo "❌ Error: SUPERVISOR_TOKEN environment variable is not set."
     exit 1
 fi
 
