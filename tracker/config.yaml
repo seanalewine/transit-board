@@ -2,7 +2,7 @@
 name: Live Train Tracker Server for CTA
 description: Tool for retrieving live train location data over CTA API and outputing an array of stations with trains due.
 url: "https://github.com/seanalewine/cta-location-tracker/tree/main/tracker"
-version: "0.2.0"
+version: "0.2.1"
 slug: tracker
 init: false
 homeassistant_api: true
@@ -46,8 +46,8 @@ schema:
    brown_line_color: str
    init_commands:
     - str?
-ports:
-   8000/tcp: 80
-ports_description:
-   8000/tcp: Web interface http
+#ports:
+#   8000/tcp: 80
+#ports_description:
+#   8000/tcp: Web interface http
 # image: "ghcr.io/home-assistant/{arch}-addon-example"   

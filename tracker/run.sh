@@ -8,8 +8,8 @@ cp -rv /files/* /data/
 
 # --- Start the HTTP Server ---
 # Start the Python server in the background (&)
-echo "Starting Python HTTP Server on port 8000..."
-python3 -m http.server 8000 &
+#echo "Starting Python HTTP Server on port 8000..."
+#python3 -m http.server 8000 &
 
 # --- Recurring Data Fetch Loop ---
 echo "Starting recurring data fetch loop..."
