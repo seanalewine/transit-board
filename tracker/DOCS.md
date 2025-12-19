@@ -1,10 +1,9 @@
-# Home Assistant Add-on: Example add-on
+# Live Train Tracker Server for CTA
 
 ## How to use
 
-This add-on really does nothing. It is just an example.
+Use of this add-on requires the following steps before it will do anything.
 
-When started it will print the configured message or "Hello world" in the log.
-
-It will also print "All done!" in `/share/example_addon_output.txt` to show
-simple example of the usage of `map` in addon config.
+1. Request API key from CTA and add to configuration tab and enter that for the `api_key` value.(Other transit agenceis may be added later.)
+2. Setup your ESPHome device with attached individual rgb lights to be controlled by this add-on. Then set the  `light_board` value on the configuration page to the entity ID of your device.
+3. Each light needs to be programmed to correlate with the correct stop by 

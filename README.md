@@ -1,21 +1,18 @@
 # Live Train Tracker Server for CTA
 
-This repository can be used as a "blueprint" for add-on development to help you get started.
-
-Add-on documentation: <https://developers.home-assistant.io/docs/add-ons>
-
 [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fseanalewine%2Fcta-location-tracker)
 
-## Add-ons
+## About
 
-This repository contains the following add-ons
+**This plugin is in active development and not meaningfully usable without modifying the base code and building your own Docker image each time. Installation not currently recomended.**
 
-### [Example add-on](./example)
+---
+
+Live Train Tracker Server for CTA is a Home Assistant add-on that does the more complex data processing tasks to control a transit tracker light board powered by an ESPHome device. (picture coming soon)
+The add-on pulls data using a transit API. **You will need to request your own API key from the transit agency to use this add-on.**The data is then used to control an ESPHome device installed in Home Assistant with individual lights representing transit stops.  Assigning the output LED to represent the correct stop can be done via the `/tracker/files/ctastationlist.csv` file.
 
 ![Supports aarch64 Architecture][aarch64-shield]
 ![Supports amd64 Architecture][amd64-shield]
-
-_Example add-on to use as a blueprint for new add-ons._
 
 <!--
 

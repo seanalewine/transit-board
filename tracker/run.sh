@@ -1,6 +1,7 @@
 #!/usr/bin/with-contenv bashio
 #Define API Key from config.yaml
 API_KEY=$(bashio::config 'api_key')
+CONFIG_PROG=$(bashio::config 'api_key')
 
 cp -rv /files/* /data/
 
@@ -10,6 +11,14 @@ cp -rv /files/* /data/
 # Start the Python server in the background (&)
 #echo "Starting Python HTTP Server on port 8000..."
 #python3 -m http.server 8000 &
+
+# --- Check to see if configuration script is set to run. ---
+if CONFIG_PROG; then
+    python3 "/data/lightconfig.py" \
+    --station-list "$CTA_STATION_LIST" \
+    --input-dir "$INPUT_DIR" \
+    --output-file "$OUTPUT_FILE"
+fi
 
 # --- Recurring Data Fetch Loop ---
 echo "Starting recurring data fetch loop..."

@@ -2,7 +2,7 @@
 name: Live Train Tracker Light Controller for CTA
 description: Tool for retrieving live train location data over CTA API and outputing an array of stations with trains due.
 url: "https://github.com/seanalewine/cta-location-tracker/tree/main/tracker"
-version: "0.2.6"
+version: "0.2.7"
 slug: tracker
 init: false
 homeassistant_api: true
@@ -29,6 +29,7 @@ options:
    blue_line_color: 0, 161, 222
    purple_line_color: 82, 35, 152
    brown_line_color: 8, 54, 27
+   assign_stations_program: false 
 schema:
    api_key: str
    light_board: str
@@ -44,10 +45,11 @@ schema:
    blue_line_color: str
    purple_line_color: str
    brown_line_color: str
+   assign_stations_program: bool 
    init_commands:
     - str?
-#ports:
-#   8000/tcp: 80
+ports:
+   8000/tcp: 8000
 #ports_description:
 #   8000/tcp: Web interface http
 # image: "ghcr.io/home-assistant/{arch}-addon-example"   
