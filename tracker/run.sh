@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bashio
 #Define Variables
 API_KEY=$(bashio::config 'api_key')
-CONFIG_PROG=$(bashio::config 'assign_stations_program:')
+CONFIG_PROG=$(bashio::config 'assign_stations_program')
 ROUTE_IDS=("red" "blue" "brn" "g" "org" "p" "pink" "y")
 PERSIST_DIR="/data/position"
 CTA_STATION_LIST="/data/ctastationlist.csv"
@@ -139,8 +139,6 @@ turn_off_light() {
     
     sleep "${SLEEP_TIME:-0.02}"
 }
-
-
 
 echo "Starting recurring data fetch loop..."
 while true; do
