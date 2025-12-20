@@ -1,4 +1,5 @@
 import os
+import csv
 import json
 from collections import defaultdict
 
@@ -38,6 +39,10 @@ def process_json_file(file_path, color_key):
         with open(file_path, 'r') as f:
             data = json.load(f)
         
+        # Debug: Print raw data for inspection
+        print(f"Raw data from {file_path}:")
+        print(json.dumps(data, indent=2))
+        
         trains = []
         if "route" in data and len(data["route"]) > 0:
             route = data["route"][0]
@@ -53,7 +58,11 @@ def process_json_file(file_path, color_key):
                         "trDr": train.get("trDr"),
                         "color": color_key,
                     }
+                    # Debug: Print each train object
+                    print(f"Train object: {train_obj}")
                     trains.append(train_obj)
+        else:
+            print(f"No route found in {file_path}")
         return trains
     except Exception as e:
         print(f"Error processing {file_path}: {e}")
@@ -63,6 +72,10 @@ def process_json_file(file_path, color_key):
 def main():
     # Load the station lookup dictionary
     station_lookup = load_station_lookup()
+    
+    # Debug: Print sample of station lookup
+    print("Sample station_lookup:", list(station_lookup.items())[:5])
+    
     print("Processor Running")
     # Define the expected file names
     color_files = {
@@ -76,17 +89,26 @@ def main():
         "y": "/data/position/y.json"
     }
     
+    # Debug: Print color files
+    print("Color files:", color_files)
+    
     # Collect all train objects
     all_trains = []
     
     # Process each color file
     for color_key, file_path in color_files.items():
         if os.path.exists(file_path):
+            print(f"Processing {file_path}")
             trains = process_json_file(file_path, color_key)
+            print(f"Got {len(trains)} trains from {file_path}")
             all_trains.extend(trains)
         else:
             print(f"File not found: {file_path}")
     print("Color Added")
+    
+    # Debug: Print total number of trains collected
+    print(f"Total trains collected before adding unifiedId: {len(all_trains)}")
+    
     # Add unifiedId to each train
     for train in all_trains:
         next_sta_id = train.get("nextStaId")
@@ -106,7 +128,11 @@ def main():
     except Exception as e:
         print(f"Error saving to {output_path}: {e}")
     
-    print(all_trains)
+    # Debug: Print final output
+    print("Final trains list:")
+    for t in all_trains:
+        print(t)
+    print(f"Total number of trains in final output: {len(all_trains)}")
 
 if __name__ == "__main__":
     main()
