@@ -112,10 +112,10 @@ def main():
         print(f"Error saving to {output_path}: {e}")
     
     # Debug: Print final output
-    print("Final trains list:")
-    for t in all_trains:
-        print(t)
-    print(f"Total number of trains in final output: {len(all_trains)}")
+    #print("Final trains list:")
+    #for t in all_trains:
+    #    print(t)
+    #print(f"Total number of trains in final output: {len(all_trains)}")
 
 if __name__ == "__main__":
     main()

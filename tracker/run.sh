@@ -173,6 +173,8 @@ while true; do
         echo "Error: Python script failed."
     fi
 
+    cat /data/active_train_summary.json | jq .
+
     TEMP_ACTIVE_IDS_FILE=$(mktemp)
     trap cleanup EXIT
     echo "--- Starting Light Control Script ---"
