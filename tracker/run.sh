@@ -202,7 +202,7 @@ while true; do
     echo "## Processing Active Trains and Collecting IDs"
 
     # 2. PROCESS TRAINS AND TURN ON LIGHTS
-    jq -r '.trains[] | "\(.nextStaId) \(.output_color)"' "$JSON_FILE" | while IFS=' ' read -r sta_id color; do
+    jq -r '.[] | "\(.nextStaId) \(.rgb)"' "$JSON_FILE" | while IFS=' ' read -r sta_id color; do
         
         if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 255 )); then
             # Set the color for the active train light
