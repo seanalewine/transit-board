@@ -63,7 +63,7 @@ def process_json_file(file_path, color_key):
 def main():
     # Load the station lookup dictionary
     station_lookup = load_station_lookup()
-    
+    print("Processor Running")
     # Define the expected file names
     color_files = {
         "red": "/data/position/red.json",
@@ -86,7 +86,7 @@ def main():
             all_trains.extend(trains)
         else:
             print(f"File not found: {file_path}")
-    
+    print("Color Added")
     # Add unifiedId to each train
     for train in all_trains:
         next_sta_id = train.get("nextStaId")
