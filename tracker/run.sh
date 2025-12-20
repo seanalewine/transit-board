@@ -202,7 +202,7 @@ while true; do
     echo "## Processing Active Trains and Collecting IDs"
 
     # 2. PROCESS TRAINS AND TURN ON LIGHTS
-    jq -r '.[] | "\(.nextStaId) \(.rgb)"' "$JSON_FILE" | while IFS=' ' read -r sta_id color; do
+    jq -r '.[] | "\(.unifiedId) \(.rgb)"' "$JSON_FILE" | while IFS=' ' read -r sta_id color; do
         
         if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 255 )); then
             # Set the color for the active train light
@@ -211,7 +211,7 @@ while true; do
             # Write the active ID to the file
             echo "$sta_id" >> "$TEMP_ACTIVE_IDS_FILE"
         else
-            echo "⚠️ Warning: Invalid nextStaId found: ${sta_id}. Skipping." >&2
+            echo "⚠️ Warning: Invalid unifiedId found: ${sta_id}. Skipping." >&2
         fi
     done
 
