@@ -39,30 +39,22 @@ def process_json_file(file_path, color_key):
         with open(file_path, 'r') as f:
             data = json.load(f)
         
-        # Debug: Print raw data for inspection
-        print(f"Raw data from {file_path}:")
-        print(json.dumps(data, indent=2))
-        
         trains = []
-        if "route" in data and len(data["route"]) > 0:
-            route = data["route"][0]
-            if "@name" in route:
-                line_name = route["@name"]
-                for train in route.get("train", []):
-                    train_obj = {
-                        "rn": train.get("rn"),
-                        "nextStaId": train.get("nextStaId"),
-                        "isApp": train.get("isApp"),
-                        "isDly": train.get("isDly"),
-                        "flags": train.get("flags"),
-                        "trDr": train.get("trDr"),
-                        "color": color_key,
-                    }
-                    # Debug: Print each train object
-                    print(f"Train object: {train_obj}")
-                    trains.append(train_obj)
-        else:
-            print(f"No route found in {file_path}")
+        # Check if we have the expected structure
+        if "ctatt" in data and "route" in data["ctatt"]:
+            for route in data["ctatt"]["route"]:
+                if "@name" in route and route["@name"] == color_key:
+                    for train in route.get("train", []):
+                        train_obj = {
+                            "rn": train.get("rn"),
+                            "nextStaId": train.get("nextStaId"),
+                            "isApp": train.get("isApp"),
+                            "isDly": train.get("isDly"),
+                            "flags": train.get("flags"),
+                            "trDr": train.get("trDr"),
+                            "color": color_key,
+                        }
+                        trains.append(train_obj)
         return trains
     except Exception as e:
         print(f"Error processing {file_path}: {e}")
