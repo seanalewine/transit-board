@@ -9,7 +9,7 @@
 ---
 
 Live Train Tracker Server for CTA is a Home Assistant add-on that does the more complex data processing tasks to control a transit tracker light board powered by an ESPHome device. (picture coming soon)
-The add-on pulls data using a transit API. **You will need to request your own API key from the transit agency to use this add-on.**The data is then used to control an ESPHome device installed in Home Assistant with individual lights representing transit stops.  Assigning the output LED to represent the correct stop can be done via the `/tracker/files/ctastationlist.csv` file.
+The add-on pulls data using a transit API. **You will need to request your own API key from the transit agency to use this add-on.** The data is then used to control an ESPHome device installed in Home Assistant with individual lights representing transit stops.  Assigning the output LED to represent the correct stop can be done via the `/tracker/files/ctastationlist.csv` file.
 
 ![Supports aarch64 Architecture][aarch64-shield]
 ![Supports amd64 Architecture][amd64-shield]
