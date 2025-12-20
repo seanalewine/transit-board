@@ -53,6 +53,7 @@ def process_json_file(file_path, color_key):
                             "flags": train.get("flags"),
                             "trDr": train.get("trDr"),
                             "color": color_key,
+                            "rgb": COLORS.get(color_key, "255, 255, 255")
                         }
                         trains.append(train_obj)
         return trains
@@ -65,10 +66,6 @@ def main():
     # Load the station lookup dictionary
     station_lookup = load_station_lookup()
     
-    # Debug: Print sample of station lookup
-    print("Sample station_lookup:", list(station_lookup.items())[:5])
-    
-    print("Processor Running")
     # Define the expected file names
     color_files = {
         "red": "/data/position/red.json",
@@ -80,9 +77,7 @@ def main():
         "pink": "/data/position/pink.json",
         "y": "/data/position/y.json"
     }
-    
-    # Debug: Print color files
-    print("Color files:", color_files)
+
     
     # Collect all train objects
     all_trains = []
@@ -90,16 +85,12 @@ def main():
     # Process each color file
     for color_key, file_path in color_files.items():
         if os.path.exists(file_path):
-            print(f"Processing {file_path}")
+            #print(f"Processing {file_path}")
             trains = process_json_file(file_path, color_key)
-            print(f"Got {len(trains)} trains from {file_path}")
+            #print(f"Got {len(trains)} trains from {file_path}")
             all_trains.extend(trains)
         else:
             print(f"File not found: {file_path}")
-    print("Color Added")
-    
-    # Debug: Print total number of trains collected
-    print(f"Total trains collected before adding unifiedId: {len(all_trains)}")
     
     # Add unifiedId to each train
     for train in all_trains:
