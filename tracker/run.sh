@@ -173,7 +173,7 @@ while true; do
         echo "Error: Python script failed."
     fi
 
-    cat /data/active_train_summary.json | jq .
+    head -n 20 /data/active_train_summary.json
 
     TEMP_ACTIVE_IDS_FILE=$(mktemp)
     trap cleanup EXIT
