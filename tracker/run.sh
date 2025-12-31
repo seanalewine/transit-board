@@ -8,7 +8,8 @@ CTA_STATION_LIST="/data/ctastationlist.csv"
 PROCESSOR_SCRIPT="/data/processor.py"
 LIGHT_BOARD_BASE=$(bashio::config 'light_board')
 BRIGHTNESS=$(bashio::config 'brightness')
-SLEEP_TIME=$(bashio::config 'light_refresh_delay')
+REFRESH_INTERVAL=$(bashio::config 'data_refresh_interval_sec')
+SLEEP_TIME=$(bashio::config 'indiv_light_refresh_delay_sec')
 JSON_FILE="/data/active_train_summary.json"
 HA_URL="${HA_URL:-http://supervisor/core/api}" 
 # Define train line colors from config.yaml and EXPORT them as environment variables
@@ -239,6 +240,5 @@ while true; do
     done
 
     echo "--- Script Finished Successfully ---"
-    # Wait for 60 seconds before running again
-    sleep 60
+    sleep "${REFRESH_INTERVAL:-60}"
 done
