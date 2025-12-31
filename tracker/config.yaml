@@ -34,7 +34,7 @@ options:
 schema:
    api_key: str
    light_board: str
-   trainsPerLine: int(1,20)
+   trainsPerLine: int(0,20)
    brightness: int(0,100)
    data_refresh_interval_sec: float(7,5000)
    indiv_light_refresh_delay_sec: float(0,2)
