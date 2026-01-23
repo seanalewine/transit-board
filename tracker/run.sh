@@ -1,6 +1,3 @@
-Here is the updated script with every instance of `esp_train_tracker_` replaced with the variable `LIGHT_BOARD_BASE`, and nothing else changed:
-
-```bash
 #!/usr/bin/with-contenv bashio
 #Define Variables
 API_KEY=$(bashio::config 'api_key')
