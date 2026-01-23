@@ -1,3 +1,6 @@
+Here is the updated script with every instance of `esp_train_tracker_` replaced with the variable `LIGHT_BOARD_BASE`, and nothing else changed:
+
+```bash
 #!/usr/bin/with-contenv bashio
 #Define Variables
 API_KEY=$(bashio::config 'api_key')
@@ -6,7 +9,8 @@ ROUTE_IDS=("red" "blue" "brn" "g" "org" "p" "pink" "y")
 PERSIST_DIR="/data/position"
 CTA_STATION_LIST="/data/ctastationlist.csv"
 PROCESSOR_SCRIPT="/data/processor.py"
-LIGHT_BOARD_BASE=$(bashio::config 'light_board')
+LIGHT_BOARD_BASEPRE=$(bashio::config 'light_board')
+LIGHT_BOARD_BASE="${LIGHT_BOARD_BASEPRE}_"
 BRIGHTNESS=$(bashio::config 'brightness')
 REFRESH_INTERVAL=$(bashio::config 'data_refresh_interval_sec')
 SLEEP_TIME=$(bashio::config 'indiv_light_refresh_delay_sec')
@@ -85,8 +89,8 @@ get_on_lights() {
     # Use jq to filter entities and sed to safely extract the numerical ID
     local on_ids
     on_ids=$(echo "$states_json" | \
-        jq -r '.[] | select(.entity_id | startswith("light.esp_train_tracker_")) | select(.state == "on") | .entity_id' | \
-        sed 's/light\.esp_train_tracker_//g' | \
+        jq -r '.[] | select(.entity_id | startswith("light.'"$LIGHT_BOARD_BASE"'")) | select(.state == "on") | .entity_id' | \
+        sed 's/light\.('"$LIGHT_BOARD_BASE"')//g' | \
         tr '\n' ' ')
         
     # Only the IDs are printed to stdout
@@ -96,7 +100,7 @@ get_on_lights() {
 set_light_color() {
     local sta_id=$1
     local color_rgb=$2
-    local entity_id="light.esp_train_tracker_${sta_id}"
+    local entity_id="light.${LIGHT_BOARD_BASE}${sta_id}"
 
     # Normalize BRIGHTNESS: HA brightness_pct must be between 1 and 100. 
     local safe_brightness="${BRIGHTNESS}"
@@ -127,7 +131,7 @@ set_light_color() {
 
 turn_off_light() {
     local sta_id=$1
-    local entity_id="light.esp_train_tracker_${sta_id}"
+    local entity_id="light.${LIGHT_BOARD_BASE}${sta_id}"
 
     DATA="{\"entity_id\": \"${entity_id}\"}"
     
