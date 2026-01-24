@@ -127,6 +127,8 @@ turn_off_light() {
     local sta_id=$1
     local entity_id="${LIGHT_BOARD_BASE}${sta_id}"
 
+    echo "sta_id: $sta_id" >&2
+
     # Validate input parameters
     if [[ -z "$sta_id" ]]; then
         echo "ERROR: Station ID is required" >&2
@@ -136,12 +138,6 @@ turn_off_light() {
     # Validate that LIGHT_BOARD_BASE is set
     if [[ -z "$LIGHT_BOARD_BASE" ]]; then
         echo "ERROR: LIGHT_BOARD_BASE is not set" >&2
-        return 1
-    fi
-
-    # Validate that entity_id is properly constructed
-    if [[ -z "$entity_id" ]] || [[ "$entity_id" == "${LIGHT_BOARD_BASE}"* ]]; then
-        echo "ERROR: Entity ID not properly constructed: $entity_id" >&2
         return 1
     fi
 
