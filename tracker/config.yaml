@@ -50,8 +50,8 @@ schema:
    assign_stations_program: bool 
    init_commands:
     - str?
-ports:
-   8000/tcp: 8000
-ports_description:
-   8000/tcp: Web interface http
+#ports:
+#   8000/tcp: 8000
+#ports_description:
+#   8000/tcp: Web interface http
 #image: "ghcr.io/seanalewine/{arch}-train-location-tracker"   
