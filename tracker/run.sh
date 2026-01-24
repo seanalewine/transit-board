@@ -99,30 +99,35 @@ set_light_color() {
     local color_rgb=$2
     local entity_id="light.${LIGHT_BOARD_BASE}${sta_id}"
 
-    # Normalize BRIGHTNESS: HA brightness_pct must be between 1 and 100. 
+    echo "🔧 Attempting to turn ON light: $entity_id with RGB [$color_rgb]" >&2
+
+    # Normalize BRIGHTNESS
     local safe_brightness="${BRIGHTNESS}"
     if (( safe_brightness > 100 )); then
         safe_brightness=100
-        echo "⚠️ Warning: Brightness value (${BRIGHTNESS}) is over 100. Capped at 100%." >&2
+        echo "⚠️ Warning: Brightness capped at 100%" >&2
     fi
 
-    # Prepare data payload for the Home Assistant API call
     IFS=',' read -r R G B <<< "$color_rgb"
-    
-    # Check if B is empty
     if [ -z "$B" ]; then
-        echo "⚠️ Error parsing color string: ${color_rgb}. Expected R,G,B format." >&2
+        echo "❌ Error parsing color string: ${color_rgb}" >&2
         return
     fi
-    
-    # Using 'brightness_pct'
+
     DATA="{\"entity_id\": \"${entity_id}\", \"rgb_color\": [${R}, ${G}, ${B}], \"brightness_pct\": ${safe_brightness}}"
 
-    curl -s -X POST \
+    response=$(curl -s -X POST \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
         -d "${DATA}" \
-        "${HA_URL}/services/light/turn_on" > /dev/null
+        "${HA_URL}/services/light/turn_on")
+
+    if [ $? -eq 0 ]; then
+        echo "✅ Light turned ON successfully for $entity_id" >&2
+    else
+        echo "❌ Failed to turn ON light for $entity_id. Response: $response" >&2
+    fi
+
     sleep "${SLEEP_TIME:-0.02}"
 }
 
@@ -130,17 +135,25 @@ turn_off_light() {
     local sta_id=$1
     local entity_id="light.${LIGHT_BOARD_BASE}${sta_id}"
 
+    echo "🔧 Attempting to turn OFF light: $entity_id" >&2
+
     DATA="{\"entity_id\": \"${entity_id}\"}"
-    
-    # Redirect server response to /dev/null to clean up logs
-    curl -s -X POST \
+
+    response=$(curl -s -X POST \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
         -d "${DATA}" \
-        "${HA_URL}/services/light/turn_off" > /dev/null
-    
+        "${HA_URL}/services/light/turn_off")
+
+    if [ $? -eq 0 ]; then
+        echo "✅ Light turned OFF successfully for $entity_id" >&2
+    else
+        echo "❌ Failed to turn OFF light for $entity_id. Response: $response" >&2
+    fi
+
     sleep "${SLEEP_TIME:-0.02}"
 }
+
 
 echo "Starting recurring data fetch loop..."
 while true; do
