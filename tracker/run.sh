@@ -136,7 +136,7 @@ turn_off_light() {
     response=$(curl -s -X POST \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
-        -d "{\"entity_id\": \"$$1\"}" \
+        -d "{\"entity_id\": \"$1\"}" \
         "${HA_URL}/services/light/turn_off")
 
     # Check if curl command was successful
