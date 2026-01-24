@@ -86,7 +86,7 @@ get_on_lights() {
     # Use jq to filter entities and sed to safely extract the numerical ID
     local on_ids
     on_ids=$(echo "$states_json" | \
-        jq -r '.[] | select(.entity_id | startswith("light.'"$LIGHT_BOARD_BASE"'")) | select(.state == "on") | .entity_id' | \
+        jq -r '.[] | select(.entity_id | startswith("'"$LIGHT_BOARD_BASE"'")) | select(.state == "on") | .entity_id' | \
         sed 's/light\.('"$LIGHT_BOARD_BASE"')//g' | \
         tr '\n' ' ')
         
@@ -97,7 +97,7 @@ get_on_lights() {
 set_light_color() {
     local sta_id=$1
     local color_rgb=$2
-    local entity_id="light.${LIGHT_BOARD_BASE}${sta_id}"
+    local entity_id="${LIGHT_BOARD_BASE}${sta_id}"
 
     echo "🔧 Attempting to turn ON light: $entity_id with RGB [$color_rgb]" >&2
 
@@ -133,7 +133,7 @@ set_light_color() {
 
 turn_off_light() {
     local sta_id=$1
-    local entity_id="light.${LIGHT_BOARD_BASE}${sta_id}"
+    local entity_id="${LIGHT_BOARD_BASE}${sta_id}"
 
     echo "🔧 Attempting to turn OFF light: $entity_id" >&2
 
