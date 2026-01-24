@@ -131,7 +131,7 @@ turn_off_light() {
         return 1
     fi
 
-    echo "DEBUG: Attempting to turn off light for entity ID: $1" >&2
+    #echo "DEBUG: Attempting to turn off light for entity ID: $1" >&2
 
     response=$(curl -s -X POST \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
@@ -157,7 +157,7 @@ turn_off_light() {
         echo "WARNING: Response may contain errors: $response" >&2
     fi
 
-    echo "DEBUG: Successfully turned off light for entity: $1" >&2
+    #echo "DEBUG: Successfully turned off light for entity: $1" >&2
     sleep "${SLEEP_TIME:-0.02}"
 }
 
