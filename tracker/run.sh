@@ -127,7 +127,38 @@ turn_off_light() {
     local sta_id=$1
     local entity_id="${LIGHT_BOARD_BASE}${sta_id}"
 
+    # Validate input parameters
+    if [[ -z "$sta_id" ]]; then
+        echo "ERROR: Station ID is required" >&2
+        return 1
+    fi
+
+    if [[ -z "$entity_id" ]]; then
+        echo "ERROR: Entity ID could not be constructed" >&2
+        return 1
+    fi
+
+    # Validate required environment variables
+    if [[ -z "$SUPERVISOR_TOKEN" ]]; then
+        echo "ERROR: SUPERVISOR_TOKEN is not set" >&2
+        return 1
+    fi
+
+    if [[ -z "$HA_URL" ]]; then
+        echo "ERROR: HA_URL is not set" >&2
+        return 1
+    fi
+
     DATA="{\"entity_id\": \"${entity_id}\"}"
+
+    # Validate that curl command can be executed
+    if ! command -v curl &> /dev/null; then
+        echo "ERROR: curl command not found" >&2
+        return 1
+    fi
+
+    echo "DEBUG: Attempting to turn off light for station ID: $sta_id" >&2
+    echo "DEBUG: Entity ID: $entity_id" >&2
 
     response=$(curl -s -X POST \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
@@ -135,8 +166,21 @@ turn_off_light() {
         -d "${DATA}" \
         "${HA_URL}/services/light/turn_off")
 
+    # Check if curl command was successful
+    if [[ $? -ne 0 ]]; then
+        echo "ERROR: Failed to execute curl request for station ID: $sta_id" >&2
+        return 1
+    fi
+
+    # Check if response contains error information
+    if [[ "$response" == *"error"* ]] || [[ "$response" == *"Error"* ]]; then
+        echo "WARNING: Response may contain errors: $response" >&2
+    fi
+
+    echo "DEBUG: Response received: $response" >&2
     sleep "${SLEEP_TIME:-0.02}"
 }
+
 
 
 echo "Starting recurring data fetch loop..."
