@@ -131,7 +131,7 @@ turn_off_light() {
         return 1
     fi
 
-    echo "DEBUG: Attempting to turn off light for station ID: $sta_id" >&2
+    echo "DEBUG: Attempting to turn off light for station ID: $1" >&2
     echo "DEBUG: Entity ID: $entity_id" >&2
 
     response=$(curl -s -X POST \
@@ -142,7 +142,7 @@ turn_off_light() {
 
     # Check if curl command was successful
     if [[ $? -ne 0 ]]; then
-        echo "ERROR: Failed to execute curl request for station ID: $sta_id" >&2
+        echo "ERROR: Failed to execute curl request for station ID: $1" >&2
         return 1
     fi
 
