@@ -133,8 +133,15 @@ turn_off_light() {
         return 1
     fi
 
-    if [[ -z "$entity_id" ]]; then
-        echo "ERROR: Entity ID could not be constructed" >&2
+    # Validate that LIGHT_BOARD_BASE is set
+    if [[ -z "$LIGHT_BOARD_BASE" ]]; then
+        echo "ERROR: LIGHT_BOARD_BASE is not set" >&2
+        return 1
+    fi
+
+    # Validate that entity_id is properly constructed
+    if [[ -z "$entity_id" ]] || [[ "$entity_id" == "${LIGHT_BOARD_BASE}"* ]]; then
+        echo "ERROR: Entity ID not properly constructed: $entity_id" >&2
         return 1
     fi
 
@@ -149,8 +156,6 @@ turn_off_light() {
         return 1
     fi
 
-    DATA="{\"entity_id\": \"${entity_id}\"}"
-
     # Validate that curl command can be executed
     if ! command -v curl &> /dev/null; then
         echo "ERROR: curl command not found" >&2
@@ -163,7 +168,7 @@ turn_off_light() {
     response=$(curl -s -X POST \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
-        -d "${DATA}" \
+        -d "{\"entity_id\": \"${entity_id}\"}" \
         "${HA_URL}/services/light/turn_off")
 
     # Check if curl command was successful
@@ -172,12 +177,19 @@ turn_off_light() {
         return 1
     fi
 
+    # Check response status
+    if [[ "$response" == *"400"* ]] || [[ "$response" == *"Bad Request"* ]]; then
+        echo "ERROR: Bad Request returned from Home Assistant - likely invalid entity ID or malformed request" >&2
+        echo "DEBUG: Response was: $response" >&2
+        return 1
+    fi
+
     # Check if response contains error information
     if [[ "$response" == *"error"* ]] || [[ "$response" == *"Error"* ]]; then
         echo "WARNING: Response may contain errors: $response" >&2
     fi
 
-    echo "DEBUG: Response received: $response" >&2
+    echo "DEBUG: Successfully turned off light for entity: $entity_id" >&2
     sleep "${SLEEP_TIME:-0.02}"
 }
 
