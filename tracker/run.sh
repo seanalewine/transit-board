@@ -124,37 +124,10 @@ set_light_color() {
 }
 
 turn_off_light() {
-    local sta_id=$1
-    local entity_id="${LIGHT_BOARD_BASE}${sta_id}"
-
-    echo "sta_id: $sta_id" >&2
 
     # Validate input parameters
-    if [[ -z "$sta_id" ]]; then
+    if [[ -z "$1" ]]; then
         echo "ERROR: Station ID is required" >&2
-        return 1
-    fi
-
-    # Validate that LIGHT_BOARD_BASE is set
-    if [[ -z "$LIGHT_BOARD_BASE" ]]; then
-        echo "ERROR: LIGHT_BOARD_BASE is not set" >&2
-        return 1
-    fi
-
-    # Validate required environment variables
-    if [[ -z "$SUPERVISOR_TOKEN" ]]; then
-        echo "ERROR: SUPERVISOR_TOKEN is not set" >&2
-        return 1
-    fi
-
-    if [[ -z "$HA_URL" ]]; then
-        echo "ERROR: HA_URL is not set" >&2
-        return 1
-    fi
-
-    # Validate that curl command can be executed
-    if ! command -v curl &> /dev/null; then
-        echo "ERROR: curl command not found" >&2
         return 1
     fi
 
@@ -164,7 +137,7 @@ turn_off_light() {
     response=$(curl -s -X POST \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
-        -d "{\"entity_id\": \"${entity_id}\"}" \
+        -d "{\"entity_id\": \"${$1}\"}" \
         "${HA_URL}/services/light/turn_off")
 
     # Check if curl command was successful
