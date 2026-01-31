@@ -1,4 +1,8 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 0.3.0
+- Stable
+- The following config options work:`api-key`, `light_board`, `brightness`, `data_refresh_interval_sec`, `indiv_light_refresh_delay_sec`, and all color options are functioning.
+- Improved but slightly verbose error reporting.
 
 ## 0.2.1
 - Disable web interface.

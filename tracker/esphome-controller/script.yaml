@@ -1,0 +1,2086 @@
+esphome:
+  name: esp-train-tracker
+  friendly_name: L Train Tracker
+  min_version: 2025.9.0
+  name_add_mac_suffix: false
+
+esp32:
+  variant: esp32c6
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+# Allow Over-The-Air updates
+ota:
+- platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+# --- Start of Generated Partitions (0 to 255) ---
+light:
+  - platform: partition
+    name: "0"
+    segments:
+      - id: stop_indicators
+        from: 0
+        to: 0
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "1"
+    segments:
+      - id: stop_indicators
+        from: 1
+        to: 1
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "2"
+    segments:
+      - id: stop_indicators
+        from: 2
+        to: 2
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "3"
+    segments:
+      - id: stop_indicators
+        from: 3
+        to: 3
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "4"
+    segments:
+      - id: stop_indicators
+        from: 4
+        to: 4
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "5"
+    segments:
+      - id: stop_indicators
+        from: 5
+        to: 5
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "6"
+    segments:
+      - id: stop_indicators
+        from: 6
+        to: 6
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "7"
+    segments:
+      - id: stop_indicators
+        from: 7
+        to: 7
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "8"
+    segments:
+      - id: stop_indicators
+        from: 8
+        to: 8
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "9"
+    segments:
+      - id: stop_indicators
+        from: 9
+        to: 9
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "10"
+    segments:
+      - id: stop_indicators
+        from: 10
+        to: 10
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "11"
+    segments:
+      - id: stop_indicators
+        from: 11
+        to: 11
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "12"
+    segments:
+      - id: stop_indicators
+        from: 12
+        to: 12
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "13"
+    segments:
+      - id: stop_indicators
+        from: 13
+        to: 13
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "14"
+    segments:
+      - id: stop_indicators
+        from: 14
+        to: 14
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "15"
+    segments:
+      - id: stop_indicators
+        from: 15
+        to: 15
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "16"
+    segments:
+      - id: stop_indicators
+        from: 16
+        to: 16
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "17"
+    segments:
+      - id: stop_indicators
+        from: 17
+        to: 17
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "18"
+    segments:
+      - id: stop_indicators
+        from: 18
+        to: 18
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "19"
+    segments:
+      - id: stop_indicators
+        from: 19
+        to: 19
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "20"
+    segments:
+      - id: stop_indicators
+        from: 20
+        to: 20
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "21"
+    segments:
+      - id: stop_indicators
+        from: 21
+        to: 21
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "22"
+    segments:
+      - id: stop_indicators
+        from: 22
+        to: 22
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "23"
+    segments:
+      - id: stop_indicators
+        from: 23
+        to: 23
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "24"
+    segments:
+      - id: stop_indicators
+        from: 24
+        to: 24
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "25"
+    segments:
+      - id: stop_indicators
+        from: 25
+        to: 25
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "26"
+    segments:
+      - id: stop_indicators
+        from: 26
+        to: 26
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "27"
+    segments:
+      - id: stop_indicators
+        from: 27
+        to: 27
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "28"
+    segments:
+      - id: stop_indicators
+        from: 28
+        to: 28
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "29"
+    segments:
+      - id: stop_indicators
+        from: 29
+        to: 29
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "30"
+    segments:
+      - id: stop_indicators
+        from: 30
+        to: 30
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "31"
+    segments:
+      - id: stop_indicators
+        from: 31
+        to: 31
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "32"
+    segments:
+      - id: stop_indicators
+        from: 32
+        to: 32
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "33"
+    segments:
+      - id: stop_indicators
+        from: 33
+        to: 33
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "34"
+    segments:
+      - id: stop_indicators
+        from: 34
+        to: 34
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "35"
+    segments:
+      - id: stop_indicators
+        from: 35
+        to: 35
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "36"
+    segments:
+      - id: stop_indicators
+        from: 36
+        to: 36
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "37"
+    segments:
+      - id: stop_indicators
+        from: 37
+        to: 37
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "38"
+    segments:
+      - id: stop_indicators
+        from: 38
+        to: 38
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "39"
+    segments:
+      - id: stop_indicators
+        from: 39
+        to: 39
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "40"
+    segments:
+      - id: stop_indicators
+        from: 40
+        to: 40
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "41"
+    segments:
+      - id: stop_indicators
+        from: 41
+        to: 41
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "42"
+    segments:
+      - id: stop_indicators
+        from: 42
+        to: 42
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "43"
+    segments:
+      - id: stop_indicators
+        from: 43
+        to: 43
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "44"
+    segments:
+      - id: stop_indicators
+        from: 44
+        to: 44
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "45"
+    segments:
+      - id: stop_indicators
+        from: 45
+        to: 45
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "46"
+    segments:
+      - id: stop_indicators
+        from: 46
+        to: 46
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "47"
+    segments:
+      - id: stop_indicators
+        from: 47
+        to: 47
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "48"
+    segments:
+      - id: stop_indicators
+        from: 48
+        to: 48
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "49"
+    segments:
+      - id: stop_indicators
+        from: 49
+        to: 49
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "50"
+    segments:
+      - id: stop_indicators
+        from: 50
+        to: 50
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "51"
+    segments:
+      - id: stop_indicators
+        from: 51
+        to: 51
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "52"
+    segments:
+      - id: stop_indicators
+        from: 52
+        to: 52
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "53"
+    segments:
+      - id: stop_indicators
+        from: 53
+        to: 53
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "54"
+    segments:
+      - id: stop_indicators
+        from: 54
+        to: 54
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "55"
+    segments:
+      - id: stop_indicators
+        from: 55
+        to: 55
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "56"
+    segments:
+      - id: stop_indicators
+        from: 56
+        to: 56
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "57"
+    segments:
+      - id: stop_indicators
+        from: 57
+        to: 57
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "58"
+    segments:
+      - id: stop_indicators
+        from: 58
+        to: 58
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "59"
+    segments:
+      - id: stop_indicators
+        from: 59
+        to: 59
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "60"
+    segments:
+      - id: stop_indicators
+        from: 60
+        to: 60
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "61"
+    segments:
+      - id: stop_indicators
+        from: 61
+        to: 61
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "62"
+    segments:
+      - id: stop_indicators
+        from: 62
+        to: 62
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "63"
+    segments:
+      - id: stop_indicators
+        from: 63
+        to: 63
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "64"
+    segments:
+      - id: stop_indicators
+        from: 64
+        to: 64
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "65"
+    segments:
+      - id: stop_indicators
+        from: 65
+        to: 65
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "66"
+    segments:
+      - id: stop_indicators
+        from: 66
+        to: 66
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "67"
+    segments:
+      - id: stop_indicators
+        from: 67
+        to: 67
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "68"
+    segments:
+      - id: stop_indicators
+        from: 68
+        to: 68
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "69"
+    segments:
+      - id: stop_indicators
+        from: 69
+        to: 69
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "70"
+    segments:
+      - id: stop_indicators
+        from: 70
+        to: 70
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "71"
+    segments:
+      - id: stop_indicators
+        from: 71
+        to: 71
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "72"
+    segments:
+      - id: stop_indicators
+        from: 72
+        to: 72
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "73"
+    segments:
+      - id: stop_indicators
+        from: 73
+        to: 73
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "74"
+    segments:
+      - id: stop_indicators
+        from: 74
+        to: 74
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "75"
+    segments:
+      - id: stop_indicators
+        from: 75
+        to: 75
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "76"
+    segments:
+      - id: stop_indicators
+        from: 76
+        to: 76
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "77"
+    segments:
+      - id: stop_indicators
+        from: 77
+        to: 77
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "78"
+    segments:
+      - id: stop_indicators
+        from: 78
+        to: 78
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "79"
+    segments:
+      - id: stop_indicators
+        from: 79
+        to: 79
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "80"
+    segments:
+      - id: stop_indicators
+        from: 80
+        to: 80
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "81"
+    segments:
+      - id: stop_indicators
+        from: 81
+        to: 81
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "82"
+    segments:
+      - id: stop_indicators
+        from: 82
+        to: 82
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "83"
+    segments:
+      - id: stop_indicators
+        from: 83
+        to: 83
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "84"
+    segments:
+      - id: stop_indicators
+        from: 84
+        to: 84
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "85"
+    segments:
+      - id: stop_indicators
+        from: 85
+        to: 85
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "86"
+    segments:
+      - id: stop_indicators
+        from: 86
+        to: 86
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "87"
+    segments:
+      - id: stop_indicators
+        from: 87
+        to: 87
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "88"
+    segments:
+      - id: stop_indicators
+        from: 88
+        to: 88
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "89"
+    segments:
+      - id: stop_indicators
+        from: 89
+        to: 89
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "90"
+    segments:
+      - id: stop_indicators
+        from: 90
+        to: 90
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "91"
+    segments:
+      - id: stop_indicators
+        from: 91
+        to: 91
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "92"
+    segments:
+      - id: stop_indicators
+        from: 92
+        to: 92
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "93"
+    segments:
+      - id: stop_indicators
+        from: 93
+        to: 93
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "94"
+    segments:
+      - id: stop_indicators
+        from: 94
+        to: 94
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "95"
+    segments:
+      - id: stop_indicators
+        from: 95
+        to: 95
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "96"
+    segments:
+      - id: stop_indicators
+        from: 96
+        to: 96
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "97"
+    segments:
+      - id: stop_indicators
+        from: 97
+        to: 97
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "98"
+    segments:
+      - id: stop_indicators
+        from: 98
+        to: 98
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "99"
+    segments:
+      - id: stop_indicators
+        from: 99
+        to: 99
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "100"
+    segments:
+      - id: stop_indicators
+        from: 100
+        to: 100
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "101"
+    segments:
+      - id: stop_indicators
+        from: 101
+        to: 101
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "102"
+    segments:
+      - id: stop_indicators
+        from: 102
+        to: 102
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "103"
+    segments:
+      - id: stop_indicators
+        from: 103
+        to: 103
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "104"
+    segments:
+      - id: stop_indicators
+        from: 104
+        to: 104
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "105"
+    segments:
+      - id: stop_indicators
+        from: 105
+        to: 105
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "106"
+    segments:
+      - id: stop_indicators
+        from: 106
+        to: 106
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "107"
+    segments:
+      - id: stop_indicators
+        from: 107
+        to: 107
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "108"
+    segments:
+      - id: stop_indicators
+        from: 108
+        to: 108
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "109"
+    segments:
+      - id: stop_indicators
+        from: 109
+        to: 109
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "110"
+    segments:
+      - id: stop_indicators
+        from: 110
+        to: 110
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "111"
+    segments:
+      - id: stop_indicators
+        from: 111
+        to: 111
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "112"
+    segments:
+      - id: stop_indicators
+        from: 112
+        to: 112
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "113"
+    segments:
+      - id: stop_indicators
+        from: 113
+        to: 113
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "114"
+    segments:
+      - id: stop_indicators
+        from: 114
+        to: 114
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "115"
+    segments:
+      - id: stop_indicators
+        from: 115
+        to: 115
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "116"
+    segments:
+      - id: stop_indicators
+        from: 116
+        to: 116
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "117"
+    segments:
+      - id: stop_indicators
+        from: 117
+        to: 117
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "118"
+    segments:
+      - id: stop_indicators
+        from: 118
+        to: 118
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "119"
+    segments:
+      - id: stop_indicators
+        from: 119
+        to: 119
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "120"
+    segments:
+      - id: stop_indicators
+        from: 120
+        to: 120
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "121"
+    segments:
+      - id: stop_indicators
+        from: 121
+        to: 121
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "122"
+    segments:
+      - id: stop_indicators
+        from: 122
+        to: 122
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "123"
+    segments:
+      - id: stop_indicators
+        from: 123
+        to: 123
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "124"
+    segments:
+      - id: stop_indicators
+        from: 124
+        to: 124
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "125"
+    segments:
+      - id: stop_indicators
+        from: 125
+        to: 125
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "126"
+    segments:
+      - id: stop_indicators
+        from: 126
+        to: 126
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "127"
+    segments:
+      - id: stop_indicators
+        from: 127
+        to: 127
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "128"
+    segments:
+      - id: stop_indicators
+        from: 128
+        to: 128
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "129"
+    segments:
+      - id: stop_indicators
+        from: 129
+        to: 129
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "130"
+    segments:
+      - id: stop_indicators
+        from: 130
+        to: 130
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "131"
+    segments:
+      - id: stop_indicators
+        from: 131
+        to: 131
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "132"
+    segments:
+      - id: stop_indicators
+        from: 132
+        to: 132
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "133"
+    segments:
+      - id: stop_indicators
+        from: 133
+        to: 133
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "134"
+    segments:
+      - id: stop_indicators
+        from: 134
+        to: 134
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "135"
+    segments:
+      - id: stop_indicators
+        from: 135
+        to: 135
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "136"
+    segments:
+      - id: stop_indicators
+        from: 136
+        to: 136
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "137"
+    segments:
+      - id: stop_indicators
+        from: 137
+        to: 137
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "138"
+    segments:
+      - id: stop_indicators
+        from: 138
+        to: 138
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "139"
+    segments:
+      - id: stop_indicators
+        from: 139
+        to: 139
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "140"
+    segments:
+      - id: stop_indicators
+        from: 140
+        to: 140
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "141"
+    segments:
+      - id: stop_indicators
+        from: 141
+        to: 141
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "142"
+    segments:
+      - id: stop_indicators
+        from: 142
+        to: 142
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "143"
+    segments:
+      - id: stop_indicators
+        from: 143
+        to: 143
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "144"
+    segments:
+      - id: stop_indicators
+        from: 144
+        to: 144
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "145"
+    segments:
+      - id: stop_indicators
+        from: 145
+        to: 145
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "146"
+    segments:
+      - id: stop_indicators
+        from: 146
+        to: 146
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "147"
+    segments:
+      - id: stop_indicators
+        from: 147
+        to: 147
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "148"
+    segments:
+      - id: stop_indicators
+        from: 148
+        to: 148
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "149"
+    segments:
+      - id: stop_indicators
+        from: 149
+        to: 149
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "150"
+    segments:
+      - id: stop_indicators
+        from: 150
+        to: 150
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "151"
+    segments:
+      - id: stop_indicators
+        from: 151
+        to: 151
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "152"
+    segments:
+      - id: stop_indicators
+        from: 152
+        to: 152
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "153"
+    segments:
+      - id: stop_indicators
+        from: 153
+        to: 153
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "154"
+    segments:
+      - id: stop_indicators
+        from: 154
+        to: 154
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "155"
+    segments:
+      - id: stop_indicators
+        from: 155
+        to: 155
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "156"
+    segments:
+      - id: stop_indicators
+        from: 156
+        to: 156
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "157"
+    segments:
+      - id: stop_indicators
+        from: 157
+        to: 157
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "158"
+    segments:
+      - id: stop_indicators
+        from: 158
+        to: 158
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "159"
+    segments:
+      - id: stop_indicators
+        from: 159
+        to: 159
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "160"
+    segments:
+      - id: stop_indicators
+        from: 160
+        to: 160
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "161"
+    segments:
+      - id: stop_indicators
+        from: 161
+        to: 161
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "162"
+    segments:
+      - id: stop_indicators
+        from: 162
+        to: 162
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "163"
+    segments:
+      - id: stop_indicators
+        from: 163
+        to: 163
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "164"
+    segments:
+      - id: stop_indicators
+        from: 164
+        to: 164
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "165"
+    segments:
+      - id: stop_indicators
+        from: 165
+        to: 165
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "166"
+    segments:
+      - id: stop_indicators
+        from: 166
+        to: 166
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "167"
+    segments:
+      - id: stop_indicators
+        from: 167
+        to: 167
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "168"
+    segments:
+      - id: stop_indicators
+        from: 168
+        to: 168
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "169"
+    segments:
+      - id: stop_indicators
+        from: 169
+        to: 169
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "170"
+    segments:
+      - id: stop_indicators
+        from: 170
+        to: 170
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "171"
+    segments:
+      - id: stop_indicators
+        from: 171
+        to: 171
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "172"
+    segments:
+      - id: stop_indicators
+        from: 172
+        to: 172
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "173"
+    segments:
+      - id: stop_indicators
+        from: 173
+        to: 173
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "174"
+    segments:
+      - id: stop_indicators
+        from: 174
+        to: 174
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "175"
+    segments:
+      - id: stop_indicators
+        from: 175
+        to: 175
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "176"
+    segments:
+      - id: stop_indicators
+        from: 176
+        to: 176
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "177"
+    segments:
+      - id: stop_indicators
+        from: 177
+        to: 177
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "178"
+    segments:
+      - id: stop_indicators
+        from: 178
+        to: 178
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "179"
+    segments:
+      - id: stop_indicators
+        from: 179
+        to: 179
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "180"
+    segments:
+      - id: stop_indicators
+        from: 180
+        to: 180
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "181"
+    segments:
+      - id: stop_indicators
+        from: 181
+        to: 181
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "182"
+    segments:
+      - id: stop_indicators
+        from: 182
+        to: 182
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "183"
+    segments:
+      - id: stop_indicators
+        from: 183
+        to: 183
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "184"
+    segments:
+      - id: stop_indicators
+        from: 184
+        to: 184
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "185"
+    segments:
+      - id: stop_indicators
+        from: 185
+        to: 185
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "186"
+    segments:
+      - id: stop_indicators
+        from: 186
+        to: 186
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "187"
+    segments:
+      - id: stop_indicators
+        from: 187
+        to: 187
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "188"
+    segments:
+      - id: stop_indicators
+        from: 188
+        to: 188
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "189"
+    segments:
+      - id: stop_indicators
+        from: 189
+        to: 189
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "190"
+    segments:
+      - id: stop_indicators
+        from: 190
+        to: 190
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "191"
+    segments:
+      - id: stop_indicators
+        from: 191
+        to: 191
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "192"
+    segments:
+      - id: stop_indicators
+        from: 192
+        to: 192
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "193"
+    segments:
+      - id: stop_indicators
+        from: 193
+        to: 193
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "194"
+    segments:
+      - id: stop_indicators
+        from: 194
+        to: 194
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "195"
+    segments:
+      - id: stop_indicators
+        from: 195
+        to: 195
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "196"
+    segments:
+      - id: stop_indicators
+        from: 196
+        to: 196
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "197"
+    segments:
+      - id: stop_indicators
+        from: 197
+        to: 197
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "198"
+    segments:
+      - id: stop_indicators
+        from: 198
+        to: 198
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "199"
+    segments:
+      - id: stop_indicators
+        from: 199
+        to: 199
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "200"
+    segments:
+      - id: stop_indicators
+        from: 200
+        to: 200
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "201"
+    segments:
+      - id: stop_indicators
+        from: 201
+        to: 201
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "202"
+    segments:
+      - id: stop_indicators
+        from: 202
+        to: 202
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "203"
+    segments:
+      - id: stop_indicators
+        from: 203
+        to: 203
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "204"
+    segments:
+      - id: stop_indicators
+        from: 204
+        to: 204
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "205"
+    segments:
+      - id: stop_indicators
+        from: 205
+        to: 205
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "206"
+    segments:
+      - id: stop_indicators
+        from: 206
+        to: 206
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "207"
+    segments:
+      - id: stop_indicators
+        from: 207
+        to: 207
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "208"
+    segments:
+      - id: stop_indicators
+        from: 208
+        to: 208
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "209"
+    segments:
+      - id: stop_indicators
+        from: 209
+        to: 209
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "210"
+    segments:
+      - id: stop_indicators
+        from: 210
+        to: 210
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "211"
+    segments:
+      - id: stop_indicators
+        from: 211
+        to: 211
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "212"
+    segments:
+      - id: stop_indicators
+        from: 212
+        to: 212
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "213"
+    segments:
+      - id: stop_indicators
+        from: 213
+        to: 213
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "214"
+    segments:
+      - id: stop_indicators
+        from: 214
+        to: 214
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "215"
+    segments:
+      - id: stop_indicators
+        from: 215
+        to: 215
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "216"
+    segments:
+      - id: stop_indicators
+        from: 216
+        to: 216
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "217"
+    segments:
+      - id: stop_indicators
+        from: 217
+        to: 217
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "218"
+    segments:
+      - id: stop_indicators
+        from: 218
+        to: 218
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "219"
+    segments:
+      - id: stop_indicators
+        from: 219
+        to: 219
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "220"
+    segments:
+      - id: stop_indicators
+        from: 220
+        to: 220
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "221"
+    segments:
+      - id: stop_indicators
+        from: 221
+        to: 221
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "222"
+    segments:
+      - id: stop_indicators
+        from: 222
+        to: 222
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "223"
+    segments:
+      - id: stop_indicators
+        from: 223
+        to: 223
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "224"
+    segments:
+      - id: stop_indicators
+        from: 224
+        to: 224
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "225"
+    segments:
+      - id: stop_indicators
+        from: 225
+        to: 225
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "226"
+    segments:
+      - id: stop_indicators
+        from: 226
+        to: 226
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "227"
+    segments:
+      - id: stop_indicators
+        from: 227
+        to: 227
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "228"
+    segments:
+      - id: stop_indicators
+        from: 228
+        to: 228
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "229"
+    segments:
+      - id: stop_indicators
+        from: 229
+        to: 229
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "230"
+    segments:
+      - id: stop_indicators
+        from: 230
+        to: 230
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "231"
+    segments:
+      - id: stop_indicators
+        from: 231
+        to: 231
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "232"
+    segments:
+      - id: stop_indicators
+        from: 232
+        to: 232
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "233"
+    segments:
+      - id: stop_indicators
+        from: 233
+        to: 233
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "234"
+    segments:
+      - id: stop_indicators
+        from: 234
+        to: 234
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "235"
+    segments:
+      - id: stop_indicators
+        from: 235
+        to: 235
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "236"
+    segments:
+      - id: stop_indicators
+        from: 236
+        to: 236
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "237"
+    segments:
+      - id: stop_indicators
+        from: 237
+        to: 237
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "238"
+    segments:
+      - id: stop_indicators
+        from: 238
+        to: 238
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "239"
+    segments:
+      - id: stop_indicators
+        from: 239
+        to: 239
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "240"
+    segments:
+      - id: stop_indicators
+        from: 240
+        to: 240
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "241"
+    segments:
+      - id: stop_indicators
+        from: 241
+        to: 241
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "242"
+    segments:
+      - id: stop_indicators
+        from: 242
+        to: 242
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "243"
+    segments:
+      - id: stop_indicators
+        from: 243
+        to: 243
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "244"
+    segments:
+      - id: stop_indicators
+        from: 244
+        to: 244
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "245"
+    segments:
+      - id: stop_indicators
+        from: 245
+        to: 245
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "246"
+    segments:
+      - id: stop_indicators
+        from: 246
+        to: 246
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "247"
+    segments:
+      - id: stop_indicators
+        from: 247
+        to: 247
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "248"
+    segments:
+      - id: stop_indicators
+        from: 248
+        to: 248
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "249"
+    segments:
+      - id: stop_indicators
+        from: 249
+        to: 249
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "250"
+    segments:
+      - id: stop_indicators
+        from: 250
+        to: 250
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "251"
+    segments:
+      - id: stop_indicators
+        from: 251
+        to: 251
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "252"
+    segments:
+      - id: stop_indicators
+        from: 252
+        to: 252
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "253"
+    segments:
+      - id: stop_indicators
+        from: 253
+        to: 253
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "254"
+    segments:
+      - id: stop_indicators
+        from: 254
+        to: 254
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "255"
+    segments:
+      - id: stop_indicators
+        from: 255
+        to: 255
+    default_transition_length: !secret transition_length
+
+# --- End of Generated Partitions ---
+  - platform: esp32_rmt_led_strip
+    id: stop_indicators 
+    rgb_order: GRB
+    pin: GPIO0
+    internal: True
+    default_transition_length: !secret transition_length
+    use_psram: False
+    num_leds: 256
+    chipset: WS2812
+    name: "Stop Indicators"

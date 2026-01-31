@@ -69,7 +69,7 @@ if [ "$CONFIG_PROG" == "true" ]; then
 fi
 
 get_on_lights() {
-    # 🌟 FIXED: Redirecting log messages to stderr (>&2) so they aren't captured by the variable assignment
+    # FIXED: Redirecting log messages to stderr (>&2) so they aren't captured by the variable assignment
     echo "Fetching current state of all light entities..." >&2 
     
     # Call the Home Assistant API to get all states
@@ -200,17 +200,17 @@ while true; do
 
     # Check for required dependencies (jq)
     if ! command -v jq &> /dev/null; then
-        echo "❌ Error: 'jq' is not installed. Please install it in your Add-on environment." >&2
+        echo "Error: 'jq' is not installed. Please install it in your Add-on environment." >&2
         exit 1
     fi
 
     if [ -z "$SUPERVISOR_TOKEN" ]; then
-        echo "❌ Error: SUPERVISOR_TOKEN environment variable is not set." >&2
+        echo "Error: SUPERVISOR_TOKEN environment variable is not set." >&2
         exit 1
     fi
 
     if [ ! -f "$JSON_FILE" ]; then
-        echo "❌ Error: JSON file not found at ${JSON_FILE}" >&2
+        echo "Error: JSON file not found at ${JSON_FILE}" >&2
         exit 1
     fi
 
@@ -230,7 +230,7 @@ while true; do
             # Write the active ID to the file
             echo "$sta_id" >> "$TEMP_ACTIVE_IDS_FILE"
         else
-            echo "⚠️ Warning: Invalid unifiedId found: ${sta_id}. Skipping." >&2
+            echo "Warning: Invalid unifiedId found: ${sta_id}. Skipping." >&2
         fi
     done
 
