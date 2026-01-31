@@ -34,32 +34,28 @@ fetch_route_data() {
     # -sSL: Silent, show errors, follow redirects
     # -o: Output the received data to the specified file, overwriting it if it already exists.
     # -w "%{http_code}": Prints the HTTP status code after the transfer
-    CURL_STATUS=$(curl -sSL -o "$JSON_FILE" "$API_URL" -w "%{http_code}\n")
+    # -m 30: Set maximum time to 30 seconds (prevents long timeouts)
+    # -f: Fail silently on HTTP 4xx and 5xx errors
+    CURL_STATUS=$(curl -sSL -m 30 -f -o "$JSON_FILE" "$API_URL" -w "%{http_code}\n" 2>/dev/null)
     
     # Extract the numerical status code (it's the last line printed by curl -w)
     HTTP_CODE=$(echo "$CURL_STATUS" | tail -n 1)
 
-if [ "$HTTP_CODE" -eq 200 ]; then
-    : 
-else
-    # Handle non-200 responses or network errors (logging the failure)
-    echo "Error: API request failed for Route $ROUTE_ID with HTTP status code $HTTP_CODE."
-    echo "Request URL: $API_URL"
-    
-    # Remove the potentially incomplete/erroneous file
-    if [ -f "$JSON_FILE" ]; then
-        rm "$JSON_FILE"
-        echo "Removed potentially erroneous file: $JSON_FILE"
+    if [ "$HTTP_CODE" -eq 200 ]; then
+        echo "Successfully fetched data for Route $ROUTE_ID"
+    else
+        # Handle non-200 responses
+        echo "Error: API request failed for Route $ROUTE_ID with HTTP status code $HTTP_CODE."
+        echo "Request URL: $API_URL"
+        
+        # Remove the potentially incomplete/erroneous file
+        if [ -f "$JSON_FILE" ]; then
+            rm "$JSON_FILE"
+            echo "Removed potentially erroneous file: $JSON_FILE"
+        fi
+        # Continue to the next route even if one fails
     fi
-    # Continue to the next route even if one fails
-fi
 }
-
-cleanup() {
-    echo "🧹 Cleaning up temporary file: ${TEMP_ACTIVE_IDS_FILE}" >&2 # Redirect log to stderr
-    rm -f "$TEMP_ACTIVE_IDS_FILE"
-}
-
 
 #Install files to persistant storage.
 cp -rv /files/* /data/
