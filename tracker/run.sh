@@ -59,6 +59,19 @@ fetch_route_data() {
     fi
 }
 
+correct_bidirectional() {
+    local ROUTE_ID="$1"
+    local JSON_FILE="$PERSIST_DIR/$ROUTE_ID.json"
+
+    # Check if file exists
+    if [[ ! -f "$JSON_FILE" ]]; then
+        echo "Error: File $JSON_FILE does not exist."
+    else
+        jq '.ctatt.route[].train |= map(select(.trDr == "1"))' "$JSON_FILE" > "${JSON_FILE}.tmp" && \
+        mv "${JSON_FILE}.tmp" "$JSON_FILE"
+    fi
+}
+
 truncate_train_entries() {
     local ROUTE_ID="$1"
     local JSON_FILE="$PERSIST_DIR/$ROUTE_ID.json"
@@ -68,7 +81,7 @@ truncate_train_entries() {
         echo "Error: File $JSON_FILE does not exist."
     else
 
-        # Use jq to truncate the train array to first 5 entries
+        # Use jq to truncate the train array to first few entries
         jq --argjson limit "$TRAINS_PER_LINE" '.ctatt.route[0].train |= .[:$limit]' "$JSON_FILE" > "${fJSON_FILE}.tmp" && \
         mv "${JSON_FILE}.tmp" "$JSON_FILE"
     fi
@@ -188,11 +201,19 @@ while true; do
     # Ensure the output directory exists once before the loop
     echo "Checking directory structure..."
     mkdir -p "$PERSIST_DIR"
-    echo "value of bidirectional is: $BIDIRECTIONAL"
     # Loop through the array and call the function for each route
     for ROUTE in "${ROUTE_IDS[@]}"; do
         fetch_route_data "$ROUTE"
     done
+
+    #Set trains to only one direction, defaults to '1' or Northbound
+    if [ $BIDIRECTIONAL -eq "false"]; then
+        echo "Bidirectional is set to 'false' so only Northbound trains will display."
+        for ROUTE in "${ROUTE_IDS[@]}"; do
+            correct_bidirectional "$ROUTE"
+        done
+    fi
+
     # Check if there is a config limit set for trains per line then run function to reduce number of trains.
     if [ $TRAINS_PER_LINE != 0 ]; then
         echo "Trains per line limited to: $TRAINS_PER_LINE. Removing excess trains."
