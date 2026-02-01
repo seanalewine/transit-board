@@ -82,7 +82,7 @@ truncate_train_entries() {
     else
 
         # Use jq to truncate the train array to first few entries
-        jq --argjson limit "$TRAINS_PER_LINE" '.ctatt.route[0].train |= .[:$limit]' "$JSON_FILE" > "${fJSON_FILE}.tmp" && \
+        jq --argjson limit "$TRAINS_PER_LINE" '.ctatt.route[0].train |= .[:$limit]' "$JSON_FILE" > "${JSON_FILE}.tmp" && \
         mv "${JSON_FILE}.tmp" "$JSON_FILE"
     fi
 }
