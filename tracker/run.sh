@@ -198,8 +198,8 @@ while true; do
         echo "Trains per line limited to: $TRAINS_PER_LINE. Removing excess trains."
         for ROUTE in "${ROUTE_IDS[@]}"; do
             truncate_train_entries "$ROUTE"
+        done
     fi
-    done
 
     echo "All routes processed. "
     echo "--------------------------------------------------------"
