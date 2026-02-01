@@ -9,6 +9,8 @@ PROCESSOR_SCRIPT="/data/processor.py"
 LIGHT_BOARD_BASEPRE=$(bashio::config 'light_board')
 LIGHT_BOARD_BASE="${LIGHT_BOARD_BASEPRE}_"
 BRIGHTNESS=$(bashio::config 'brightness')
+BIDIRECTIONAL=$(bashio::config 'bidirectional')
+TRAINS_PER_LINE=$(bashio::config 'trainsPerLine')
 REFRESH_INTERVAL=$(bashio::config 'data_refresh_interval_sec')
 SLEEP_TIME=$(bashio::config 'indiv_light_refresh_delay_sec')
 JSON_FILE="/data/active_train_summary.json"
@@ -54,6 +56,21 @@ fetch_route_data() {
             echo "Removed potentially erroneous file: $JSON_FILE"
         fi
         # Continue to the next route even if one fails
+    fi
+}
+
+truncate_train_entries() {
+    local ROUTE_ID="$1"
+    local JSON_FILE="$PERSIST_DIR/$ROUTE_ID.json"
+
+    # Check if file exists
+    if [[ ! -f "$JSON_FILE" ]]; then
+        echo "Error: File $JSON_FILE does not exist."
+    else
+
+        # Use jq to truncate the train array to first 5 entries
+        jq --argjson limit "$TRAINS_PER_LINE" '.ctatt.route[0].train |= .[:$limit]' "$file_path" > "${file_path}.tmp" && \
+        mv "${JSON_FILE}.tmp" "$JSON_FILE"
     fi
 }
 
@@ -171,10 +188,17 @@ while true; do
     # Ensure the output directory exists once before the loop
     echo "Checking directory structure..."
     mkdir -p "$PERSIST_DIR"
-
+    echo "value of bidirectional is: $BIDIRECTIONAL"
     # Loop through the array and call the function for each route
     for ROUTE in "${ROUTE_IDS[@]}"; do
         fetch_route_data "$ROUTE"
+    done
+    # Check if there is a config limit set for trains per line then run function to reduce number of trains.
+    if [ $TRAINS_PER_LINE != 0 ]; then
+        echo "Trains per line limited to: $TRAINS_PER_LINE. Removing excess trains."
+        for ROUTE in "${ROUTE_IDS[@]}"; do
+            truncate_train_entries "$ROUTE"
+    fi
     done
 
     echo "All routes processed. "
