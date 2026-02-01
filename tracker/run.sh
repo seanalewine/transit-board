@@ -262,10 +262,16 @@ while true; do
         echo "Error: Python script failed."
     fi
 
-    #head -n 20 /data/active_train_summary.json
-
     TEMP_ACTIVE_IDS_FILE=$(mktemp)
-    trap cleanup EXIT
+    cleanup() {
+        echo "Cleaning up temporary files..."
+        if [[ -n "$TEMP_ACTIVE_IDS_FILE" && -f "$TEMP_ACTIVE_IDS_FILE" ]]; then
+            rm -f "$TEMP_ACTIVE_IDS_FILE"
+            echo "Removed temporary file: $TEMP_ACTIVE_IDS_FILE"
+        fi
+    }
+trap cleanup EXIT
+
     echo "--- Starting Light Control Script ---"
 
     # Check for required dependencies (jq)
