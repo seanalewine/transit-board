@@ -67,7 +67,10 @@ correct_bidirectional() {
     if [[ ! -f "$JSON_FILE" ]]; then
         echo "Error: File $JSON_FILE does not exist."
     else
-        jq '.ctatt.route[].train |= map(select(.trDr == "1"))' "$JSON_FILE" > "${JSON_FILE}.tmp" && \
+        jq '
+        .ctatt.route[].train |= 
+            (map(select(.trDr == "5")) | if . == null then [] else . end)
+    ' "$JSON_FILE" > "${JSON_FILE}.tmp" 2>/dev/null; then
         mv "${JSON_FILE}.tmp" "$JSON_FILE"
     fi
 }
