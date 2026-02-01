@@ -207,7 +207,7 @@ while true; do
     done
 
     #Set trains to only one direction, defaults to '1' or Northbound
-    if [ $BIDIRECTIONAL -eq "false"]; then
+    if [ "$BIDIRECTIONAL" = "false" ]; then
         echo "Bidirectional is set to 'false' so only Northbound trains will display."
         for ROUTE in "${ROUTE_IDS[@]}"; do
             correct_bidirectional "$ROUTE"
