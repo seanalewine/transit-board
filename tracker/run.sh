@@ -75,18 +75,19 @@ correct_bidirectional() {
         return 0
     fi
 
-        # Process the file - check if the structure exists before applying transformation
-    local has_data=$(jq '.ctatt.route[].train | length > 0' "$JSON_FILE" 2>/dev/null | grep -v null | wc -l)
+    # Check if the structure exists and has train data
+    local has_train_data=$(jq -r '.ctatt.route[] | .train? | select(. != null)' "$JSON_FILE" 2>/dev/null | wc -l)
     
-    if [[ $has_data -eq 0 ]]; then
+    if [[ $has_train_data -eq 0 ]]; then
         echo "Warning: No train data found in $JSON_FILE, skipping processing."
         return 0
     else
-        # Apply the transformation
-        jq '.ctatt.route[].train |= map(select(.trDr == "1"))' "$JSON_FILE" > "${JSON_FILE}.tmp" && \
+        # Apply transformation safely
+        jq '.ctatt.route |= map(if has("train") then .train |= map(select(.trDr == "1")) else . end)' "$JSON_FILE" > "${JSON_FILE}.tmp" && \
         mv "${JSON_FILE}.tmp" "$JSON_FILE"
     fi
 }
+
 
 
 truncate_train_entries() {
