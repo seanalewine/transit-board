@@ -66,14 +66,28 @@ correct_bidirectional() {
     # Check if file exists
     if [[ ! -f "$JSON_FILE" ]]; then
         echo "Error: File $JSON_FILE does not exist."
+        return 0
+    elif [[ ! -s "$JSON_FILE" ]]; then
+        echo "Warning: File $JSON_FILE is empty, skipping processing."
+        return 0
+    elif ! jq empty "$JSON_FILE" 2>/dev/null; then
+        echo "Error: File $JSON_FILE contains invalid JSON."
+        return 0
+    fi
+
+        # Process the file - check if the structure exists before applying transformation
+    local has_data=$(jq '.ctatt.route[].train | length > 0' "$JSON_FILE" 2>/dev/null | grep -v null | wc -l)
+    
+    if [[ $has_data -eq 0 ]]; then
+        echo "Warning: No train data found in $JSON_FILE, skipping processing."
+        return 0
     else
-        jq '
-        .ctatt.route[].train |= 
-            (map(select(.trDr == "5")) | if . == null then [] else . end)
-    ' "$JSON_FILE" > "${JSON_FILE}.tmp" 2>/dev/null; then
+        # Apply the transformation
+        jq '.ctatt.route[].train |= map(select(.trDr == "1"))' "$JSON_FILE" > "${JSON_FILE}.tmp" && \
         mv "${JSON_FILE}.tmp" "$JSON_FILE"
     fi
 }
+
 
 truncate_train_entries() {
     local ROUTE_ID="$1"
@@ -82,6 +96,13 @@ truncate_train_entries() {
     # Check if file exists
     if [[ ! -f "$JSON_FILE" ]]; then
         echo "Error: File $JSON_FILE does not exist."
+        return 0
+    elif [[ ! -s "$JSON_FILE" ]]; then
+        echo "Warning: File $JSON_FILE is empty, skipping processing."
+        return 0
+    elif ! jq empty "$JSON_FILE" 2>/dev/null; then
+        echo "Error: File $JSON_FILE contains invalid JSON."
+        return 0
     else
 
         # Use jq to truncate the train array to first few entries
