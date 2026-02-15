@@ -23,7 +23,7 @@ wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
 
-# --- Start of Generated Partitions (0 to 255) ---
+#Start of Separation of Individual LEDs on the strip.
 light:
   - platform: partition
     name: "0"
@@ -2073,14 +2073,543 @@ light:
         to: 255
     default_transition_length: !secret transition_length
 
-# --- End of Generated Partitions ---
+  - platform: partition
+    name: "256"
+    segments:
+      - id: stop_indicators
+        from: 256
+        to: 256
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "257"
+    segments:
+      - id: stop_indicators
+        from: 257
+        to: 257
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "258"
+    segments:
+      - id: stop_indicators
+        from: 258
+        to: 258
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "259"
+    segments:
+      - id: stop_indicators
+        from: 259
+        to: 259
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "260"
+    segments:
+      - id: stop_indicators
+        from: 260
+        to: 260
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "261"
+    segments:
+      - id: stop_indicators
+        from: 261
+        to: 261
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "262"
+    segments:
+      - id: stop_indicators
+        from: 262
+        to: 262
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "263"
+    segments:
+      - id: stop_indicators
+        from: 263
+        to: 263
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "264"
+    segments:
+      - id: stop_indicators
+        from: 264
+        to: 264
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "265"
+    segments:
+      - id: stop_indicators
+        from: 265
+        to: 265
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "266"
+    segments:
+      - id: stop_indicators
+        from: 266
+        to: 266
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "267"
+    segments:
+      - id: stop_indicators
+        from: 267
+        to: 267
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "268"
+    segments:
+      - id: stop_indicators
+        from: 268
+        to: 268
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "269"
+    segments:
+      - id: stop_indicators
+        from: 269
+        to: 269
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "270"
+    segments:
+      - id: stop_indicators
+        from: 270
+        to: 270
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "271"
+    segments:
+      - id: stop_indicators
+        from: 271
+        to: 271
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "272"
+    segments:
+      - id: stop_indicators
+        from: 272
+        to: 272
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "273"
+    segments:
+      - id: stop_indicators
+        from: 273
+        to: 273
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "274"
+    segments:
+      - id: stop_indicators
+        from: 274
+        to: 274
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "275"
+    segments:
+      - id: stop_indicators
+        from: 275
+        to: 275
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "276"
+    segments:
+      - id: stop_indicators
+        from: 276
+        to: 276
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "277"
+    segments:
+      - id: stop_indicators
+        from: 277
+        to: 277
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "278"
+    segments:
+      - id: stop_indicators
+        from: 278
+        to: 278
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "279"
+    segments:
+      - id: stop_indicators
+        from: 279
+        to: 279
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "280"
+    segments:
+      - id: stop_indicators
+        from: 280
+        to: 280
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "281"
+    segments:
+      - id: stop_indicators
+        from: 281
+        to: 281
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "282"
+    segments:
+      - id: stop_indicators
+        from: 282
+        to: 282
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "283"
+    segments:
+      - id: stop_indicators
+        from: 283
+        to: 283
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "284"
+    segments:
+      - id: stop_indicators
+        from: 284
+        to: 284
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "285"
+    segments:
+      - id: stop_indicators
+        from: 285
+        to: 285
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "286"
+    segments:
+      - id: stop_indicators
+        from: 286
+        to: 286
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "287"
+    segments:
+      - id: stop_indicators
+        from: 287
+        to: 287
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "288"
+    segments:
+      - id: stop_indicators
+        from: 288
+        to: 288
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "289"
+    segments:
+      - id: stop_indicators
+        from: 289
+        to: 289
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "290"
+    segments:
+      - id: stop_indicators
+        from: 290
+        to: 290
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "291"
+    segments:
+      - id: stop_indicators
+        from: 291
+        to: 291
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "292"
+    segments:
+      - id: stop_indicators
+        from: 292
+        to: 292
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "293"
+    segments:
+      - id: stop_indicators
+        from: 293
+        to: 293
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "294"
+    segments:
+      - id: stop_indicators
+        from: 294
+        to: 294
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "295"
+    segments:
+      - id: stop_indicators
+        from: 295
+        to: 295
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "296"
+    segments:
+      - id: stop_indicators
+        from: 296
+        to: 296
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "297"
+    segments:
+      - id: stop_indicators
+        from: 297
+        to: 297
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "298"
+    segments:
+      - id: stop_indicators
+        from: 298
+        to: 298
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "299"
+    segments:
+      - id: stop_indicators
+        from: 299
+        to: 299
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "300"
+    segments:
+      - id: stop_indicators
+        from: 300
+        to: 300
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "301"
+    segments:
+      - id: stop_indicators
+        from: 301
+        to: 301
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "302"
+    segments:
+      - id: stop_indicators
+        from: 302
+        to: 302
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "303"
+    segments:
+      - id: stop_indicators
+        from: 303
+        to: 303
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "304"
+    segments:
+      - id: stop_indicators
+        from: 304
+        to: 304
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "305"
+    segments:
+      - id: stop_indicators
+        from: 305
+        to: 305
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "306"
+    segments:
+      - id: stop_indicators
+        from: 306
+        to: 306
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "307"
+    segments:
+      - id: stop_indicators
+        from: 307
+        to: 307
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "308"
+    segments:
+      - id: stop_indicators
+        from: 308
+        to: 308
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "309"
+    segments:
+      - id: stop_indicators
+        from: 309
+        to: 309
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "310"
+    segments:
+      - id: stop_indicators
+        from: 310
+        to: 310
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "311"
+    segments:
+      - id: stop_indicators
+        from: 311
+        to: 311
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "312"
+    segments:
+      - id: stop_indicators
+        from: 312
+        to: 312
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "313"
+    segments:
+      - id: stop_indicators
+        from: 313
+        to: 313
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "314"
+    segments:
+      - id: stop_indicators
+        from: 314
+        to: 314
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "315"
+    segments:
+      - id: stop_indicators
+        from: 315
+        to: 315
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "316"
+    segments:
+      - id: stop_indicators
+        from: 316
+        to: 316
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "317"
+    segments:
+      - id: stop_indicators
+        from: 317
+        to: 317
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "318"
+    segments:
+      - id: stop_indicators
+        from: 318
+        to: 318
+    default_transition_length: !secret transition_length
+
+  - platform: partition
+    name: "319"
+    segments:
+      - id: stop_indicators
+        from: 319
+        to: 319
+    default_transition_length: !secret transition_length
+
+#Root Light Strip
   - platform: esp32_rmt_led_strip
-    id: stop_indicators 
+    id: stop_indicators
     rgb_order: GRB
     pin: GPIO0
     internal: True
     default_transition_length: !secret transition_length
     use_psram: False
-    num_leds: 256
+    num_leds: 320
     chipset: WS2812
     name: "Stop Indicators"
+#    effects:
+#      - strobe:
+#      - strobe:
+#          name: Holiday Strobe
+#         colors:
+#           - state: true
+#              brightness: 100%
+#              red: 100%
+#              green: 0%
+#              blue: 0%
+#              duration: 1000ms
+#            - state: true
+#              brightness: 100%
+#              red: 0%
+#              green: 100%
+#             blue: 0%
+#             duration: 1000ms
