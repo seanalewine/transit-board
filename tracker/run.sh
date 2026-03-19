@@ -142,7 +142,8 @@ get_on_lights() {
         tr '\n' ' ')
         
     # Only the IDs are printed to stdout
-    echo "$on_ids"
+    echo "$on_ids" >&2
+    return $on_ids
 }
 
 set_light_color() {
@@ -280,11 +281,6 @@ trap cleanup EXIT
         exit 1
     fi
 
-    if [ -z "$SUPERVISOR_TOKEN" ]; then
-        echo "Error: SUPERVISOR_TOKEN environment variable is not set." >&2
-        exit 1
-    fi
-
     if [ ! -f "$JSON_FILE" ]; then
         echo "Error: JSON file not found at ${JSON_FILE}" >&2
         exit 1
@@ -315,6 +311,7 @@ trap cleanup EXIT
 
     # Convert the array to a space-separated string for efficient checking
     ACTIVE_IDS_STRING=" ${ACTIVE_LIGHT_IDS[*]} "
+    echo "List of trains in new date" ${ACTIVE_IDS_STRING}
 
     echo "--- Identifying and Turning Off Lights ---"
 
