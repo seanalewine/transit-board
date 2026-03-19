@@ -354,22 +354,25 @@ trap cleanup EXIT
     sta_ids=()
     colors=()
 
-    jq -r '.[] | .unifiedId + " " + .rgb' "$JSON_FILE" | while IFS=' ' read -r sta_id color; do
+    # Read all lines from jq output into an array
+    mapfile -t jq_output < <(jq -r '.[] | .unifiedId + " " + .rgb' "$JSON_FILE")
+
+    # Process each line
+    for line in "${jq_output[@]}"; do
+        # Split the line into sta_id and color
+        IFS=' ' read -r sta_id color <<< "$line"
         
         if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 319 )); then
-            # Store values in arrays instead of calling set_light_color
             sta_ids+=("$sta_id")
-            colors+=("$color")           
-            
-            # Write the active ID to the file
-            #echo "$sta_id" >> "$TEMP_ACTIVE_IDS_FILE"
+            colors+=("$color")
         else
             echo "Warning: Invalid unifiedId found: ${sta_id}. Skipping." >&2
         fi
     done
+
     echo "On Array size: ${#sta_ids[@]}"
 
-    board_refresh $sta_ids $colors $light_ids
+    board_refresh "${sta_ids[*]}" "${colors[*]}" "${light_ids[*]}"
 
     # 3. Read the IDs from the temporary file into the array
     #mapfile -t ACTIVE_LIGHT_IDS < "$TEMP_ACTIVE_IDS_FILE"
