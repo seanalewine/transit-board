@@ -216,6 +216,7 @@ board_refresh() {
     local -n arr2=$2
     local -n arr3=$3
     
+    actualoff=($(array_diff $3 $1))
     echo "Refreshing lights on the board now." >&2
     
     # Get the maximum length among all arrays
@@ -237,9 +238,37 @@ board_refresh() {
         
         # Turn off light if array 3 has a value at this index
         if [[ $i -lt $len3 ]]; then
-            turn_off_light "${arr3[i]}"
+            turn_off_light "${actualoff[i]}"
         fi
     done
+}
+
+array_diff() {
+    local -n arr1=$1
+    local -n arr2=$2
+    
+    local result=()
+    
+    # Iterate through each element in the first array
+    for item in "${arr1[@]}"; do
+        local found=false
+        
+        # Check if this item exists in the second array
+        for compare_item in "${arr2[@]}"; do
+            if [[ "$item" == "$compare_item" ]]; then
+                found=true
+                break
+            fi
+        done
+        
+        # If item not found in second array, add it to result
+        if [[ "$found" == false ]]; then
+            result+=("$item")
+        fi
+    done
+    
+    # Return the result by printing each element on a new line
+    printf '%s\n' "${result[@]}"
 }
 
 echo "Starting recurring data fetch loop..."
