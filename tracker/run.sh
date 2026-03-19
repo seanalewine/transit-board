@@ -124,25 +124,26 @@ if [ "$CONFIG_PROG" == "true" ]; then
 fi
 
 get_on_lights() {
-    echo "Fetching current state of all light entities..." >&2
-
+    echo "Fetching current state of all light entities..." >&2 
+    
+    # Call the Home Assistant API to get all states
     local states_json
     states_json=$(curl -s -X GET \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
         "${HA_URL}/states")
 
-    local on_ids=()
-    while IFS= read -r line; do
-        if [[ $line =~ ^light\.$LIGHT_BOARD_BASE(.+)$ ]]; then
-            id="${BASH_REMATCH[1]}"
-            on_ids+=("$id")
-            echo "DEBUG: Added ID '$id' to on_ids" >&2
-        fi
-    done < <(echo "$states_json" | jq -r '.[] | select(.entity_id | startswith("'"$LIGHT_BOARD_BASE"'")) | select(.state == "on") | .entity_id')
+    # Use jq to filter entities and sed to safely extract the numerical ID
+    local on_ids
+    on_ids=$(echo "$states_json" | \
+        jq -r '.[] | select(.entity_id | startswith("'"$LIGHT_BOARD_BASE"'")) | select(.state == "on") | .entity_id' | \
+        sed 's/light\.('"$LIGHT_BOARD_BASE"')//g')
 
-    # Output one item per line for proper array parsing
-    printf '%s\n' "${on_ids[@]}"
+    # Print each ID on a separate line for proper array conversion
+    printf '%s\n' "$on_ids" >&2
+    
+    # Return the IDs as a space-separated string (this is what gets captured)
+    echo "$on_ids"
 }
 
 set_light_color() {
