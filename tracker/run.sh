@@ -367,7 +367,7 @@ trap cleanup EXIT
             echo "Warning: Invalid unifiedId found: ${sta_id}. Skipping." >&2
         fi
     done
-    echo "${sta_ids}"
+    echo "On Array size: ${#sta_ids[@]}"
 
     board_refresh $sta_ids $colors $light_ids
 
