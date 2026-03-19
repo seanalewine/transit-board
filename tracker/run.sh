@@ -354,7 +354,7 @@ trap cleanup EXIT
     sta_ids=()
     colors=()
 
-    jq -r '.[] | "$.unifiedId) $.rgb)"' "$JSON_FILE" | while IFS=' ' read -r sta_id color; do
+    jq -r '.[] | .unifiedId + " " + .rgb' "$JSON_FILE" | while IFS=' ' read -r sta_id color; do
         
         if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 319 )); then
             # Store values in arrays instead of calling set_light_color
@@ -367,6 +367,7 @@ trap cleanup EXIT
             echo "Warning: Invalid unifiedId found: ${sta_id}. Skipping." >&2
         fi
     done
+
 
     board_refresh $sta_ids $colors $light_ids
 
