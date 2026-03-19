@@ -362,6 +362,7 @@ trap cleanup EXIT
         if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 319 )); then
             # Store values in arrays instead of calling set_light_color
             sta_ids+=("$sta_id")
+            echo "$sta_id"
             colors+=("$color")
             
             # Write the active ID to the file
