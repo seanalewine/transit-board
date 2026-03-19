@@ -212,64 +212,54 @@ turn_off_light() {
 }
 
 board_refresh() {
-    local -n arr1=$1
-    local -n arr2=$2
-    local -n arr3=$3
-    
-    mapfile -t actualoff < <(array_diff "$arr3" "$arr1")
-    echo "Refreshing lights on the board now." >&2
-    
-    # Get the maximum length among all arrays
-    local max_len=0
-    local len1=${#arr1[@]}
-    local len2=${#arr2[@]}
-    local len3=${#arr3[@]}
-    
-    if [[ $len1 -gt $max_len ]]; then max_len=$len1; fi
-    if [[ $len2 -gt $max_len ]]; then max_len=$len2; fi
-    if [[ $len3 -gt $max_len ]]; then max_len=$len3; fi
-    
-    # Process each index
-    for ((i=0; i<max_len; i++)); do
-        # Set light color if arrays 1 and 2 have values at this index
-        if [[ $i -lt $len1 ]] && [[ $i -lt $len2 ]]; then
-            set_light_color "${arr1[i]}" "${arr2[i]}"
-        fi
-        
-        # Turn off light if array 3 has a value at this index
-        if [[ $i -lt $len3 ]]; then
-            local entity_id="${LIGHT_BOARD_BASE}${actualoff[i]}"
-            turn_off_light "$entity_id"
-        fi
-    done
-}
+    local -a arr1=("${!1}")
+    local -a arr2=("${!2}")
+    local -a arr3=("${!3}")
 
-array_diff() {
-    local -n arr1=$1
-    local -n arr2=$2
-    
-    local result=()
-    
-    # Iterate through each element in the first array
-    for item in "${arr1[@]}"; do
+    # Create a temporary array for the diff result
+    local -a actualoff=()
+    local i
+
+    # Simulate array_diff logic manually in this context
+    for item in "${arr3[@]}"; do
         local found=false
-        
-        # Check if this item exists in the second array
-        for compare_item in "${arr2[@]}"; do
+        for compare_item in "${arr1[@]}"; do
             if [[ "$item" == "$compare_item" ]]; then
                 found=true
                 break
             fi
         done
-        
-        # If item not found in second array, add it to result
+
+        # Only add to actualoff if NOT found in arr1
         if [[ "$found" == false ]]; then
-            result+=("$item")
+            actualoff+=("$item")
         fi
     done
-    
-    # Return the result by printing each element on a new line
-    printf '%s\n' "${result[@]}"
+
+    echo "Refreshing lights on the board now." >&2
+
+    # Determine max length among arrays
+    local max_len=0
+    local len1=${#arr1[@]}
+    local len2=${#arr2[@]}
+    local len3=${#arr3[@]}
+
+    if [[ $len1 -gt $max_len ]]; then max_len=$len1; fi
+    if [[ $len2 -gt $max_len ]]; then max_len=$len2; fi
+    if [[ $len3 -gt $max_len ]]; then max_len=$len3; fi
+
+    # Process each index
+    for ((i=0; i<max_len; i++)); do
+        if [[ $i -lt $len1 ]] && [[ $i -lt $len2 ]]; then
+            set_light_color "${arr1[i]}" "${arr2[i]}"
+        fi
+
+        if [[ $i -lt ${#actualoff[@]} ]]; then
+            local entity_id="${LIGHT_BOARD_BASE}${actualoff[i]}"
+            turn_off_light "$entity_id"
+        fi
+    done
+done    
 }
 
 echo "Starting recurring data fetch loop..."
