@@ -133,16 +133,16 @@ get_on_lights() {
         -H "Content-Type: application/json" \
         "${HA_URL}/states")
 
-    # Use jq to filter entities and sed to safely extract the numerical ID
+    # Use jq to filter entities and extract just the numerical IDs
     local on_ids
     on_ids=$(echo "$states_json" | \
         jq -r '.[] | select(.entity_id | startswith("'"$LIGHT_BOARD_BASE"'")) | select(.state == "on") | .entity_id' | \
         sed 's/light\.('"$LIGHT_BOARD_BASE"')//g')
 
-    # Print each ID on a separate line for proper array conversion
-    printf '%s\n' "$on_ids" >&2
+    # Print the IDs to stderr for logging
+    echo "$on_ids" >&2
     
-    # Return the IDs as a space-separated string (this is what gets captured)
+    # Return the IDs as a space-separated string
     echo "$on_ids"
 }
 
