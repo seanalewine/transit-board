@@ -137,11 +137,11 @@ get_on_lights() {
         if [[ $line =~ ^light\.$LIGHT_BOARD_BASE(.+)$ ]]; then
             id="${BASH_REMATCH[1]}"
             on_ids+=("$id")
+            echo "DEBUG: Added ID '$id' to on_ids" >&2
         fi
     done < <(echo "$states_json" | jq -r '.[] | select(.entity_id | startswith("'"$LIGHT_BOARD_BASE"'")) | select(.state == "on") | .entity_id')
 
     # Output one item per line for proper array parsing
-    echo "$on_ids" >&2
     printf '%s\n' "${on_ids[@]}"
 }
 
