@@ -370,9 +370,7 @@ trap cleanup EXIT
         fi
     done
 
-    echo "On Array size: ${#sta_ids[@]}"
-
-    board_refresh "${sta_ids[*]}" "${colors[*]}" "${light_ids[*]}"
+    board_refresh "sta_ids" "colors" "light_ids"
 
     # 3. Read the IDs from the temporary file into the array
     #mapfile -t ACTIVE_LIGHT_IDS < "$TEMP_ACTIVE_IDS_FILE"
