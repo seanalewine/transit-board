@@ -140,9 +140,12 @@ get_on_lights() {
         jq -r '.[] | select(.entity_id | startswith("'"$LIGHT_BOARD_BASE"'")) | select(.state == "on") | .entity_id' | \
         sed 's/light\.('"$LIGHT_BOARD_BASE"')//g' | \
         tr '\n' ' ')
+    local 1on_ids=($(echo "$states_json" | \
+        jq -r '.[] | select(.entity_id | startswith("'"$LIGHT_BOARD_BASE"'")) | select(.state == "on") | .entity_id' | \
+        sed 's/light\.('"$LIGHT_BOARD_BASE"')//g'))
         
     # Only the IDs are printed to stdout
-    echo "$on_ids" >&2
+    echo "$1on_ids" >&2
     return $on_ids
 }
 
