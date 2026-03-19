@@ -357,6 +357,7 @@ trap cleanup EXIT
         
         if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 319 )); then
             sta_ids+=("$sta_id")
+            echo "$sta_id"
             colors+=("$color")
         else
             echo "Warning: Invalid unifiedId found: ${sta_id}. Skipping." >&2
