@@ -124,29 +124,24 @@ if [ "$CONFIG_PROG" == "true" ]; then
 fi
 
 get_on_lights() {
-    # FIXED: Redirecting log messages to stderr (>&2) so they aren't captured by the variable assignment
-    echo "Fetching current state of all light entities..." >&2 
-    
-    # Call the Home Assistant API to get all states
+    echo "Fetching current state of all light entities..." >&2
+
     local states_json
     states_json=$(curl -s -X GET \
         -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
         -H "Content-Type: application/json" \
         "${HA_URL}/states")
 
-    # Use jq to filter entities and sed to safely extract the numerical ID
-    local on_ids
-    on_ids=$(echo "$states_json" | \
-        jq -r '.[] | select(.entity_id | startswith("'"$LIGHT_BOARD_BASE"'")) | select(.state == "on") | .entity_id' | \
-        sed 's/light\.('"$LIGHT_BOARD_BASE"')//g' | \
-        tr '\n' ' ')
-    local on_ids1=($(echo "$states_json" | \
-        jq -r '.[] | select(.entity_id | startswith("'"$LIGHT_BOARD_BASE"'")) | select(.state == "on") | .entity_id' | \
-        sed 's/light\.('"$LIGHT_BOARD_BASE"')//g'))
-        
-    # Only the IDs are printed to stdout
-    echo "$on_ids1" >&2
-    return $on_ids
+    local on_ids=()
+    while IFS= read -r line; do
+        if [[ $line =~ ^light\.$LIGHT_BOARD_BASE(.+)$ ]]; then
+            id="${BASH_REMATCH[1]}"
+            on_ids+=("$id")
+        fi
+    done < <(echo "$states_json" | jq -r '.[] | select(.entity_id | startswith("'"$LIGHT_BOARD_BASE"'")) | select(.state == "on") | .entity_id')
+
+    # Output one item per line for proper array parsing
+    printf '%s\n' "${on_ids[@]}"
 }
 
 set_light_color() {
@@ -216,7 +211,36 @@ turn_off_light() {
     sleep "${SLEEP_TIME:-0.02}"
 }
 
-
+board_refresh() {
+    local -n arr1=$1
+    local -n arr2=$2
+    local -n arr3=$3
+    
+    echo "Refreshing lights on the board now." >&2
+    
+    # Get the maximum length among all arrays
+    local max_len=0
+    local len1=${#arr1[@]}
+    local len2=${#arr2[@]}
+    local len3=${#arr3[@]}
+    
+    if [[ $len1 -gt $max_len ]]; then max_len=$len1; fi
+    if [[ $len2 -gt $max_len ]]; then max_len=$len2; fi
+    if [[ $len3 -gt $max_len ]]; then max_len=$len3; fi
+    
+    # Process each index
+    for ((i=0; i<max_len; i++)); do
+        # Set light color if arrays 1 and 2 have values at this index
+        if [[ $i -lt $len1 ]] && [[ $i -lt $len2 ]]; then
+            set_light_color "${arr1[i]}" "${arr2[i]}"
+        fi
+        
+        # Turn off light if array 3 has a value at this index
+        if [[ $i -lt $len3 ]]; then
+            turn_off_light "${arr3[i]}"
+        fi
+    done
+}
 
 echo "Starting recurring data fetch loop..."
 while true; do
@@ -291,47 +315,38 @@ trap cleanup EXIT
 
     # 1. READ CURRENT STATE
     # This variable will now ONLY contain the space-separated light IDs.
-    PREVIOUSLY_ON_IDS_STRING=$(get_on_lights)
+    mapfile -t light_ids < <(get_on_lights)
+    echo "Array size: ${#light_ids[@]}"
+    echo "First ID: ${light_ids[0]}"
 
     echo "## Processing Active Trains and Collecting IDs"
 
-    # 2. PROCESS TRAINS AND TURN ON LIGHTS
-    jq -r '.[] | "\(.unifiedId) \(.rgb)"' "$JSON_FILE" | while IFS=' ' read -r sta_id color; do
+    # 2. PROCESS TRAINS INTO ARRAYS
+    sta_ids=()
+    colors=()
+
+    jq -r '.[] | "$.unifiedId) $.rgb)"' "$JSON_FILE" | while IFS=' ' read -r sta_id color; do
         
         if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 319 )); then
-            # Set the color for the active train light
-            set_light_color "$sta_id" "$color"
+            # Store values in arrays instead of calling set_light_color
+            sta_ids+=("$sta_id")
+            colors+=("$color")
             
             # Write the active ID to the file
-            echo "$sta_id" >> "$TEMP_ACTIVE_IDS_FILE"
+            #echo "$sta_id" >> "$TEMP_ACTIVE_IDS_FILE"
         else
             echo "Warning: Invalid unifiedId found: ${sta_id}. Skipping." >&2
         fi
     done
 
+    board_refresh $sta_ids $colors $light_ids
+
     # 3. Read the IDs from the temporary file into the array
-    mapfile -t ACTIVE_LIGHT_IDS < "$TEMP_ACTIVE_IDS_FILE"
+    #mapfile -t ACTIVE_LIGHT_IDS < "$TEMP_ACTIVE_IDS_FILE"
+    #echo "Array size: ${#light_ids[@]}"
+    #echo "First ID: ${light_ids[0]}"
 
-    # Convert the array to a space-separated string for efficient checking
-    ACTIVE_IDS_STRING=" ${ACTIVE_LIGHT_IDS[*]} "
-    echo "List of trains in new date" ${ACTIVE_IDS_STRING}
 
-    echo "--- Identifying and Turning Off Lights ---"
-
-    # 4. LOOP THROUGH PREVIOUSLY ON LIGHTS AND TURN OFF INACTIVES
-    for i in $PREVIOUSLY_ON_IDS_STRING; do
-        
-        # Sanity check to ensure $i is not empty or malformed
-        if [[ -z "$i" ]]; then
-            continue 
-        fi
-
-        # Check if the current ID (i) is NOT present in the list of lights we just set (ACTIVE_IDS_STRING)
-        if [[ ! "$ACTIVE_IDS_STRING" =~ " $i " ]]; then
-            # The light was ON but was NOT activated by the train data, so turn it off
-            turn_off_light "$i"
-        fi
-    done
 
     echo "--- Script Finished Successfully ---"
     sleep "${REFRESH_INTERVAL:-60}"
