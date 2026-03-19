@@ -213,8 +213,10 @@ turn_off_light() {
 
 board_refresh() {
     local -a arr1=("${!1}")
+    echo "New IDs $arr1"
     local -a arr2=("${!2}")
     local -a arr3=("${!3}")
+    echo "Old IDs $arr3"
 
     # Create a temporary array for the diff result
     local -a actualoff=()
@@ -235,6 +237,7 @@ board_refresh() {
             actualoff+=("$item")
         fi
     done
+    echo "To Turn Off: $actualoff"
 
     echo "Refreshing lights on the board now." >&2
 
