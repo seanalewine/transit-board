@@ -141,6 +141,7 @@ get_on_lights() {
     done < <(echo "$states_json" | jq -r '.[] | select(.entity_id | startswith("'"$LIGHT_BOARD_BASE"'")) | select(.state == "on") | .entity_id')
 
     # Output one item per line for proper array parsing
+    echo "$on_ids" >&2
     printf '%s\n' "${on_ids[@]}"
 }
 
