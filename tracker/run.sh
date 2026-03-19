@@ -138,9 +138,6 @@ get_on_lights() {
     on_ids=$(echo "$states_json" | \
         jq -r '.[] | select(.entity_id | startswith("'"$LIGHT_BOARD_BASE"'")) | select(.state == "on") | .entity_id' | \
         sed 's/.*_//')
-
-    # Print the IDs to stderr for logging
-    echo "$on_ids" >&2
     
     # Return the IDs as a space-separated string
     echo "$on_ids"
@@ -362,8 +359,7 @@ trap cleanup EXIT
         if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 319 )); then
             # Store values in arrays instead of calling set_light_color
             sta_ids+=("$sta_id")
-            echo "$sta_id"
-            colors+=("$color")
+            colors+=("$color")           
             
             # Write the active ID to the file
             #echo "$sta_id" >> "$TEMP_ACTIVE_IDS_FILE"
@@ -371,7 +367,7 @@ trap cleanup EXIT
             echo "Warning: Invalid unifiedId found: ${sta_id}. Skipping." >&2
         fi
     done
-
+    echo "${sta_ids}"
 
     board_refresh $sta_ids $colors $light_ids
 
