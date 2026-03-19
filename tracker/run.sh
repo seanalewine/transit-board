@@ -299,7 +299,7 @@ trap cleanup EXIT
     # 2. PROCESS TRAINS AND TURN ON LIGHTS
     jq -r '.[] | "\(.unifiedId) \(.rgb)"' "$JSON_FILE" | while IFS=' ' read -r sta_id color; do
         
-        if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 255 )); then
+        if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 319 )); then
             # Set the color for the active train light
             set_light_color "$sta_id" "$color"
             
