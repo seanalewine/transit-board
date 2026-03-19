@@ -137,7 +137,7 @@ get_on_lights() {
     local on_ids
     on_ids=$(echo "$states_json" | \
         jq -r '.[] | select(.entity_id | startswith("'"$LIGHT_BOARD_BASE"'")) | select(.state == "on") | .entity_id' | \
-        sed 's/light\.('"$LIGHT_BOARD_BASE"')//g')
+        sed 's/.*_//')
 
     # Print the IDs to stderr for logging
     echo "$on_ids" >&2
@@ -145,6 +145,7 @@ get_on_lights() {
     # Return the IDs as a space-separated string
     echo "$on_ids"
 }
+
 
 set_light_color() {
     local sta_id=$1
