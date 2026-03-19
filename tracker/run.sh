@@ -258,8 +258,7 @@ board_refresh() {
             local entity_id="${LIGHT_BOARD_BASE}${actualoff[i]}"
             turn_off_light "$entity_id"
         fi
-    done
-done    
+    done    
 }
 
 echo "Starting recurring data fetch loop..."
