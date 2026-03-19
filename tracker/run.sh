@@ -238,7 +238,8 @@ board_refresh() {
         
         # Turn off light if array 3 has a value at this index
         if [[ $i -lt $len3 ]]; then
-            turn_off_light "${actualoff[i]}"
+            local entity_id="${LIGHT_BOARD_BASE}${actualoff[i]}"
+            turn_off_light "$entity_id"
         fi
     done
 }
