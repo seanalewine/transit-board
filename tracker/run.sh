@@ -216,7 +216,7 @@ board_refresh() {
     local -n arr2=$2
     local -n arr3=$3
     
-    actualoff=($(array_diff $3 $1))
+    mapfile -t actualoff < <(array_diff "$arr3" "$arr1")
     echo "Refreshing lights on the board now." >&2
     
     # Get the maximum length among all arrays
