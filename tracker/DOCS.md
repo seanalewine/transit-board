@@ -33,7 +33,7 @@ The add-on must be restarted to process changes to any of these values.
 
 - `data_refresh_interval_sec` **Default to `60`.** Set the interval (in seconds) at which the add-on will refresh data from the transit agency and update the light board. The CTA limits API calls to 100,000/day. Due to how many calls are made to refresh all data, the most frequent refresh interval is 7 seconds. The arbitrary max for this value is 5000 seconds.
 
-- `indiv_light_refresh_delay_sec` **Default to `0.25`.** Set the interval (in seconds) for which the add-on turns on or off individual lights during an update cycle. This option can be used for effect or to help reduce flickering during a refresh on some lights.
+- `indiv_light_refresh_delay_milliseconds` **Default to `200`.** Set the interval (in milliseconds) for which the add-on turns on or off individual lights during an update cycle. This option can be used for effect or to help reduce flickering during a refresh on some lights.
 
 - `bidirectional` **Default to `true`.** The data shared by the CTA will assign directionality to each train corresponding with the stop at the end of the line. If you only want to show trains moving in one direction set this to `false`. 
 

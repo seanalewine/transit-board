@@ -10,8 +10,8 @@ from collections import defaultdict
 
 token = os.environ.get("SUPERVISOR_TOKEN")
 boardname = os.environ.get("LIGHT_BOARD_BASE")
-brightness = os.environ.get("BRIGHTNESS", 100)
-sleeptime = os.environ.get("SLEEP_TIME", 0.02)
+brightness = int(os.environ.get("BRIGHTNESS", 100))
+sleeptime = int(os.environ.get("SLEEP_TIME", 0.02))
 input_path = os.environ.get("JSON_FILE","/data/active_train_summary.json")
 
 # Function Definitions
@@ -68,7 +68,7 @@ def set_light_color(sta_id, color_rgb):
         json=data
     )
     
-    time.sleep(sleeptime)
+    time.sleep(sleeptime/1000)
 
 def turn_off_light(sta_id):
     # Prepare the request
@@ -107,7 +107,7 @@ def turn_off_light(sta_id):
         
         # Success case
         # print(f"DEBUG: Successfully turned off light for entity: {station_id}")
-        time.sleep(sleeptime)
+        time.sleep(sleeptime/1000)
         return True
         
     except requests.exceptions.RequestException as e:

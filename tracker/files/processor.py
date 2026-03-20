@@ -22,8 +22,8 @@ output_path = os.environ.get("JSON_FILE","/data/active_train_summary.json")
 stationlist = os.environ.get("CTA_STATION_LIST","/data/ctastationlist.csv")
 api_key = os.environ.get("API_KEY")
 persist_dir = os.environ.get("PERSIST_DIR", "/data/position")
-bidirectional = os.environ.get("BIDIRECTIONAL","True")
-trainsperline = os.environ.get("TRAINS_PER_LINE", 5)
+bidirectional = os.environ.get("BIDIRECTIONAL","true")
+trainsperline = int(os.environ.get("TRAINS_PER_LINE", 5))
 
 def fetch_route_data(route_id):
     """
