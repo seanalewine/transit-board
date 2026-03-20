@@ -23,7 +23,7 @@ stationlist = os.environ.get("CTA_STATION_LIST","/data/ctastationlist.csv")
 api_key = os.environ.get("API_KEY")
 persist_dir = os.environ.get("PERSIST_DIR", "/data/position")
 bidirectional = os.environ.get("BIDIRECTIONAL","True")
-trainsperline = os.environ.get("TRAINS_PER_LINE", "0")
+trainsperline = os.environ.get("TRAINS_PER_LINE", 5)
 
 def fetch_route_data(route_id):
     """
@@ -187,7 +187,6 @@ def truncate_train_entries(route_id):
         
         # Truncate the train array to first few entries
         try:
-            # Assuming TRAINS_PER_LINE is defined somewhere
             
             # Navigate to the train array and truncate it
             if 'ctatt' in data and 'route' in data['ctatt'] and len(data['ctatt']['route']) > 0:
@@ -305,8 +304,13 @@ def main():
         if next_sta_id and color:
             # Use the color as the line name in the lookup
             unified_id = station_lookup.get((next_sta_id, color))
-            if unified_id:
-                train["unifiedId"] = unified_id
+            if unified_id is not None:
+                # Convert to integer
+                try:
+                    train["unifiedId"] = int(unified_id)
+                except (ValueError, TypeError):
+                    print(f"Warning: Could not convert unified_id '{unified_id}' to integer. Skipping train.")
+                    continue
     
     # Save to output file
     try:

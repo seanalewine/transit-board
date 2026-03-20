@@ -173,13 +173,13 @@ def board_refresh(off, on):
             set_light_color(key, value)
         
         # If we have values left, turn off lights
-        if i < len(list_values):
-            turn_off_lights(list_values[i])
+        if i < len(off):
+            turn_off_light(off[i])
 
 def main():
-    #Add all new active stops to a dictionary.
+    # Add all new active stops to a dictionary.
     active_stops = intake_trains()
-    #Send all lights that are on from previous refresh to list.
+    # Send all lights that are on from previous refresh to list.
     currently_on = get_on_lights()
     # Update currently_on to only include stops that are no longer active.
     final_off = actual_off(currently_on, active_stops)
@@ -189,6 +189,6 @@ def main():
     board_refresh(final_off, final_on)
 
     sys.exit(0)
-    
+
 if __name__ == "__main__":
     main()
