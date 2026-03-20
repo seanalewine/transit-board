@@ -1,6 +1,9 @@
 import os
 import csv
 import json
+import requests
+import sys
+import subprocess
 from collections import defaultdict
 
 # Define colors dictionary with environment variable fallbacks
@@ -14,12 +17,198 @@ COLORS = {
     "pink": os.environ.get("PINK_COLOR", "255, 105, 180"),
     "y": os.environ.get("YELLOW_COLOR", "255, 255, 0")
 }
+ROUTE_IDS=("red", "blue", "brn", "g", "org", "p", "pink", "y")
+output_path = os.environ.get("JSON_FILE","/data/active_train_summary.json")
+stationlist = os.environ.get("CTA_STATION_LIST","/data/ctastationlist.csv")
+api_key = os.environ.get("API_KEY")
+persist_dir = os.environ.get("PERSIST_DIR", "/data/position")
+bidirectional = os.environ.get("BIDIRECTIONAL","True")
+trainsperline = os.environ.get("TRAINS_PER_LINE", "0")
+
+def fetch_route_data(route_id):
+    """
+    Fetch real-time transit data for a specific route from Chicago Transit Authority API
+    
+    Args:
+        route_id (str): The transit route ID to fetch data for
+    
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    
+    # Construct the API URL
+    api_url = f"http://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key={api_key}&rt={route_id}&outputType=JSON"
+    
+    # Construct the file path
+    json_file = os.path.join(persist_dir, f"/{route_id}.json")
+    
+    try:
+        # Make the request with timeout and error handling
+        response = requests.get(
+            api_url,
+            timeout=1,  # 1 second timeout
+            headers={'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1'}
+        )
+        
+        # Check if request was successful
+        if response.status_code == 200:
+            # Save the data to file
+            with open(json_file, 'w') as f:
+                f.write(response.text)
+            
+            print(f"Successfully fetched data for Route {route_id}")
+            return True
+            
+        else:
+            # Handle non-200 responses
+            print(f"Error: API request failed for Route {route_id} with HTTP status code {response.status_code}.")
+            print(f"Request URL: {api_url}")
+            
+            # Remove the potentially incomplete/erroneous file if it exists
+            if os.path.exists(json_file):
+                try:
+                    os.remove(json_file)
+                    print(f"Removed potentially erroneous file: {json_file}")
+                except OSError as e:
+                    print(f"Warning: Could not remove file {json_file}: {e}")
+            
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        # Handle network-related errors
+        print(f"Error: Network request failed for Route {route_id}: {str(e)}")
+        print(f"Request URL: {api_url}")
+        
+        # Remove the potentially incomplete/erroneous file if it exists
+        if os.path.exists(json_file):
+            try:
+                os.remove(json_file)
+                print(f"Removed potentially erroneous file: {json_file}")
+            except OSError as e:
+                print(f"Warning: Could not remove file {json_file}: {e}")
+        
+        return False
+    except Exception as e:
+        # Handle any other unexpected errors
+        print(f"Error: Unexpected error for Route {route_id}: {str(e)}")
+        print(f"Request URL: {api_url}")
+        
+        # Remove the potentially incomplete/erroneous file if it exists
+        if os.path.exists(json_file):
+            try:
+                os.remove(json_file)
+                print(f"Removed potentially erroneous file: {json_file}")
+            except OSError as e:
+                print(f"Warning: Could not remove file {json_file}: {e}")
+        
+        return False
+
+def correct_bidirectional(route_id):
+    """
+    Correct bidirectional train data in JSON file
+    
+    Args:
+        route_id (str): The route identifier
+        persist_dir (str): Directory where JSON files are stored
+    """
+    json_file = os.path.join(persist_dir, f"/{route_id}.json")
+    
+    # Check if file exists
+    if not os.path.exists(json_file):
+        print(f"Error: File {json_file} does not exist.")
+        return True
+    elif os.path.getsize(json_file) == 0:
+        print(f"Warning: File {json_file} is empty, skipping processing.")
+        return True
+    else:
+        # Validate JSON format
+        try:
+            with open(json_file, 'r') as f:
+                json.load(f)
+        except json.JSONDecodeError as e:
+            print(f"Error: File {json_file} contains invalid JSON.")
+            return True
+    
+    # Check if the structure exists and has train data
+    try:
+        with open(json_file, 'r') as f:
+            data = json.load(f)
+        
+        # Check for train data in route structure
+        has_train_data = False
+        if 'ctatt' in data and 'route' in data['ctatt']:
+            for route in data['ctatt']['route']:
+                if isinstance(route, dict) and 'train' in route and route['train']:
+                    has_train_data = True
+                    break
+        
+        if not has_train_data:
+            print(f"Warning: No train data found in {json_file}, skipping processing.")
+            return 0
+        else:
+            # Apply transformation safely
+            # Process the data to filter trains with trDr == "1"
+            for route in data['ctatt']['route']:
+                if isinstance(route, dict) and 'train' in route and route['train']:
+                    route['train'] = [train for train in route['train'] 
+                                    if train.get('trDr') == '1']
+            
+            # Write back to file
+            with open(json_file + '.tmp', 'w') as f:
+                json.dump(data, f, indent=2)
+            
+            # Replace original file
+            os.replace(json_file + '.tmp', json_file)
+            
+    except Exception as e:
+        print(f"Error processing {json_file}: {e}")
+        return 0
+    
+    return 0
+
+def truncate_train_entries(route_id):
+    json_file = os.path.join(persist_dir, f"/{route_id}.json")
+    
+    # Check if file exists
+    if not os.path.exists(json_file):
+        print(f"Error: File {json_file} does not exist.")
+        return 0
+    elif os.path.getsize(json_file) == 0:
+        print(f"Warning: File {json_file} is empty, skipping processing.")
+        return 0
+    else:
+        # Validate JSON
+        try:
+            with open(json_file, 'r') as f:
+                data = json.load(f)
+        except json.JSONDecodeError:
+            print(f"Error: File {json_file} contains invalid JSON.")
+            return 0
+        
+        # Truncate the train array to first few entries
+        try:
+            # Assuming TRAINS_PER_LINE is defined somewhere
+            
+            # Navigate to the train array and truncate it
+            if 'ctatt' in data and 'route' in data['ctatt'] and len(data['ctatt']['route']) > 0:
+                if 'train' in data['ctatt']['route'][0]:
+                    data['ctatt']['route'][0]['train'] = data['ctatt']['route'][0]['train'][:trainsperline]
+            
+            # Write back to file
+            with open(json_file, 'w') as f:
+                json.dump(data, f, indent=2)
+                
+        except Exception as e:
+            print(f"Error processing file {json_file}: {e}")
+            return 0
+    
+    return 0
 
 # Read the ctastationlist.csv file to create a lookup dictionary
 def load_station_lookup():
     station_lookup = {}
     try:
-        with open("/data/ctastationlist.csv", "r") as f:
+        with open(stationlist, "r") as f:
             for line in f:
                 if not line.strip() or line.startswith("#"):
                     continue
@@ -56,6 +245,8 @@ def process_json_file(file_path, color_key):
                             "rgb": COLORS.get(color_key, "255, 255, 255")
                         }
                         trains.append(train_obj)
+        else:
+            print(f"Data for {color_key} line malformed or no trains.")
         return trains
     except Exception as e:
         print(f"Error processing {file_path}: {e}")
@@ -77,6 +268,21 @@ def main():
         "pink": "/data/position/pink.json",
         "y": "/data/position/y.json"
     }
+
+    for route in ROUTE_IDS:
+        fetch_route_data(route)
+    
+    #Set trains to only one direction, defaults to '1' or Northbound
+    if bidirectional.lower() == "false":
+        print("Bidirectional is set to 'false' so only Northbound trains will display.")
+        for ROUTE in ROUTE_IDS:
+            correct_bidirectional(ROUTE)
+
+    # Check if there is a config limit set for trains per line then run function to reduce number of trains.
+    if trainsperline != 0:
+        print(f"Trains per line limited to: {trainsperline}. Removing excess trains.")
+        for ROUTE in ROUTE_IDS:
+            truncate_train_entries(ROUTE)
 
     
     # Collect all train objects
@@ -103,7 +309,6 @@ def main():
                 train["unifiedId"] = unified_id
     
     # Save to output file
-    output_path = "/data/active_train_summary.json"
     try:
         with open(output_path, 'w') as f:
             json.dump(all_trains, f, indent=2)

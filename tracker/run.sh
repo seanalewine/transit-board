@@ -1,21 +1,19 @@
 #!/usr/bin/with-contenv bashio
 #Define Variables
-API_KEY=$(bashio::config 'api_key')
+export API_KEY=$(bashio::config 'api_key')
 CONFIG_PROG=$(bashio::config 'assign_stations_program')
 ROUTE_IDS=("red" "blue" "brn" "g" "org" "p" "pink" "y")
-PERSIST_DIR="/data/position"
-CTA_STATION_LIST="/data/ctastationlist.csv"
-PROCESSOR_SCRIPT="/data/processor.py"
+export PERSIST_DIR="/data/position"
+export CTA_STATION_LIST="/data/ctastationlist.csv"
 LIGHT_BOARD_BASEPRE=$(bashio::config 'light_board')
-LIGHT_BOARD_BASE="${LIGHT_BOARD_BASEPRE}_"
-BRIGHTNESS=$(bashio::config 'brightness')
-BIDIRECTIONAL=$(bashio::config 'bidirectional')
-TRAINS_PER_LINE=$(bashio::config 'trainsPerLine')
+export LIGHT_BOARD_BASE="${LIGHT_BOARD_BASEPRE}_"
+export BRIGHTNESS=$(bashio::config 'brightness')
+export BIDIRECTIONAL=$(bashio::config 'bidirectional')
+export TRAINS_PER_LINE=$(bashio::config 'trainsPerLine')
 REFRESH_INTERVAL=$(bashio::config 'data_refresh_interval_sec')
-SLEEP_TIME=$(bashio::config 'indiv_light_refresh_delay_sec')
-JSON_FILE="/data/active_train_summary.json"
+export SLEEP_TIME=$(bashio::config 'indiv_light_refresh_delay_sec')
+export JSON_FILE="/data/active_train_summary.json"
 HA_URL="${HA_URL:-http://supervisor/core/api}" 
-# Define train line colors from config.yaml and EXPORT them as environment variables
 export RED_COLOR=$(bashio::config 'red_line_color')
 export PINK_COLOR=$(bashio::config 'pink_line_color')
 export ORANGE_COLOR=$(bashio::config 'orange_line_color')
@@ -277,32 +275,26 @@ while true; do
     echo "Checking directory structure..."
     mkdir -p "$PERSIST_DIR"
     # Loop through the array and call the function for each route
-    for ROUTE in "${ROUTE_IDS[@]}"; do
-        fetch_route_data "$ROUTE"
-    done
+    #for ROUTE in "${ROUTE_IDS[@]}"; do
+    #    fetch_route_data "$ROUTE"
+    #done
 
     #Set trains to only one direction, defaults to '1' or Northbound
-    if [ "$BIDIRECTIONAL" = "false" ]; then
-        echo "Bidirectional is set to 'false' so only Northbound trains will display."
-        for ROUTE in "${ROUTE_IDS[@]}"; do
-            correct_bidirectional "$ROUTE"
-        done
-    fi
+    #if [ "$BIDIRECTIONAL" = "false" ]; then
+    #    echo "Bidirectional is set to 'false' so only Northbound trains will display."
+    #    for ROUTE in "${ROUTE_IDS[@]}"; do
+    #        correct_bidirectional "$ROUTE"
+    #    done
+    #fi
 
     # Check if there is a config limit set for trains per line then run function to reduce number of trains.
-    if [ $TRAINS_PER_LINE != 0 ]; then
-        echo "Trains per line limited to: $TRAINS_PER_LINE. Removing excess trains."
-        for ROUTE in "${ROUTE_IDS[@]}"; do
-            truncate_train_entries "$ROUTE"
-        done
-    fi
-
-    echo "All routes processed. "
-    echo "--------------------------------------------------------"
-    python3 "$PROCESSOR_SCRIPT" \
-        --station-list "$CTA_STATION_LIST" \
-        --input-dir "$PERSIST_DIR" \
-        --output-file "$JSON_FILE"
+    #if [ $TRAINS_PER_LINE != 0 ]; then
+    #    echo "Trains per line limited to: $TRAINS_PER_LINE. Removing excess trains."
+    #    for ROUTE in "${ROUTE_IDS[@]}"; do
+    #        truncate_train_entries "$ROUTE"
+    #    done
+    #fi
+    python3 "/data/processor.py" \
 
     if [ $? -eq 0 ]; then
         echo "--------------------------------------------------------"
@@ -312,67 +304,14 @@ while true; do
         echo "Error: Python script failed."
     fi
 
-    TEMP_ACTIVE_IDS_FILE=$(mktemp)
-    cleanup() {
-        echo "Cleaning up temporary files..."
-        if [[ -n "$TEMP_ACTIVE_IDS_FILE" && -f "$TEMP_ACTIVE_IDS_FILE" ]]; then
-            rm -f "$TEMP_ACTIVE_IDS_FILE"
-            echo "Removed temporary file: $TEMP_ACTIVE_IDS_FILE"
-        fi
-    }
-trap cleanup EXIT
+    python3 "/data/graphicrefresh.py" \
 
-    echo "--- Starting Light Control Script ---"
-
-    # Check for required dependencies (jq)
-    if ! command -v jq &> /dev/null; then
-        echo "Error: 'jq' is not installed. Please install it in your Add-on environment." >&2
-        exit 1
+    if [ $? -eq 0 ]; then
+        echo "--------------------------------------------------------"
+        echo "Successfully updated the board."
+    else
+        echo "--------------------------------------------------------"
+        echo "Error: Python script failed."
     fi
 
-    if [ ! -f "$JSON_FILE" ]; then
-        echo "Error: JSON file not found at ${JSON_FILE}" >&2
-        exit 1
-    fi
-
-    # 1. READ CURRENT STATE
-    # This variable will now ONLY contain the space-separated light IDs.
-    mapfile -t light_ids < <(get_on_lights)
-    echo "Array size: ${#light_ids[@]}"
-    echo "First ID: ${light_ids[0]}"
-
-    echo "## Processing Active Trains and Collecting IDs"
-
-    # 2. PROCESS TRAINS INTO ARRAYS
-    sta_ids=()
-    colors=()
-
-    # Read all lines from jq output into an array
-    mapfile -t jq_output < <(jq -r '.[] | .unifiedId + " " + .rgb' "$JSON_FILE")
-
-    # Process each line
-    for line in "${jq_output[@]}"; do
-        # Split the line into sta_id and color
-        IFS=' ' read -r sta_id color <<< "$line"
-        
-        if [[ "$sta_id" =~ ^[0-9]+$ ]] && (( sta_id >= 0 && sta_id <= 319 )); then
-            sta_ids+=("$sta_id")
-            echo "$sta_id"
-            colors+=("$color")
-        else
-            echo "Warning: Invalid unifiedId found: ${sta_id}. Skipping." >&2
-        fi
-    done
-
-    board_refresh sta_ids colors light_ids
-
-    # 3. Read the IDs from the temporary file into the array
-    #mapfile -t ACTIVE_LIGHT_IDS < "$TEMP_ACTIVE_IDS_FILE"
-    #echo "Array size: ${#light_ids[@]}"
-    #echo "First ID: ${light_ids[0]}"
-
-
-
-    echo "--- Script Finished Successfully ---"
     sleep "${REFRESH_INTERVAL:-60}"
-done
