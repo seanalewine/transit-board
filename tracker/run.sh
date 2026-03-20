@@ -315,3 +315,4 @@ while true; do
     fi
 
     sleep "${REFRESH_INTERVAL:-60}"
+done
