@@ -212,10 +212,10 @@ turn_off_light() {
 }
 
 board_refresh() {
-    local -a arr1=("${!1}")
+    local -a arr1=$1
     echo "New IDs $arr1"
-    local -a arr2=("${!2}")
-    local -a arr3=("${!3}")
+    local -a arr2=$2
+    local -a arr3=$3
     echo "Old IDs $arr3"
 
     # Create a temporary array for the diff result
@@ -237,7 +237,7 @@ board_refresh() {
             actualoff+=("$item")
         fi
     done
-    echo "To Turn Off: $actualoff"
+    echo "To Turn Off: ${actualoff[*]}"
 
     echo "Refreshing lights on the board now." >&2
 
@@ -364,7 +364,7 @@ trap cleanup EXIT
         fi
     done
 
-    board_refresh "sta_ids" "colors" "light_ids"
+    board_refresh sta_ids colors light_ids
 
     # 3. Read the IDs from the temporary file into the array
     #mapfile -t ACTIVE_LIGHT_IDS < "$TEMP_ACTIVE_IDS_FILE"
