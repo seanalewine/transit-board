@@ -20,7 +20,7 @@ RUN apk add --no-cache \
 # Install Python packages using wheels
 RUN pip install --no-cache-dir \
     requests \
-    numpy==2.4.3 \
+    numpy \
     python-dateutil \
     pandas
 # Clean up build dependencies (optional but recommended)
