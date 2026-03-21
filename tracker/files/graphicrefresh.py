@@ -147,7 +147,9 @@ def intake_trains():
 def actual_off(old, new):
     # Create a set of dictionary keys for faster lookup
     dict_keys = set(new.keys())
-    
+    print("Running actual_off function")
+    print(f"original list: {old}")
+    print(f"list of stops to turn on: {dict_keys}")
     # Filter out any values that are keys in the dictionary
     return [item for item in old if item not in dict_keys]
 
