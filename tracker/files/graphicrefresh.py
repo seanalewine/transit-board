@@ -40,10 +40,13 @@ def get_on_lights():
     return on_ids
 
 def set_light_color(sta_id, color_rgb):    
+    
+    if isinstance(color_rgb, str):
+        color_rgb = [int(val.strip()) for val in color_rgb.split(',')]
     # Create data payload
     data = {
         "entity_id": f"{boardname}{sta_id}",
-        "rgb_color": color_rgb,  # Remove the extra brackets
+        "rgb_color": color_rgb,
         "brightness_pct": brightness
     }
     
