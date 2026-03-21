@@ -64,7 +64,7 @@ def main():
         master_df = master_df.groupby('color').head(trainsperline).reset_index(drop=True)
 
     try:
-        stations_df = pd.read_csv(stationlist, names=['nextStaId', 'color', 'unifiedId'], comment='#', header=None)
+        stations_df = pd.read_csv(stationlist, names=['nextStaId', 'color', 'unifiedId', 'humanName'], comment='#', header=None)
         stations_df['nextStaId'] = stations_df['nextStaId'].astype(str).str.strip()
         stations_df['color'] = stations_df['color'].astype(str).str.strip()
         master_df['nextStaId'] = master_df['nextStaId'].astype(str).str.strip()

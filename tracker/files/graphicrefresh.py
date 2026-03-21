@@ -1,9 +1,7 @@
 import os
-import csv
 import json
 import requests
 import sys
-import subprocess
 import re
 import time
 import pandas as pd
@@ -177,7 +175,7 @@ def board_refresh(off, on):
         # If we have values left, turn off lights
         if i < len(off):
             turn_off_light(off[i])
-
+            
 def main():
     # Add all new active stops to a dictionary.
     active_stops = intake_trains()
