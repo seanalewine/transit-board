@@ -40,21 +40,15 @@ def get_on_lights():
     return on_ids
 
 def set_light_color(sta_id, color_rgb):    
-    # Parse RGB color
-    #rgb_parts = color_rgb.split(',')
-    #if len(rgb_parts) < 3:
-    #    print(f"Error parsing color string: {color_rgb}")
-    #    return
-    #Don't think below is required
-    #R, G, B = rgb_parts[0], rgb_parts[1], rgb_parts[2]
-    
     # Create data payload
     data = {
         "entity_id": f"{boardname}{sta_id}",
-        #"rgb_color": [int(R), int(G), int(B)],
         "rgb_color": f"[{color_rgb}]",
         "brightness_pct": brightness
     }
+    
+    # Debug: Print the data being sent
+    print(f"DEBUG: Sending data - {data}")
     
     # Send POST request
     headers = {
@@ -62,13 +56,42 @@ def set_light_color(sta_id, color_rgb):
         "Content-Type": "application/json"
     }
     
-    response = requests.post(
-        "http://supervisor/core/api/services/light/turn_on",
-        headers=headers,
-        json=data
-    )
+    # Debug: Print headers
+    print(f"DEBUG: Headers - {headers}")
     
+    # Debug: Print URL
+    url = "http://supervisor/core/api/services/light/turn_on"
+    print(f"DEBUG: Posting to URL - {url}")
+    
+    try:
+        response = requests.post(
+            url,
+            headers=headers,
+            json=data
+        )
+        
+        # Debug: Print response status and content
+        print(f"DEBUG: Response status code - {response.status_code}")
+        print(f"DEBUG: Response content - {response.text}")
+        
+        # Check if request was successful
+        if response.status_code >= 200 and response.status_code < 300:
+            print(f"SUCCESS: Light color set for station {sta_id}")
+        else:
+            print(f"ERROR: Failed to set light color. Status code: {response.status_code}")
+            
+    except Exception as e:
+        # Debug: Print any exceptions
+        print(f"ERROR: Exception occurred - {str(e)}")
+        print(f"ERROR: Exception type - {type(e).__name__}")
+    
+    # Debug: Print sleep info
+    print(f"DEBUG: Sleeping for {sleeptime/1000} seconds")
     time.sleep(sleeptime/1000)
+    
+    # Debug: Confirm completion
+    print(f"DEBUG: Function completed for station {sta_id}")
+
 
 def turn_off_light(sta_id):
     # Prepare the request
@@ -85,7 +108,7 @@ def turn_off_light(sta_id):
             "http://supervisor/core/api/services/light/turn_off",
             headers=headers,
             json=data,
-            timeout=2 # Add a reasonable timeout
+            timeout=2
         )
         
         # Check if request was successful
@@ -106,7 +129,6 @@ def turn_off_light(sta_id):
             print(f"WARNING: Response may contain errors: {response.text}")
         
         # Success case
-        # print(f"DEBUG: Successfully turned off light for entity: {station_id}")
         time.sleep(sleeptime/1000)
         return True
         
