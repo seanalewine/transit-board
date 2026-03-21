@@ -38,21 +38,11 @@ while true; do
     # Ensure the output directory exists once before the loop
     echo "Checking directory structure..."
     mkdir -p "$PERSIST_DIR"
-    python3 "/data/processor.py" \
+    python3 "/data/processor.py" | python3 "/data/graphicrefresh.py"
 
     if [ $? -eq 0 ]; then
         echo "--------------------------------------------------------"
-        echo "Successfully completed processing. Output saved to $JSON_FILE"
-    else
-        echo "--------------------------------------------------------"
-        echo "Error: Python script failed."
-    fi
-
-    python3 "/data/graphicrefresh.py" \
-
-    if [ $? -eq 0 ]; then
-        echo "--------------------------------------------------------"
-        echo "Successfully updated the board."
+        echo "Successfully completed processing and board refresh."
     else
         echo "--------------------------------------------------------"
         echo "Error: Python script failed."

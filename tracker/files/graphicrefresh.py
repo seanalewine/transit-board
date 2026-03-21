@@ -12,7 +12,7 @@ token = os.environ.get("SUPERVISOR_TOKEN")
 boardname = os.environ.get("LIGHT_BOARD_BASE")
 brightness = int(os.environ.get("BRIGHTNESS", 100))
 sleeptime = int(os.environ.get("SLEEP_TIME", 250))
-input_path = os.environ.get("JSON_FILE","/data/active_train_summary.json")
+# input_path = os.environ.get("JSON_FILE","/data/active_train_summary.json")
 
 # Function Definitions
 def get_on_lights():
@@ -121,26 +121,24 @@ def turn_off_light(sta_id):
         return False
 
 def intake_trains():
-    result_dict = {}    
+    result_dict = {}
     try:
-        with open(input_path, 'r') as f:
-            data = json.load(f)
-        
-        # Process each item in the JSON array
-        for item in data:
-            # Extract unifiedId and rgb values
-            sta_id = item.get('unifiedId')
-            color = item.get('rgb')
+        # Read the JSON payload piped in from the bash script via stdin
+        df = pd.read_json(sys.stdin)
+
+        if not df.empty:
+            valid_mask = (df['unifiedId'] >= 0) & (df['unifiedId'] <= 319)
+            valid_df = df[valid_mask]
             
-            # Check if sta_id is a valid integer between 0 and 319
-            if isinstance(sta_id, int) and 0 <= sta_id <= 319:
-                result_dict[sta_id] = color
-            else:
-                print(f"Warning: Invalid unifiedId found: {sta_id}. Skipping.", file=sys.stderr)
-                
-    except (json.JSONDecodeError, FileNotFoundError) as e:
-        print(f"Error processing file: {e}", file=sys.stderr)
-    
+            invalid_ids = df[~valid_mask]['unifiedId'].tolist()
+            for invalid_id in invalid_ids:
+                print(f"Warning: Invalid unifiedId: {invalid_id}. Skipping.", file=sys.stderr)
+
+            result_dict = dict(zip(valid_df['unifiedId'].astype(int), valid_df['rgb']))
+
+    except ValueError as e:
+        print(f"Error parsing dataframe from stdin: {e}", file=sys.stderr)
+        
     return result_dict
 
 def actual_off(old, new):
