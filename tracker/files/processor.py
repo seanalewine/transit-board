@@ -46,7 +46,7 @@ def fetch_route_data(route_id):
         # Make the request with timeout and error handling
         response = requests.get(
             api_url,
-            timeout=1,  # 1 second timeout
+            timeout=3,  # 1 second timeout
             headers={'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1'}
         )
         
