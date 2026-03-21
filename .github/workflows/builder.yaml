@@ -102,11 +102,11 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build ${{ matrix.addon }} add-on
-        uses: home-assistant/actions/build-image@master
+          
+      - name: Build add-on
+        uses: home-assistant/actions/helpers/build-image@master
         with:
           account: ghcr.io/${{ github.repository_owner }}
           addon: ${{ matrix.addon }}
           arch: ${{ matrix.arch }}
-          # This enables the modern GitHub Actions cache backend
           cache: true
