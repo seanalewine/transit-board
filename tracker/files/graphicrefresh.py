@@ -56,33 +56,26 @@ def set_light_color(sta_id, color_rgb):
         "Content-Type": "application/json"
     }
     
-    # Debug: Print URL
-    url = "http://supervisor/core/api/services/light/turn_on"
-    
     try:
         response = requests.post(
-            url,
+            "http://supervisor/core/api/services/light/turn_on",
             headers=headers,
             json=data
         )
         
-        # Debug: Print response status and content
         print(f"DEBUG: Response status code - {response.status_code}")
         print(f"DEBUG: Response content - {response.text}")
         
         # Check if request was successful
-        if response.status_code >= 200 and response.status_code < 300:
-            print(f"SUCCESS: Light color set for station {sta_id}")
-        else:
+        if response.status_code != 200:
             print(f"ERROR: Failed to set light color. Status code: {response.status_code}")
             print(f"ERROR: Response details - {response.text}")
             
     except Exception as e:
-        # Debug: Print any exceptions
         print(f"ERROR: Exception occurred - {str(e)}")
         print(f"ERROR: Exception type - {type(e).__name__}")
     
-    # Debug: Print sleep info
+
     time.sleep(sleeptime/1000)
 
 def turn_off_light(sta_id):
@@ -95,12 +88,10 @@ def turn_off_light(sta_id):
     data = {"entity_id": f"{boardname}{sta_id}"}
     
     try:
-        # Make the POST request
         response = requests.post(
             "http://supervisor/core/api/services/light/turn_off",
             headers=headers,
             json=data,
-            timeout=2 # Add a reasonable timeout
         )
         
         # Check if request was successful

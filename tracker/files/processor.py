@@ -55,8 +55,10 @@ def fetch_route_data(route_id):
             # Save the data to file
             with open(json_file, 'w') as f:
                 f.write(response.text)
-            
-            print(f"Successfully fetched data for Route {route_id}")
+            data = response.json()
+            train_count = len(data['ctatt']['route'][0]['train']) if 'ctatt' in data and 'route' in data['ctatt'] and data['ctatt']['route'] and 'train' in data['ctatt']['route'][0] else 0
+
+            print(f"Successfully fetched data for Route {route_id}. # of trains {train_count}")
             return True
             
         else:
