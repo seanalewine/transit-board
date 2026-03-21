@@ -3,13 +3,12 @@ FROM $BUILD_FROM
 
 RUN apk add --no-cache \
     build-base \
-    tzdata
+    tzdata \
+    libstdc++ \
+    openblas-dev
 
-RUN python3 -m pip install --no-cache-dir \
-    requests \
-    numpy \
-    python-dateutil \
-    pandas
+RUN python3 -m pip install --no-cache-dir --upgrade pip && \
+    python3 -m pip install --no-cache-dir pandas requests numpy python-dateutil
 
 # Set the working directory
 WORKDIR /data
