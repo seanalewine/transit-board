@@ -1,8 +1,8 @@
 #!/usr/bin/with-contenv bashio
+set -o pipefail
 #Define Variables
 export API_KEY=$(bashio::config 'api_key')
 CONFIG_PROG=$(bashio::config 'assign_stations_program')
-ROUTE_IDS=("red" "blue" "brn" "g" "org" "p" "pink" "y")
 export PERSIST_DIR="/data/position"
 export CTA_STATION_LIST="/data/ctastationlist.csv"
 LIGHT_BOARD_BASEPRE=$(bashio::config 'light_board')
@@ -13,7 +13,6 @@ export TRAINS_PER_LINE=$(bashio::config 'trainsPerLine')
 REFRESH_INTERVAL=$(bashio::config 'data_refresh_interval_sec')
 export SLEEP_TIME=$(bashio::config 'indiv_light_refresh_delay_milliseconds')
 export JSON_FILE="/data/active_train_summary.json"
-HA_URL="${HA_URL:-http://supervisor/core/api}" 
 export RED_COLOR=$(bashio::config 'red_line_color')
 export PINK_COLOR=$(bashio::config 'pink_line_color')
 export ORANGE_COLOR=$(bashio::config 'orange_line_color')

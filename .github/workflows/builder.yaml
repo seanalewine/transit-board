@@ -78,10 +78,6 @@ jobs:
         uses: home-assistant/actions/helpers/info@master
         with:
           path: "./${{ matrix.addon }}"
-      - uses: actions/cache@v5.0.4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
       - name: Check if add-on should be built
         id: check
         run: |
@@ -117,4 +113,5 @@ jobs:
             --target /data/${{ matrix.addon }} \
             --image "${{ steps.check.outputs.image }}" \
             --docker-hub "ghcr.io/${{ github.repository_owner }}" \
-            --addon
+            --addon \
+            --cache
