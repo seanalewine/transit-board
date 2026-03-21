@@ -1,15 +1,17 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-RUN apk add --no-cache \
-    build-base \
+RRUN apt-get update && apt-get install -y --no-install-recommends \
     tzdata \
-    libstdc++ \
-    openblas-dev
+    && rm -rf /var/lib/apt/lists/*
 
-RUN python3 -m pip install --no-cache-dir --upgrade pip && \
-    python3 -m pip install --no-cache-dir pandas requests numpy python-dateutil
-
+# Install Python packages
+# We use 'pip' directly as it's already configured in this base image
+RUN pip install --no-cache-dir \
+    requests \
+    numpy \
+    python-dateutil \
+    pandas
 # Set the working directory
 WORKDIR /data
 
