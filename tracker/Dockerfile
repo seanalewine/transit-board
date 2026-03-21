@@ -4,7 +4,7 @@ FROM $BUILD_FROM
 # Install requirements for add-on
 RUN apk add --no-cache python3 py3-pip
 
-RUN pip install requests pandas
+RUN pip install requests numpy python-dateutil pandas
 
 
 # Python 3 HTTP Server serves the current working dir
