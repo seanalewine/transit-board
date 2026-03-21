@@ -11,7 +11,7 @@ from collections import defaultdict
 token = os.environ.get("SUPERVISOR_TOKEN")
 boardname = os.environ.get("LIGHT_BOARD_BASE")
 brightness = int(os.environ.get("BRIGHTNESS", 100))
-sleeptime = int(os.environ.get("SLEEP_TIME", 0.02))
+sleeptime = int(os.environ.get("SLEEP_TIME", 250))
 input_path = os.environ.get("JSON_FILE","/data/active_train_summary.json")
 
 # Function Definitions
@@ -50,21 +50,14 @@ def set_light_color(sta_id, color_rgb):
         "brightness_pct": brightness
     }
     
-    # Debug: Print the data being sent
-    print(f"DEBUG: Sending data - {data}")
-    
     # Send POST request
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
     }
     
-    # Debug: Print headers
-    print(f"DEBUG: Headers - {headers}")
-    
     # Debug: Print URL
     url = "http://supervisor/core/api/services/light/turn_on"
-    print(f"DEBUG: Posting to URL - {url}")
     
     try:
         response = requests.post(
@@ -90,12 +83,7 @@ def set_light_color(sta_id, color_rgb):
         print(f"ERROR: Exception type - {type(e).__name__}")
     
     # Debug: Print sleep info
-    print(f"DEBUG: Sleeping for {sleeptime/1000} seconds")
     time.sleep(sleeptime/1000)
-    
-    # Debug: Confirm completion
-    print(f"DEBUG: Function completed for station {sta_id}")
-
 
 def turn_off_light(sta_id):
     # Prepare the request
