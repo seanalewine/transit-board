@@ -25,7 +25,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy wheels from builder
 COPY --from=builder /install /install
 RUN python3 -m pip install --no-index --find-links=/install /install/* \
-    --break-system-packages \
     && rm -rf /install
 # Set the working directory
 WORKDIR /data
