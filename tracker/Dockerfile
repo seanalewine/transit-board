@@ -1,15 +1,11 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-# Install only the necessary system libraries 
-# (Most Python dependencies are handled by the pre-built wheels)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache \
+    build-base \
+    tzdata
 
-# Install Python packages
-# pip will automatically find the 'manylinux' wheels on Debian
-RUN pip install --no-cache-dir \
+RUN python3 -m pip install --no-cache-dir \
     requests \
     numpy \
     python-dateutil \
