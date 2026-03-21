@@ -1,7 +1,7 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-# Install requirements for add-on
+# Install system dependencies
 RUN apk add --no-cache \
     python3 \
     py3-pip \
@@ -10,11 +10,19 @@ RUN apk add --no-cache \
     musl-dev \
     linux-headers \
     libffi-dev \
-    openssl-dev
+    openssl-dev \
+    zlib-dev \
+    bzip2-dev \
+    readline-dev \
+    sqlite-dev \
+    xz-dev
 
-# Install python packages
-RUN pip install --no-cache-dir requests numpy python-dateutil pandas
-
+# Install Python packages using wheels
+RUN pip install --no-cache-dir \
+    requests \
+    numpy==2.4.3 \
+    python-dateutil \
+    pandas
 # Clean up build dependencies (optional but recommended)
 RUN apk del gcc g++ musl-dev linux-headers libffi-dev openssl-dev
 
