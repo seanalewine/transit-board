@@ -82,7 +82,7 @@ def turn_off_light(sta_id):
     try:
         # Make the POST request
         response = requests.post(
-            f"{HA_URL}/services/light/turn_off",
+            "http://supervisor/core/api/services/light/turn_off",
             headers=headers,
             json=data,
             timeout=2 # Add a reasonable timeout
@@ -133,7 +133,6 @@ def intake_trains():
             # Check if sta_id is a valid integer between 0 and 319
             if isinstance(sta_id, int) and 0 <= sta_id <= 319:
                 result_dict[sta_id] = color
-                print(sta_id)
             else:
                 print(f"Warning: Invalid unifiedId found: {sta_id}. Skipping.", file=sys.stderr)
                 
