@@ -2,29 +2,26 @@ ARG BUILD_FROM
 FROM $BUILD_FROM AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3-pip \
-    python3-dev \
-    build-essential \
+    python3-pip python3-dev python3-venv build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy only requirements first to protect the cache
+# Create a virtual environment
+RUN python3 -m venv /opt/venv
+# Use the venv's pip to install
 COPY requirements.txt /tmp/
-RUN python3 -m pip wheel --no-cache-dir --wheel-dir /install \
-    -r /tmp/requirements.txt
+RUN /opt/venv/bin/pip install --no-cache-dir -r /tmp/requirements.txt
 
-# --- Stage 2: The Final Image ---
+# --- Stage 2: Final Image ---
 FROM $BUILD_FROM
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    tzdata \
-    python3 \
-    python3-pip \
-    && rm -rf /var/lib/apt/lists/*
+    tzdata python3 && rm -rf /var/lib/apt/lists/*
 
-# Copy wheels from builder
-COPY --from=builder /install /install
-RUN python3 -m pip install --no-index --find-links=/install /install/* \
-    && rm -rf /install
+# Copy the entire virtual environment
+COPY --from=builder /opt/venv /opt/venv
+
+# Ensure the app uses the venv by default
+ENV PATH="/opt/venv/bin:$PATH"
 # Set the working directory
 WORKDIR /data
 
