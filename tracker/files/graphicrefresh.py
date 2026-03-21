@@ -18,7 +18,6 @@ input_path = os.environ.get("JSON_FILE","/data/active_train_summary.json")
 def get_on_lights():
     print("Fetching current state of all light entities...")
     
-    # Call the Home Assistant API to get all states
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
@@ -35,7 +34,7 @@ def get_on_lights():
                 # Extract numerical ID using regex
                 match = re.search(r'_(\d+)$', entity.get("entity_id", ""))
                 if match:
-                    on_ids.append(match.group(1))
+                    on_ids.append(int(match.group(1)))
     
     return on_ids
 
