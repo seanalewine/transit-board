@@ -10,7 +10,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy only requirements first to protect the cache
 COPY requirements.txt /tmp/
 RUN python3 -m pip wheel --no-cache-dir --wheel-dir /install \
-    --break-system-packages \
     -r /tmp/requirements.txt
 
 # --- Stage 2: The Final Image ---
