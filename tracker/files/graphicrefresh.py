@@ -63,9 +63,6 @@ def set_light_color(sta_id, color_rgb):
             json=data
         )
         
-        print(f"DEBUG: Response status code - {response.status_code}")
-        print(f"DEBUG: Response content - {response.text}")
-        
         # Check if request was successful
         if response.status_code != 200:
             print(f"ERROR: Failed to set light color. Status code: {response.status_code}")
