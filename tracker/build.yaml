@@ -1,7 +1,7 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration#add-on-dockerfile
 build_from:
-  aarch64: "ghcr.io/home-assistant/aarch64-base-python:3.14-alpine3.23"
-  amd64: "ghcr.io/home-assistant/amd64-base-python:3.14-alpine3.23"
+  aarch64: "ghcr.io/home-assistant/aarch64-base-debian:trixie"
+  amd64: "ghcr.io/home-assistant/amd64-base-debian:trixie"
 labels:
   org.opencontainers.image.title: "CTA Live Train Tracker Server"
   org.opencontainers.image.description: "Add-on that pulls, parses, and presents CTA live train data over HTTP."
