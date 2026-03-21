@@ -6,6 +6,7 @@ import sys
 import subprocess
 import re
 import time
+import pandas as pd
 from collections import defaultdict
 
 token = os.environ.get("SUPERVISOR_TOKEN")
