@@ -12,16 +12,10 @@ esp32:
 # Enable logging
 logger:
 
-number:
-  - platform: template
-    name: "Global Brightness"
-    min_value: 0
-    max_value: 100
-    step: 1
-    mode: slider
-    optimistic: true
-    initial_value: 100
-    id: global_brightness
+globals:
+  - id: global_brightness
+    type: int
+    initial_value: '100'
 
 # Enable Home Assistant API
 api:
@@ -36,6 +30,14 @@ wifi:
 
 #Start of Separation of Individual LEDs on the strip.
 light:
+  - platform: template
+    name: "Global Brightness"
+    lambda: |-
+      return static_cast<float>(id(global_brightness));
+    set_lambda: |-
+      id(global_brightness) = static_cast<int>(state);
+    optimistic: true
+
   - platform: partition
     name: "2"
     segments:

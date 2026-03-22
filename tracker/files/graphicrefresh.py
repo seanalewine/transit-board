@@ -13,7 +13,7 @@ refresh_interval = int(os.environ.get("DATA_REFRESH_INTERVAL_SEC", 60))
 
 # Function Definitions
 def get_global_brightness():
-    brightness_entity = os.environ.get("BRIGHTNESS_ENTITY", "number.esp_train_tracker_global_brightness")
+    brightness_entity = f"{boardname}global_brightness"
     try:
         headers = {
             "Authorization": f"Bearer {token}",

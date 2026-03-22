@@ -12,7 +12,7 @@ Use of this add-on requires the following steps before it will do anything.
 
 1. Request API key from CTA and add to configuration tab and enter that for the `api_key` value.(Other transit agencies may be added later.)
 
-2. Setup your ESPHome device with attached individual rgb lights to be controlled by this add-on. Then set the `light_board` value on the configuration page to the entity ID of your device. The value should look like: `light.*` where the * is your entity ID without the trailing underscore. **Brightness is controlled via the ESPHome device's "Global Brightness" slider in Home Assistant, not via addon configuration.**
+2. Setup your ESPHome device with attached individual rgb lights to be controlled by this add-on. Then set the `light_board` value on the configuration page to the entity ID of your device. The value should look like: `light.*` where the * is your entity ID without the trailing underscore. **Brightness is controlled via a "Global Brightness" Light entity in Home Assistant, auto-named as `{light_board}_global_brightness` (e.g., `light.exampleentity_global_brightness`).**
 
 3. Each light needs to be programmed to correlate with the correct stop by updating the `ctastationlist.csv` file to assign the numeric LED to each station name.
 
