@@ -2,7 +2,7 @@
 name: Live Train Tracker Light Controller for CTA
 description: Tool for retrieving live train location data over CTA API and outputing an array of stations with trains due.
 url: "https://github.com/seanalewine/cta-location-tracker/tree/main/tracker"
-version: "0.7.1"
+version: "0.7.2"
 slug: tracker
 init: false
 homeassistant_api: true
@@ -15,7 +15,7 @@ arch:
   - amd64
 options:
    api_key: Provided by CTA Webmaster
-   light_board: light.exampleentity
+   light_board: exampleentity
    trainsPerLine: 0
    data_refresh_interval_sec: 60
    bidirectional: true

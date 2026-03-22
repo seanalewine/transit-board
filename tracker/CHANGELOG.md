@@ -1,8 +1,11 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 0.7.2
+- `light_board` config now accepts device name without `light.` prefix (e.g., `trainboard` instead of `light.trainboard`)
+- Brightness entity auto-derived from config: `number.{light_board}_global_brightness`
+
 ## 0.7.1
-- Global Brightness is now a `light.template` entity (was `number.template`)
-- Brightness entity ID is auto-derived from `light_board` config value: `{light_board}_global_brightness`
-- Brightness is controlled via Home Assistant's native Light entity with built-in brightness slider
+- Brightness entity ID is now auto-derived from `light_board` config value: `{light_board}_global_brightness` (e.g., `number.trainboard_global_brightness`)
+- Global Brightness uses `number.template` entity in ESPHome (no `light.template` platform exists)
 
 ## 0.7.0
 - Board updates are now evenly spaced over the `data_refresh_interval_sec` duration

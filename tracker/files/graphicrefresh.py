@@ -13,7 +13,7 @@ refresh_interval = int(os.environ.get("DATA_REFRESH_INTERVAL_SEC", 60))
 
 # Function Definitions
 def get_global_brightness():
-    brightness_entity = f"{boardname}global_brightness"
+    brightness_entity = f"number.{boardname}global_brightness"
     try:
         headers = {
             "Authorization": f"Bearer {token}",
@@ -44,7 +44,7 @@ def get_on_lights():
     # Filter entities and extract just the numerical IDs
     on_ids = []
     for entity in states_json:
-        if entity.get("entity_id", "").startswith(boardname):
+        if entity.get("entity_id", "").startswith(f"light.{boardname}"):
             if entity.get("state") == "on":
                 # Extract numerical ID using regex
                 match = re.search(r'_(\d+)$', entity.get("entity_id", ""))
@@ -57,7 +57,7 @@ def set_light_color(sta_id, color_rgb):
     if isinstance(color_rgb, str):
         color_rgb = [int(val.strip()) for val in color_rgb.split(',')]
     data = {
-        "entity_id": f"{boardname}{sta_id}",
+        "entity_id": f"light.{boardname}{sta_id}",
         "rgb_color": color_rgb,
         "brightness_pct": get_global_brightness()
     }
@@ -91,7 +91,7 @@ def turn_off_light(sta_id):
         "Content-Type": "application/json"
     }
     
-    data = {"entity_id": f"{boardname}{sta_id}"}
+    data = {"entity_id": f"light.{boardname}{sta_id}"}
     
     try:
         response = requests.post(
