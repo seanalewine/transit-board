@@ -1,7 +1,7 @@
 nextStaId,line,unifiedId,humanName
-40830,pink,319,18th
+40830,pink,249,18th
 41120,g,211,35th-Bronzeville-IIT
-40120,org,319,35th/Archer
+40120,org,245,35th/Archer
 41270,g,214,43rd
 41080,g,215,47th
 41230,red,216,47th
@@ -23,10 +23,10 @@ nextStaId,line,unifiedId,humanName
 41200,red,163,Argyle
 40660,brn,319,Armitage
 40660,p,174,Armitage
-40290,g,319,Ashland/63rd
+40290,g,241,Ashland/63rd
 40170,g,319,Ashland
-40170,pink,319,Ashland
-41060,org,319,Ashland
+40170,pink,272,Ashland
+41060,org,247,Ashland
 40010,blue,16,Austin
 41260,g,26,Austin
 41320,red,168,Belmont
@@ -59,12 +59,12 @@ nextStaId,line,unifiedId,humanName
 40380,pink,319,Clark/Lake
 40430,blue,204,Clinton
 41160,g,319,Clinton
-41160,pink,319,Clinton
+41160,pink,274,Clinton
 41670,g,20,Conservatory
 40230,blue,39,Cumberland
 40090,brn,110,Damen
-41710,g,319,Damen
-40210,pink,319,Damen
+41710,g,271,Damen
+40210,pink,255,Damen
 40590,blue,319,Damen
 40050,p,111,Davis
 40690,p,114,Dempster
@@ -84,8 +84,8 @@ nextStaId,line,unifiedId,humanName
 40490,blue,319,Grand
 40330,red,180,Grand
 40760,red,124,Granville
-40940,g,319,Halsted
-41130,org,319,Halsted
+40940,g,242,Halsted
+41130,org,248,Halsted
 40980,blue,14,Harlem
 40020,g,24,Harlem/Lake
 40750,blue,38,Harlem
@@ -97,11 +97,11 @@ nextStaId,line,unifiedId,humanName
 40900,red,117,Howard
 40900,p,116,Howard
 40900,y,105,Howard
-40810,blue,319,Illinois Medical District
+40810,blue,251,Illinois Medical District
 40300,g,213,Indiana
 40550,blue,35,Irving Park
 41460,brn,319,Irving Park
-40070,blue,319,Jackson
+40070,blue,265,Jackson
 40560,red,198,Jackson
 41190,red,118,Jarvis
 41280,blue,37,Jefferson Park
@@ -116,10 +116,10 @@ nextStaId,line,unifiedId,humanName
 41660,red,186,Lake
 40700,g,27,Laramie
 41340,blue,203,LaSalle
-40160,brn,319,LaSalle/Van Buren
-40160,org,319,LaSalle/Van Buren
-40160,p,319,LaSalle/Van Buren
-40160,pink,319,LaSalle/Van Buren
+40160,brn,257,LaSalle/Van Buren
+40160,org,259,LaSalle/Van Buren
+40160,p,258,LaSalle/Van Buren
+40160,pink,260,LaSalle/Van Buren
 40770,red,164,Lawrence
 41050,p,106,Linden
 41020,blue,32,Logan Square
@@ -128,12 +128,12 @@ nextStaId,line,unifiedId,humanName
 40460,brn,319,Merchandise Mart
 40460,p,319,Merchandise Mart
 40930,org,2,Midway
-40790,blue,319,Monroe
+40790,blue,270,Monroe
 41090,red,192,Monroe
 41330,blue,36,Montrose
 41500,brn,115,Montrose
 41510,g,319,Morgan
-41510,pink,319,Morgan
+41510,pink,273,Morgan
 40100,red,119,Morse
 40650,red,177,North/Clybourn
 40400,p,113,Noyes
@@ -142,16 +142,16 @@ nextStaId,line,unifiedId,humanName
 41680,y,97,Oakton-Skokie
 40890,blue,41,O'Hare
 41310,brn,102,Paulina
-41030,pink,319,Polk
+41030,pink,250,Polk
 40150,pink,8,Pulaski
 40920,blue,18,Pulaski
 40030,g,28,Pulaski
 40960,org,3,Pulaski
-40040,brn,319,Quincy/Wells
-40040,org,319,Quincy/Wells
-40040,p,319,Quincy/Wells
-40040,pink,319,Quincy/Wells
-40470,blue,319,Racine
+40040,brn,261,Quincy/Wells
+40040,org,263,Quincy/Wells
+40040,p,262,Quincy/Wells
+40040,pink,264,Quincy/Wells
+40470,blue,254,Racine
 40610,g,23,Ridgeland
 41010,brn,96,Rockwell
 41400,red,208,Roosevelt
@@ -170,23 +170,23 @@ nextStaId,line,unifiedId,humanName
 40260,p,182,State/Lake
 40260,pink,185,State/Lake
 40880,red,123,Thorndale
-40350,blue,319,UIC-Halsted
+40350,blue,256,UIC-Halsted
 41700,brn,189,Washington/Wabash
 41700,g,187,Washington/Wabash
 41700,org,190,Washington/Wabash
 41700,p,188,Washington/Wabash
 41700,pink,191,Washington/Wabash
-40730,brn,319,Washington/Wells
-40730,org,319,Washington/Wells
-40730,p,319,Washington/Wells
-40730,pink,319,Washington/Wells
-40370,blue,319,Washington
+40730,brn,266,Washington/Wells
+40730,org,268,Washington/Wells
+40730,p,267,Washington/Wells
+40730,pink,269,Washington/Wells
+40370,blue,275,Washington
 41210,brn,319,Wellington
 41210,p,170,Wellington
 41480,brn,104,Western
-40740,pink,319,Western
+40740,pink,246,Western
 40220,blue,12,Western
 40670,blue,319,Western
-40310,org,319,Western
+40310,org,243,Western
 40540,red,165,Wilson
 40540,p,319,Wilson

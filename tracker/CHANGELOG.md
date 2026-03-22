@@ -1,4 +1,10 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 0.5.0
+- Stable
+- Rewritten in python and data manipulation using pandas
+- Refreshes board correctly.
+- Config option `indiv_light_refresh_delay_sec` has been changed to `indiv_light_refresh_delay_milliseconds` and is now measured in milliseconds.
+
 ## 0.3.0
 - Stable
 - The following config options work:`api-key`, `light_board`, `brightness`, `data_refresh_interval_sec`, `indiv_light_refresh_delay_sec`, and all color options are functioning.

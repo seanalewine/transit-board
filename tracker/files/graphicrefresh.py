@@ -91,7 +91,7 @@ def turn_off_light(sta_id):
         
         # Check if request was successful
         if response.status_code != 200:
-            print(f"ERROR: Failed to execute request for station ID: {station_id}")
+            print(f"ERROR: Failed to execute request for station ID: {sta_id}")
             print(f"Response status: {response.status_code}")
             return False
         
@@ -112,7 +112,7 @@ def turn_off_light(sta_id):
         return True
         
     except requests.exceptions.RequestException as e:
-        print(f"ERROR: Failed to execute curl request for station ID: {station_id}")
+        print(f"ERROR: Failed to execute curl request for station ID: {sta_id}")
         print(f"Exception: {str(e)}", file=sys.stderr)
         return False
     except Exception as e:
@@ -175,7 +175,7 @@ def board_refresh(off, on):
         # If we have values left, turn off lights
         if i < len(off):
             turn_off_light(off[i])
-            
+
 def main():
     # Add all new active stops to a dictionary.
     active_stops = intake_trains()
