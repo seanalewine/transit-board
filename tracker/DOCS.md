@@ -1,7 +1,5 @@
 # Server for Custom Live Transit Tracker
 
-
-
 ## How to use
 
  
@@ -33,11 +31,11 @@ The add-on must be restarted to process changes to any of these values.
 
 - `bidirectional` **Default to `true`.** The data shared by the CTA will assign directionality to each train corresponding with the stop at the end of the line. If you only want to show trains moving in one direction set this to `false`. 
 
-- `red_line_color` **Default to `198, 16, 48`**
+- `red_line_color` **Default to `198, 12, 48`**
 
 - `pink_line_color` **Default to `226, 126, 166`**
 
-- `orange_line_color` **Default to `249, 70, 28`**
+- `orange_line_color` **Default to `255, 146, 25`**
 
  - `yellow_line_color` **Default to `249, 227, 0`**
 
@@ -47,7 +45,7 @@ The add-on must be restarted to process changes to any of these values.
 
 - `purple_line_color` **Default to `82, 35, 152`**
 
-- `brown_line_color` **Default to `8, 54, 27`**
+- `brown_line_color` **Default to `150, 75, 0`**
 
 - `assign_stations_program` **Default to `false`.** Not currently used. May be added at later point to assist with the process of assigning each station to an LED.
 

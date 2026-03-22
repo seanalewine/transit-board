@@ -41,16 +41,28 @@ docker build --build-arg BUILD_FROM=ghcr.io/home-assistant/aarch64-base-debian:t
 # Install dependencies
 pip install -r tracker/requirements.txt
 
-# Run Python syntax check
-python3 -m py_compile tracker/files/processor.py
-python3 -m py_compile tracker/files/graphicrefresh.py
+# Run Python syntax check on all files
+python3 -m py_compile tracker/files/processor.py tracker/files/graphicrefresh.py
 
-# Check Python style (if black is installed)
+# Check Python style (ruff)
+pip install ruff
+ruff check tracker/files/*.py
+
+# Fix Python style issues
+ruff format tracker/files/*.py
+
+# Check/format with black (alternative)
 black --check tracker/files/*.py
-
-# Format Python code
 black tracker/files/*.py
 ```
+
+### Testing
+
+There are currently no tests in this repository. When adding tests:
+- Use `pytest` as the test framework
+- Place tests in `tracker/files/test_*.py`
+- Run single test: `pytest tracker/files/test_processor.py::test_function_name`
+- Run all tests: `pytest tracker/files/`
 
 ### GitHub Actions CI
 
@@ -65,7 +77,21 @@ Monitored files for build trigger: `build.yaml`, `config.yaml`, `Dockerfile`, `r
 ### Python
 
 - **Formatting**: Use standard PEP 8 style. 4-space indentation.
-- **Imports**: Standard library first, then third-party (requests, pandas, numpy, dateutil).
+- **Imports**: Standard library first, then third-party, then local imports.
+  ```python
+  # Standard library
+  import os
+  import sys
+  import json
+  
+  # Third-party (requests, pandas, numpy, dateutil)
+  import requests
+  import pandas as pd
+  from dateutil import parser
+  
+  # Local imports
+  from .utils import helper_function
+  ```
 - **String formatting**: Use f-strings for readability.
 - **Type hints**: Not currently used, but adding them is encouraged for new functions.
 - **Line length**: Target 100 characters max, 120 absolute max.
@@ -124,6 +150,7 @@ Monitored files for build trigger: `build.yaml`, `config.yaml`, `Dockerfile`, `r
 - Define all options with types and defaults.
 - Use schema validation for user inputs.
 - Document required vs optional options.
+- Use `0?` for optional integers, `1?` for required integers.
 
 ### ESPHome script.yaml
 
@@ -131,6 +158,14 @@ Monitored files for build trigger: `build.yaml`, `config.yaml`, `Dockerfile`, `r
 - Use secrets for sensitive values (wifi, transitions).
 - Partition lights for individual control.
 - Document hardware-specific settings (chipset, pin, num_leds).
+- YAML anchors (`&anchor` and `*alias`) are preferred over Jinja2 macros for reusability.
+
+## Secrets Management
+
+- Store all secrets in `secrets.yaml` files (gitignored).
+- Never commit API keys, tokens, or passwords.
+- Use environment variable overrides where supported.
+- If a secret is accidentally committed, rotate it immediately.
 
 ## File Locations
 
@@ -151,3 +186,26 @@ Monitored files for build trigger: `build.yaml`, `config.yaml`, `Dockerfile`, `r
 - Test API changes against the CTA TrainTracker API documentation.
 - When adding new train lines, update `ROUTE_IDS` and `COLORS` in processor.py.
 - Brightness is controlled via ESPHome `number.template` entity, not addon config.
+
+## Directory Structure
+
+```
+cta-location-tracker/
+├── tracker/                    # Home Assistant Add-on
+│   ├── Dockerfile
+│   ├── config.yaml             # Add-on configuration schema
+│   ├── requirements.txt        # Python dependencies
+│   ├── rootfs/                 # Files copied to /data in container
+│   │   └── etc/
+│   │       └── services/
+│   │           └── tracker/
+│   │               └── run.sh  # Entry point
+│   └── files/                  # Python source code
+│       ├── processor.py        # Fetches CTA API, outputs JSON to stdout
+│       ├── graphicrefresh.py   # Reads JSON, controls lights via HA API
+│       └── ctastationlist.csv  # Station ID to LED mapping
+├── esphome-controller/         # ESP32 firmware
+│   ├── script.yaml             # ESPHome configuration
+│   └── secrets.yaml            # Device secrets (gitignored)
+└── .github/workflows/          # CI/CD pipelines
+```

@@ -1,8 +1,11 @@
-# https://developers.home-assistant.io/docs/add-ons/configuration#add-on-config
+#
+# Required options (no ? in schema):
+#   - api_key: CTA TrainTracker API key (get from https://www.transitchicago.com/developers/traintrackerapply/)
+#   - light_board: ESPHome light entity name (without "light." prefix)
 name: Live Train Tracker Light Controller for CTA
 description: Tool for retrieving live train location data over CTA API and outputing an array of stations with trains due.
 url: "https://github.com/seanalewine/cta-location-tracker/tree/main/tracker"
-version: "0.7.4"
+version: "0.7.5"
 slug: tracker
 init: false
 homeassistant_api: true
@@ -19,33 +22,33 @@ options:
    trainsPerLine: 0
    data_refresh_interval_sec: 60
    bidirectional: true
-   red_line_color: 198, 16, 48
+   red_line_color: 198, 12, 48
    pink_line_color: 226, 126, 166
-   orange_line_color: 249, 70, 28
+   orange_line_color: 255, 146, 25
    yellow_line_color: 249, 227, 0
    green_line_color: 0, 155, 58
    blue_line_color: 0, 161, 222
    purple_line_color: 82, 35, 152
-   brown_line_color: 8, 54, 27
+   brown_line_color: 150, 75, 0
    assign_stations_program: false 
    init_commands: []
 schema:
-   api_key: str
-   light_board: str
-   trainsPerLine: int(0,20)
-   data_refresh_interval_sec: int(7,5000)
-   bidirectional: bool
-   red_line_color: str
-   pink_line_color: str
-   orange_line_color: str
-   yellow_line_color: str
-   green_line_color: str
-   blue_line_color: str
-   purple_line_color: str
-   brown_line_color: str
-   assign_stations_program: bool 
-   init_commands:
-    - str?
+    api_key: str
+    light_board: str
+    trainsPerLine: int(0,20)?
+    data_refresh_interval_sec: int(7,5000)?
+    bidirectional: bool
+    red_line_color: str?
+    pink_line_color: str?
+    orange_line_color: str?
+    yellow_line_color: str?
+    green_line_color: str?
+    blue_line_color: str?
+    purple_line_color: str?
+    brown_line_color: str?
+    assign_stations_program: bool?
+    init_commands:
+     - str?
 #ports:
 #   8000/tcp: 8000
 #ports_description:

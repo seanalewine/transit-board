@@ -6,14 +6,14 @@ import pandas as pd
 
 # Define colors dictionary with environment variable fallbacks
 COLORS = {
-    "red": os.environ.get("RED_COLOR", "255, 0, 0"),
-    "blue": os.environ.get("BLUE_COLOR", "0, 0, 255"),
-    "brn": os.environ.get("BROWN_COLOR", "98, 54, 27"),
-    "g": os.environ.get("GREEN_COLOR", "0, 128, 0"),
-    "org": os.environ.get("ORANGE_COLOR", "255, 140, 0"),
-    "p": os.environ.get("PURPLE_COLOR", "128, 0, 128"),
-    "pink": os.environ.get("PINK_COLOR", "255, 105, 180"),
-    "y": os.environ.get("YELLOW_COLOR", "255, 255, 0")
+    "red": os.environ.get("RED_COLOR", "198, 12, 48"),
+    "blue": os.environ.get("BLUE_COLOR", "0, 161, 222"),
+    "brn": os.environ.get("BROWN_COLOR", "150, 75, 0"),
+    "g": os.environ.get("GREEN_COLOR", "0, 155, 58"),
+    "org": os.environ.get("ORANGE_COLOR", "255, 146, 25"),
+    "p": os.environ.get("PURPLE_COLOR", "82, 35, 152"),
+    "pink": os.environ.get("PINK_COLOR", "226, 126, 166"),
+    "y": os.environ.get("YELLOW_COLOR", "249, 227, 0")
 }
 ROUTE_IDS = ("red", "blue", "brn", "g", "org", "p", "pink", "y")
 # output_path = os.environ.get("JSON_FILE", "/data/active_train_summary.json")
@@ -21,7 +21,7 @@ stationlist = os.environ.get("CTA_STATION_LIST", "/data/ctastationlist.csv")
 station_frequency_csv = "/data/station_frequency.csv"
 api_key = os.environ.get("API_KEY")
 bidirectional = os.environ.get("BIDIRECTIONAL", "true")
-trainsperline = int(os.environ.get("TRAINS_PER_LINE", 5))
+trainsperline = int(os.environ.get("TRAINS_PER_LINE", 0))
 
 def fetch_route_data(route_id):
     api_url = f"http://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key={api_key}&rt={route_id}&outputType=JSON"
