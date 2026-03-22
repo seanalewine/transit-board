@@ -11,6 +11,15 @@ token = os.environ.get("SUPERVISOR_TOKEN")
 boardname = os.environ.get("LIGHT_BOARD_BASE")
 refresh_interval = int(os.environ.get("DATA_REFRESH_INTERVAL_SEC", 60))
 
+STATION_COLORS = {}
+csv_path = os.environ.get("CTA_STATION_LIST", "/data/ctastationlist.csv")
+try:
+    df = pd.read_csv(csv_path)
+    for _, row in df.iterrows():
+        STATION_COLORS[int(row['unifiedId'])] = row['line']
+except Exception as e:
+    print(f"WARNING: Could not load station color map: {e}", file=sys.stderr)
+
 # Function Definitions
 def get_global_brightness():
     brightness_entity = f"number.{boardname}global_brightness"
@@ -130,21 +139,22 @@ def turn_off_light(sta_id):
 def intake_trains():
     result_dict = {}
     try:
-        # Read the JSON payload piped in from the bash script via stdin
-        df = pd.read_json(sys.stdin)
+        data = json.load(sys.stdin)
+        
+        for item in data:
+            unified_id = item.get('unifiedId', -1)
+            if 0 <= unified_id <= 319:
+                result_dict[unified_id] = {
+                    'rgb': item.get('rgb', '255,255,255'),
+                    'color': item.get('color', 'unknown')
+                }
+            else:
+                print(f"Warning: Invalid unifiedId: {unified_id}. Skipping.", file=sys.stderr)
 
-        if not df.empty:
-            valid_mask = (df['unifiedId'] >= 0) & (df['unifiedId'] <= 319)
-            valid_df = df[valid_mask]
-            
-            invalid_ids = df[~valid_mask]['unifiedId'].tolist()
-            for invalid_id in invalid_ids:
-                print(f"Warning: Invalid unifiedId: {invalid_id}. Skipping.", file=sys.stderr)
-
-            result_dict = dict(zip(valid_df['unifiedId'].astype(int), valid_df['rgb']))
-
-    except ValueError as e:
-        print(f"Error parsing dataframe from stdin: {e}", file=sys.stderr)
+    except json.JSONDecodeError as e:
+        print(f"Error parsing JSON from stdin: {e}", file=sys.stderr)
+    except Exception as e:
+        print(f"Error processing train data: {e}", file=sys.stderr)
         
     return result_dict
 
@@ -164,25 +174,54 @@ def actual_on(old, new):
     return result
 
 def board_refresh(off, on, refresh_interval):
-    dict_keys = list(on.keys())
-    total_on = len(dict_keys)
-    total_off = len(off)
-    total_changes = total_on + total_off
+    # Group by color for pairing
+    off_by_color = defaultdict(list)
+    for sid in off:
+        color = STATION_COLORS.get(sid, 'unknown')
+        off_by_color[color].append(sid)
     
+    on_by_color = defaultdict(list)
+    for sid in on:
+        color = on[sid].get('color', STATION_COLORS.get(sid, 'unknown'))
+        on_by_color[color].append(sid)
+    
+    all_colors = set(off_by_color.keys()) | set(on_by_color.keys())
+    
+    pairs = []
+    singles = {'off': [], 'on': []}
+    for color in all_colors:
+        offs = off_by_color.get(color, [])
+        ons = on_by_color.get(color, [])
+        min_len = min(len(offs), len(ons))
+        for i in range(min_len):
+            pairs.append((offs[i], ons[i]))
+        singles['off'].extend(offs[min_len:])
+        singles['on'].extend(ons[min_len:])
+    
+    total_changes = len(pairs) * 2 + len(singles['off']) + len(singles['on'])
     if total_changes == 0:
         return
     
     interval_sec = refresh_interval / total_changes
-    delay_ms = interval_sec * 1000
     
-    for i in range(max(total_on, total_off)):
-        if i < total_on:
-            set_light_color(dict_keys[i], on[dict_keys[i]])
-        if i < total_off:
-            turn_off_light(off[i])
-        
-        if i < total_changes - 1:
-            time.sleep(delay_ms / 1000)
+    # Process paired changes (turn off and on together) - one interval each
+    for off_id, on_id in pairs:
+        turn_off_light(off_id)
+        set_light_color(on_id, on[on_id]['rgb'])
+        if total_changes > 1:
+            time.sleep(interval_sec)
+    
+    # Process remaining offs (all before ons)
+    for sid in singles['off']:
+        turn_off_light(sid)
+        if total_changes > 1:
+            time.sleep(interval_sec)
+    
+    # Process remaining ons
+    for sid in singles['on']:
+        set_light_color(sid, on[sid]['rgb'])
+        if total_changes > 1:
+            time.sleep(interval_sec)
 
 def main():
     # Add all new active stops to a dictionary.

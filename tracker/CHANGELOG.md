@@ -1,4 +1,14 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 0.8.0
+- Added color-pairing logic for smoother visual updates: lights turning off and on of the same color are now processed together in the same refresh interval
+- Color data now included in JSON output from processor to graphicrefresh
+- Station color map loaded from ctastationlist.csv at startup
+
+## 0.7.5
+- Revised default color values to better match CTA line colors: red (198,12,48), pink (226,126,166), orange (255,146,25), yellow (249,227,0), green (0,155,58), blue (0,161,222), purple (82,35,152), brown (150,75,0)
+- Fixed trainsPerLine default mismatch (was 5 in code, now 0)
+- Marked api_key and light_board as required options in schema
+
 ## 0.7.2
 - `light_board` config now accepts device name without `light.` prefix (e.g., `trainboard` instead of `light.trainboard`)
 - Brightness entity auto-derived from config: `number.{light_board}_global_brightness`

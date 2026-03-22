@@ -1,6 +1,7 @@
 import os
 import sys
 import signal
+import json
 import requests
 import pandas as pd
 
@@ -109,7 +110,15 @@ def main():
 
     track_station_frequency(master_df, station_frequency_csv)
 
-    master_df.to_json(sys.stdout, orient='records')
+    output_data = []
+    for _, row in master_df.iterrows():
+        output_data.append({
+            'unifiedId': int(row['unifiedId']),
+            'rgb': row['rgb'],
+            'color': row['color']
+        })
+    
+    print(json.dumps(output_data), file=sys.stdout)
 
 if __name__ == "__main__":
     main()
