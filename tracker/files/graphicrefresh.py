@@ -143,9 +143,6 @@ def intake_trains():
 def actual_off(old, new):
     # Create a set of dictionary keys for faster lookup
     dict_keys = set(new.keys())
-    print("Running actual_off function")
-    print(f"original list: {old}")
-    print(f"list of stops to turn on: {dict_keys}")
     # Filter out any values that are keys in the dictionary
     return [item for item in old if item not in dict_keys]
 
@@ -179,16 +176,16 @@ def board_refresh(off, on):
 def main():
     # Add all new active stops to a dictionary.
     active_stops = intake_trains()
-    # print(f"active_stops:{active_stops}")
+    print(f"active_stops:{active_stops}")
     # Send all lights that are on from previous refresh to list.
     currently_on = get_on_lights()
-    # print(f"currently_on:{currently_on}")
+    print(f"currently_on:{currently_on}")
     # Update currently_on to only include stops that are no longer active.
     final_off = actual_off(currently_on, active_stops)
-    # print(f"final_off:{final_off}")
+    print(f"final_off:{final_off}")
     # Update active_stops to only include stations that were not previously lit.
     final_on = actual_on(currently_on, active_stops)
-    # print(f"final_on:{final_on}")
+    print(f"final_on:{final_on}")
     # Finally update the board
     board_refresh(final_off, final_on)
 
