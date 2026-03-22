@@ -1,5 +1,6 @@
 import os
 import sys
+import signal
 import requests
 import pandas as pd
 
@@ -69,6 +70,11 @@ def track_station_frequency(df, csv_path):
             counts_df.to_csv(csv_path, index=False)
     except Exception as e:
         print(f"Error updating frequency CSV: {e}", file=sys.stderr)
+
+def handle_broken_pipe(signum, frame):
+    sys.exit(0)
+
+signal.signal(signal.SIGPIPE, handle_broken_pipe)
 
 def main():
     dfs = [fetch_route_data(route) for route in ROUTE_IDS]
