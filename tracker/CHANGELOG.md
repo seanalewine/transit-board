@@ -1,4 +1,9 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 0.7.0
+- Board updates are now evenly spaced over the `data_refresh_interval_sec` duration
+- Light changes are calculated as: `data_refresh_interval_sec / total_changes`, providing smooth, distributed updates instead of rapid sequential changes
+- Removed `indiv_light_refresh_delay_milliseconds` config option (no longer needed)
+
 ## 0.6.0
 - Brightness is now controlled via ESPHome device slider ("Global Brightness") instead of addon config option
 - Removed `brightness` from addon configuration

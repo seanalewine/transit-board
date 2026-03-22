@@ -9,8 +9,7 @@ LIGHT_BOARD_BASEPRE=$(bashio::config 'light_board')
 export LIGHT_BOARD_BASE="${LIGHT_BOARD_BASEPRE}_"
 export BIDIRECTIONAL=$(bashio::config 'bidirectional')
 export TRAINS_PER_LINE=$(bashio::config 'trainsPerLine')
-REFRESH_INTERVAL=$(bashio::config 'data_refresh_interval_sec')
-export SLEEP_TIME=$(bashio::config 'indiv_light_refresh_delay_milliseconds')
+export DATA_REFRESH_INTERVAL_SEC=$(bashio::config 'data_refresh_interval_sec')
 export JSON_FILE="/data/active_train_summary.json"
 export RED_COLOR=$(bashio::config 'red_line_color')
 export PINK_COLOR=$(bashio::config 'pink_line_color')
@@ -45,6 +44,4 @@ while true; do
         echo "--------------------------------------------------------"
         echo "Error: Python script failed."
     fi
-
-    sleep "${REFRESH_INTERVAL:-60}"
 done

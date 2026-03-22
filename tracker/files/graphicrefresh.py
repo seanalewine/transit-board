@@ -9,7 +9,7 @@ from collections import defaultdict
 
 token = os.environ.get("SUPERVISOR_TOKEN")
 boardname = os.environ.get("LIGHT_BOARD_BASE")
-sleeptime = int(os.environ.get("SLEEP_TIME", 250))
+refresh_interval = int(os.environ.get("DATA_REFRESH_INTERVAL_SEC", 60))
 
 # Function Definitions
 def get_global_brightness():
@@ -83,9 +83,6 @@ def set_light_color(sta_id, color_rgb):
     except Exception as e:
         print(f"ERROR: Exception occurred - {str(e)}")
         print(f"ERROR: Exception type - {type(e).__name__}")
-    
-
-    time.sleep(sleeptime/1000)
 
 def turn_off_light(sta_id):
     # Prepare the request
@@ -120,9 +117,6 @@ def turn_off_light(sta_id):
         if "error" in response_text:
             print(f"WARNING: Response may contain errors: {response.text}")
         
-        # Success case
-        # print(f"DEBUG: Successfully turned off light for entity: {station_id}")
-        time.sleep(sleeptime/1000)
         return True
         
     except requests.exceptions.RequestException as e:
@@ -169,23 +163,26 @@ def actual_on(old, new):
     
     return result
 
-def board_refresh(off, on):
+def board_refresh(off, on, refresh_interval):
     dict_keys = list(on.keys())
+    total_on = len(dict_keys)
+    total_off = len(off)
+    total_changes = total_on + total_off
     
-    # Determine the maximum length to know when to stop
-    max_length = max(len(dict_keys), len(off))
+    if total_changes == 0:
+        return
     
-    # Alternate between operations
-    for i in range(max_length):
-        # If we have keys left, set light color
-        if i < len(dict_keys):
-            key = dict_keys[i]
-            value = on[key]
-            set_light_color(key, value)
-        
-        # If we have values left, turn off lights
-        if i < len(off):
+    interval_sec = refresh_interval / total_changes
+    delay_ms = interval_sec * 1000
+    
+    for i in range(max(total_on, total_off)):
+        if i < total_on:
+            set_light_color(dict_keys[i], on[dict_keys[i]])
+        if i < total_off:
             turn_off_light(off[i])
+        
+        if i < total_changes - 1:
+            time.sleep(delay_ms / 1000)
 
 def main():
     # Add all new active stops to a dictionary.
@@ -201,7 +198,7 @@ def main():
     final_on = actual_on(currently_on, active_stops)
     # print(f"final_on:{final_on}")
     # Finally update the board
-    board_refresh(final_off, final_on)
+    board_refresh(final_off, final_on, refresh_interval)
 
     sys.exit(0)
 
