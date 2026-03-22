@@ -17,6 +17,7 @@ COLORS = {
 ROUTE_IDS = ("red", "blue", "brn", "g", "org", "p", "pink", "y")
 # output_path = os.environ.get("JSON_FILE", "/data/active_train_summary.json")
 stationlist = os.environ.get("CTA_STATION_LIST", "/data/ctastationlist.csv")
+station_frequency_csv = "/data/station_frequency.csv"
 api_key = os.environ.get("API_KEY")
 bidirectional = os.environ.get("BIDIRECTIONAL", "true")
 trainsperline = int(os.environ.get("TRAINS_PER_LINE", 5))
@@ -45,6 +46,30 @@ def fetch_route_data(route_id):
     
     return pd.DataFrame()
 
+def track_station_frequency(df, csv_path):
+    if df.empty or 'nextStaId' not in df.columns:
+        return
+    
+    counts_df = df['nextStaId'].value_counts().reset_index()
+    counts_df.columns = ['nextStaId', 'count']
+    counts_df['last_seen'] = pd.Timestamp.now().isoformat()
+    
+    try:
+        if os.path.exists(csv_path):
+            existing_df = pd.read_csv(csv_path)
+            for _, row in counts_df.iterrows():
+                mask = existing_df['nextStaId'] == row['nextStaId']
+                if mask.any():
+                    existing_df.loc[mask, 'count'] += row['count']
+                    existing_df.loc[mask, 'last_seen'] = row['last_seen']
+                else:
+                    existing_df = pd.concat([existing_df, row.to_frame().T], ignore_index=True)
+            existing_df.to_csv(csv_path, index=False)
+        else:
+            counts_df.to_csv(csv_path, index=False)
+    except Exception as e:
+        print(f"Error updating frequency CSV: {e}", file=sys.stderr)
+
 def main():
     dfs = [fetch_route_data(route) for route in ROUTE_IDS]
     dfs = [df for df in dfs if not df.empty]
@@ -64,7 +89,7 @@ def main():
         master_df = master_df.groupby('color').head(trainsperline).reset_index(drop=True)
 
     try:
-        stations_df = pd.read_csv(stationlist, names=['nextStaId', 'color', 'unifiedId', 'humanName'], comment='#', header=None)
+        stations_df = pd.read_csv(stationlist, names=['nextStaId', 'color', 'unifiedId'], comment='#', header=None)
         stations_df['nextStaId'] = stations_df['nextStaId'].astype(str).str.strip()
         stations_df['color'] = stations_df['color'].astype(str).str.strip()
         master_df['nextStaId'] = master_df['nextStaId'].astype(str).str.strip()
@@ -74,6 +99,8 @@ def main():
         master_df['unifiedId'] = master_df['unifiedId'].astype(int)
     except Exception as e:
         print(f"Error processing station list CSV: {e}", file=sys.stderr)
+
+    track_station_frequency(master_df, station_frequency_csv)
 
     master_df.to_json(sys.stdout, orient='records')
 
