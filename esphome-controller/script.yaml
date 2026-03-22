@@ -381,6 +381,14 @@ light:
     default_transition_length: !secret transition_length
 
   - platform: partition
+    name: "50"
+    segments:
+      - id: stop_indicators
+        from: 50
+        to: 50
+    default_transition_length: !secret transition_length
+
+  - platform: partition
     name: "92"
     segments:
       - id: stop_indicators
