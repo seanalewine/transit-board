@@ -1,4 +1,9 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 0.8.4
+- Station frequency data now persists across container restarts using Home Assistant's /share directory
+- Data stored in /share/station_frequency.csv instead of /data/
+- Web server now serves persistent data via symlink
+
 ## 0.8.1
 - Added Python HTTP web server to serve station data files (station_frequency.csv, ctastationlist.csv, etc.)
 - Web server runs on port 8000 and serves files from /data directory

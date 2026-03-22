@@ -23,6 +23,14 @@ export BROWN_COLOR=$(bashio::config 'brown_line_color')
 #Install files to persistant storage.
 cp -rv /files/* /data/
 
+# Ensure share directory exists for persistent data
+mkdir -p /share
+
+# Create symlink for persistent station frequency file in web root
+if [ -f /share/station_frequency.csv ]; then
+    ln -sf /share/station_frequency.csv /data/station_frequency.csv
+fi
+
 # Start web server in background
 python3 /data/webserver.py &
 
