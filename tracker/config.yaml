@@ -5,7 +5,7 @@
 name: Live Train Tracker Light Controller for CTA
 description: Tool for retrieving live train location data over CTA API and outputing an array of stations with trains due.
 url: "https://github.com/seanalewine/cta-location-tracker/tree/main/tracker"
-version: "0.8.0"
+version: "0.8.1"
 slug: tracker
 init: false
 homeassistant_api: true
@@ -49,8 +49,8 @@ schema:
     assign_stations_program: bool?
     init_commands:
      - str?
-#ports:
-#   8000/tcp: 8000
-#ports_description:
-#   8000/tcp: Web interface http
+ports:
+   8000/tcp: 8000
+ports_description:
+   8000/tcp: Web interface for station data (station_frequency.csv, etc.)
 image: "ghcr.io/seanalewine/{arch}-train-location-tracker"   

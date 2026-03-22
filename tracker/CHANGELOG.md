@@ -1,4 +1,9 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 0.8.1
+- Added Python HTTP web server to serve station data files (station_frequency.csv, ctastationlist.csv, etc.)
+- Web server runs on port 8000 and serves files from /data directory
+- Access station data at http://<ha-ip>:8000/station_frequency.csv
+
 ## 0.8.0
 - Added color-pairing logic for smoother visual updates: lights turning off and on of the same color are now processed together in the same refresh interval
 - Color data now included in JSON output from processor to graphicrefresh

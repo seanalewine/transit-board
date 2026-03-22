@@ -23,6 +23,9 @@ export BROWN_COLOR=$(bashio::config 'brown_line_color')
 #Install files to persistant storage.
 cp -rv /files/* /data/
 
+# Start web server in background
+python3 /data/webserver.py &
+
 echo "Starting recurring data fetch loop..."
 while true; do
     # Run the data refresh script

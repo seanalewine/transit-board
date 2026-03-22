@@ -30,4 +30,6 @@ COPY files/. /files/
 COPY run.sh /
 RUN chmod a+x /run.sh
 
+EXPOSE 8000
+
 CMD [ "/run.sh" ]
