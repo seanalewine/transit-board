@@ -150,3 +150,4 @@ Monitored files for build trigger: `build.yaml`, `config.yaml`, `Dockerfile`, `r
 - The addon runs in a Docker container with Home Assistant API access.
 - Test API changes against the CTA TrainTracker API documentation.
 - When adding new train lines, update `ROUTE_IDS` and `COLORS` in processor.py.
+- Brightness is controlled via ESPHome `number.template` entity, not addon config.

@@ -9,11 +9,27 @@ from collections import defaultdict
 
 token = os.environ.get("SUPERVISOR_TOKEN")
 boardname = os.environ.get("LIGHT_BOARD_BASE")
-brightness = int(os.environ.get("BRIGHTNESS", 100))
 sleeptime = int(os.environ.get("SLEEP_TIME", 250))
-# input_path = os.environ.get("JSON_FILE","/data/active_train_summary.json")
 
 # Function Definitions
+def get_global_brightness():
+    brightness_entity = os.environ.get("BRIGHTNESS_ENTITY", "number.esp_train_tracker_global_brightness")
+    try:
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+        response = requests.get(
+            f"http://supervisor/core/api/states/{brightness_entity}",
+            headers=headers,
+            timeout=3
+        )
+        if response.status_code == 200:
+            return int(float(response.json().get("state", 100)))
+    except Exception as e:
+        print(f"WARNING: Could not fetch brightness from {brightness_entity}: {e}", file=sys.stderr)
+    return 100
+
 def get_on_lights():
     print("Fetching current state of all light entities...")
     
@@ -38,14 +54,12 @@ def get_on_lights():
     return on_ids
 
 def set_light_color(sta_id, color_rgb):    
-    
     if isinstance(color_rgb, str):
         color_rgb = [int(val.strip()) for val in color_rgb.split(',')]
-    # Create data payload
     data = {
         "entity_id": f"{boardname}{sta_id}",
         "rgb_color": color_rgb,
-        "brightness_pct": brightness
+        "brightness_pct": get_global_brightness()
     }
     
     # Send POST request

@@ -7,7 +7,6 @@ export PERSIST_DIR="/data/position"
 export CTA_STATION_LIST="/data/ctastationlist.csv"
 LIGHT_BOARD_BASEPRE=$(bashio::config 'light_board')
 export LIGHT_BOARD_BASE="${LIGHT_BOARD_BASEPRE}_"
-export BRIGHTNESS=$(bashio::config 'brightness')
 export BIDIRECTIONAL=$(bashio::config 'bidirectional')
 export TRAINS_PER_LINE=$(bashio::config 'trainsPerLine')
 REFRESH_INTERVAL=$(bashio::config 'data_refresh_interval_sec')

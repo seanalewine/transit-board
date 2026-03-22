@@ -25,3 +25,6 @@ You will need to update the `platform`, `pin`, `chipset`, `rgb_order`, and `num_
 
 ## secrets.yaml
 Depending on if you're using locally hosted ESPHome Device Builder or [ESPHome Web](https://web.esphome.io/) the actual process of applying the secrets.yaml file may varry. To build properly all 3 secrets in the example `secrets.yaml` file must be set properly.
+
+## Global Brightness Control
+A "Global Brightness" slider (0-100) is available as a `number` entity in Home Assistant under the ESPHome device. This controls the brightness of all partition lights. The addon reads this value during each refresh cycle and applies it when setting LED colors.

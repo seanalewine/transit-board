@@ -1,4 +1,8 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 0.6.0
+- Brightness is now controlled via ESPHome device slider ("Global Brightness") instead of addon config option
+- Removed `brightness` from addon configuration
+
 ## 0.5.0
 - Stable
 - Rewritten in python and data manipulation using pandas
