@@ -62,7 +62,7 @@ nextStaId,line,unifiedId,humanName
 41160,g,286,Clinton
 41670,g,20,Conservatory
 40720,g,220,Cottage Grove
-40230,blue,39,Cumberland
+40230,blue,49,Cumberland
 40090,brn,110,Damen
 40210,pink,255,Damen
 41710,g,271,Damen
@@ -137,7 +137,7 @@ nextStaId,line,unifiedId,humanName
 40100,red,119,Morse
 40650,red,177,North/Clybourn
 40400,p,113,Noyes
-40890,blue,41,O'Hare
+40890,blue,47,O'Hare
 40180,blue,15,Oak Park
 41350,g,25,Oak Park
 41680,y,97,Oakton-Skokie
@@ -157,7 +157,7 @@ nextStaId,line,unifiedId,humanName
 41400,org,206,Roosevelt
 41400,g,207,Roosevelt
 41400,red,208,Roosevelt
-40820,blue,40,Rosemont
+40820,blue,48,Rosemont
 40800,p,175,Sedgwick
 40800,brn,176,Sedgwick
 40080,red,166,Sheridan
@@ -173,7 +173,7 @@ nextStaId,line,unifiedId,humanName
 40350,blue,256,UIC-Halsted
 40370,blue,275,Washington
 41700,g,187,Washington/Wabash
-41700,pink,191,Washington/Wabash
+41700,pink,307,Washington/Wabash
 41700,brn,278,Washington/Wabash
 41700,p,279,Washington/Wabash
 41700,org,280,Washington/Wabash
