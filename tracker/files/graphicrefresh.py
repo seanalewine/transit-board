@@ -5,11 +5,11 @@ import sys
 import re
 import time
 import pandas as pd
-from collections import defaultdict
 
 token = os.environ.get("SUPERVISOR_TOKEN")
 boardname = os.environ.get("LIGHT_BOARD_BASE")
 refresh_interval = int(os.environ.get("DATA_REFRESH_INTERVAL_SEC", 60))
+previous_trains_path = "/data/previous_trains.json"
 
 STATION_COLORS = {}
 csv_path = os.environ.get("CTA_STATION_LIST", "/data/ctastationlist.csv")
@@ -61,6 +61,23 @@ def get_on_lights():
                     on_ids.append(int(match.group(1)))
     
     return on_ids
+
+def load_previous_trains():
+    try:
+        if os.path.exists(previous_trains_path):
+            with open(previous_trains_path, 'r') as f:
+                data = json.load(f)
+                return {rn: int(uid) for rn, uid in data.items()}
+    except Exception as e:
+        print(f"WARNING: Could not load previous trains: {e}", file=sys.stderr)
+    return {}
+
+def save_previous_trains(trains):
+    try:
+        with open(previous_trains_path, 'w') as f:
+            json.dump(trains, f)
+    except Exception as e:
+        print(f"WARNING: Could not save previous trains: {e}", file=sys.stderr)
 
 def set_light_color(sta_id, color_rgb):    
     if isinstance(color_rgb, str):
@@ -143,13 +160,18 @@ def intake_trains():
         
         for item in data:
             unified_id = item.get('unifiedId', -1)
-            if 0 <= unified_id <= 319:
-                result_dict[unified_id] = {
+            rn = item.get('rn')
+            if 0 <= unified_id <= 319 and rn:
+                result_dict[rn] = {
+                    'unifiedId': unified_id,
                     'rgb': item.get('rgb', '255,255,255'),
                     'color': item.get('color', 'unknown')
                 }
             else:
-                print(f"Warning: Invalid unifiedId: {unified_id}. Skipping.", file=sys.stderr)
+                if unified_id < 0 or unified_id > 319:
+                    print(f"Warning: Invalid unifiedId: {unified_id}. Skipping.", file=sys.stderr)
+                if not rn:
+                    print(f"Warning: Missing rn for unifiedId: {unified_id}. Skipping.", file=sys.stderr)
 
     except json.JSONDecodeError as e:
         print(f"Error parsing JSON from stdin: {e}", file=sys.stderr)
@@ -158,86 +180,65 @@ def intake_trains():
         
     return result_dict
 
-def actual_off(old, new):
-    # Create a set of dictionary keys for faster lookup
-    dict_keys = set(new.keys())
-    # Filter out any values that are keys in the dictionary
-    return [item for item in old if item not in dict_keys]
+def calculate_changes(prev_trains, curr_trains):
+    moved = []
+    new_trains = []
+    gone_trains = []
+    
+    prev_rns = set(prev_trains.keys())
+    curr_rns = set(curr_trains.keys())
+    
+    for rn in curr_rns:
+        if rn in prev_rns:
+            prev_id = prev_trains[rn]
+            curr_id = curr_trains[rn]['unifiedId']
+            if prev_id != curr_id:
+                moved.append((prev_id, curr_id, curr_trains[rn]['rgb']))
+        else:
+            new_trains.append((curr_trains[rn]['unifiedId'], curr_trains[rn]['rgb']))
+    
+    for rn in prev_rns - curr_rns:
+        gone_trains.append(prev_trains[rn])
+    
+    return moved, new_trains, gone_trains
 
-def actual_on(old, new):
-    result = new.copy()
+def board_refresh(moved, new_trains, gone_trains, refresh_interval):
+    moved_count = len(moved)
+    new_count = len(new_trains)
+    gone_count = len(gone_trains)
+    total_units = moved_count + new_count + gone_count
     
-    # Remove each key that exists in the list
-    for key in old:
-        result.pop(key, None)  # pop with default None prevents KeyError
-    
-    return result
-
-def board_refresh(off, on, refresh_interval):
-    # Group by color for pairing
-    off_by_color = defaultdict(list)
-    for sid in off:
-        color = STATION_COLORS.get(sid, 'unknown')
-        off_by_color[color].append(sid)
-    
-    on_by_color = defaultdict(list)
-    for sid in on:
-        color = on[sid].get('color', STATION_COLORS.get(sid, 'unknown'))
-        on_by_color[color].append(sid)
-    
-    all_colors = set(off_by_color.keys()) | set(on_by_color.keys())
-    
-    pairs = []
-    singles = {'off': [], 'on': []}
-    for color in all_colors:
-        offs = off_by_color.get(color, [])
-        ons = on_by_color.get(color, [])
-        min_len = min(len(offs), len(ons))
-        for i in range(min_len):
-            pairs.append((offs[i], ons[i]))
-        singles['off'].extend(offs[min_len:])
-        singles['on'].extend(ons[min_len:])
-    
-    total_changes = len(pairs) * 2 + len(singles['off']) + len(singles['on'])
-    if total_changes == 0:
+    if total_units == 0:
         return
     
-    interval_sec = refresh_interval / total_changes
+    interval_sec = refresh_interval / total_units
     
-    # Process paired changes (turn off and on together) - one interval each
-    for off_id, on_id in pairs:
-        turn_off_light(off_id)
-        set_light_color(on_id, on[on_id]['rgb'])
-        if total_changes > 1:
+    for old_id, new_id, rgb in moved:
+        turn_off_light(old_id)
+        set_light_color(new_id, rgb)
+        if total_units > 1:
             time.sleep(interval_sec)
     
-    # Process remaining offs (all before ons)
-    for sid in singles['off']:
+    for sid in gone_trains:
         turn_off_light(sid)
-        if total_changes > 1:
+        if total_units > 1:
             time.sleep(interval_sec)
     
-    # Process remaining ons
-    for sid in singles['on']:
-        set_light_color(sid, on[sid]['rgb'])
-        if total_changes > 1:
+    for sid, rgb in new_trains:
+        set_light_color(sid, rgb)
+        if total_units > 1:
             time.sleep(interval_sec)
 
 def main():
-    # Add all new active stops to a dictionary.
-    active_stops = intake_trains()
-    # print(f"active_stops:{active_stops}")
-    # Send all lights that are on from previous refresh to list.
-    currently_on = get_on_lights()
-    # print(f"currently_on:{currently_on}")
-    # Update currently_on to only include stops that are no longer active.
-    final_off = actual_off(currently_on, active_stops)
-    # print(f"final_off:{final_off}")
-    # Update active_stops to only include stations that were not previously lit.
-    final_on = actual_on(currently_on, active_stops)
-    # print(f"final_on:{final_on}")
-    # Finally update the board
-    board_refresh(final_off, final_on, refresh_interval)
+    active_trains = intake_trains()
+    prev_trains = load_previous_trains()
+    
+    moved, new_trains, gone_trains = calculate_changes(prev_trains, active_trains)
+    
+    board_refresh(moved, new_trains, gone_trains, refresh_interval)
+    
+    curr_trains = {rn: data['unifiedId'] for rn, data in active_trains.items()}
+    save_previous_trains(curr_trains)
 
     sys.exit(0)
 

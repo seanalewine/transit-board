@@ -1,4 +1,11 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 0.9.0
+- Smart train tracking: now tracks individual trains by their persistent "rn" identifier between refresh cycles
+- Moved trains now transition smoothly: when a train moves between stations, its light turns off at the old station and immediately turns on at the new station (single animation step)
+- New trains (first appearance) and gone trains (no longer visible) are treated as separate operations
+- Previous train state persists across refresh cycles via /data/previous_trains.json
+- Removed get_on_lights() dependency for state tracking (now purely train-identifier based)
+
 ## 0.8.4
 - Station frequency data now persists across container restarts using Home Assistant's /share directory
 - Data stored in /share/station_frequency.csv instead of /data/

@@ -115,7 +115,8 @@ def main():
         output_data.append({
             'unifiedId': int(row['unifiedId']),
             'rgb': row['rgb'],
-            'color': row['color']
+            'color': row['color'],
+            'rn': str(row['rn'])
         })
     
     print(json.dumps(output_data), file=sys.stdout)
