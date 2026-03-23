@@ -1,4 +1,7 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 0.9.8
+- Fixed frequency CSV error: added validation for required columns ("color", "nextStaId") when reading existing CSV, recreates file if columns are missing
+
 ## 0.9.7
 - Corrected output structure of station_frequency.csv: fixed duplicate nextStaId rows and added multi-color support (tracks composite key)
 - Reduced log verbosity: condensed 8 per-route messages to single summary line

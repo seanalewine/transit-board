@@ -65,6 +65,10 @@ def track_station_frequency(df, csv_path):
     try:
         if os.path.exists(csv_path):
             existing_df = pd.read_csv(csv_path)
+            if "color" not in existing_df.columns or "nextStaId" not in existing_df.columns:
+                print("WARNING: frequency CSV missing required columns, recreating", file=sys.stderr)
+                counts_df.to_csv(csv_path, index=False)
+                return
             existing_df = existing_df.drop_duplicates(subset=["nextStaId", "color"], keep="last")
             for _, row in counts_df.iterrows():
                 mask = (existing_df["nextStaId"] == row["nextStaId"]) & (existing_df["color"] == row["color"])
