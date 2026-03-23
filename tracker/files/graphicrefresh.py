@@ -58,7 +58,7 @@ def get_global_brightness():
 def get_on_lights():
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
-    response = requests.get("http://supervisor/core/api/states", headers=headers)
+    response = requests.get("http://supervisor/core/api/states", headers=headers, timeout=3)
     states_json = response.json()
 
     on_ids = set()
@@ -108,6 +108,7 @@ def set_light_color(sta_id, color_rgb):
             "http://supervisor/core/api/services/light/turn_on",
             headers=headers,
             json=data,
+            timeout=3,
         )
 
         # Check if request was successful
@@ -133,6 +134,7 @@ def turn_off_light(sta_id):
             "http://supervisor/core/api/services/light/turn_off",
             headers=headers,
             json=data,
+            timeout=3,
         )
 
         # Check if request was successful

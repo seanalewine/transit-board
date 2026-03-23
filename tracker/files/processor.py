@@ -4,6 +4,7 @@ import signal
 import json
 import requests
 import pandas as pd
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Define colors dictionary with environment variable fallbacks
 COLORS = {
@@ -40,38 +41,33 @@ def fetch_route_data(route_id):
                 if not df.empty:
                     df["color"] = route_id
                     df["rgb"] = COLORS.get(route_id, "255, 255, 255")
-                    # Redirect log to stderr so it doesn't pollute the data pipe
-                    print(
-                        f"Successfully fetched Route {route_id}. # of trains {len(df)}",
-                        file=sys.stderr,
-                    )
-                    return df
+                    return df, "success"
             except (KeyError, IndexError):
-                print(f"No train data found for Route {route_id}.", file=sys.stderr)
+                return pd.DataFrame(), "no_data"
         else:
-            print(
-                f"API request failed for {route_id} (Code {response.status_code}).",
-                file=sys.stderr,
-            )
+            return pd.DataFrame(), "failed"
     except Exception as e:
         print(f"Error fetching Route {route_id}: {e}", file=sys.stderr)
+        return pd.DataFrame(), "error"
 
-    return pd.DataFrame()
+    return pd.DataFrame(), "error"
 
 
 def track_station_frequency(df, csv_path):
-    if df.empty or "nextStaId" not in df.columns:
+    if df.empty or "nextStaId" not in df.columns or "color" not in df.columns:
         return
 
-    counts_df = df["nextStaId"].value_counts().reset_index()
-    counts_df.columns = ["nextStaId", "count"]
+    counts_df = df.groupby(["nextStaId", "color"]).size().reset_index(name="count")
+    counts_df["nextStaId"] = counts_df["nextStaId"].astype(int)
+    counts_df["color"] = counts_df["color"].astype(str).str.strip()
     counts_df["last_seen"] = pd.Timestamp.now().isoformat()
 
     try:
         if os.path.exists(csv_path):
             existing_df = pd.read_csv(csv_path)
+            existing_df = existing_df.drop_duplicates(subset=["nextStaId", "color"], keep="last")
             for _, row in counts_df.iterrows():
-                mask = existing_df["nextStaId"] == row["nextStaId"]
+                mask = (existing_df["nextStaId"] == row["nextStaId"]) & (existing_df["color"] == row["color"])
                 if mask.any():
                     existing_df.loc[mask, "count"] += row["count"]
                     existing_df.loc[mask, "last_seen"] = row["last_seen"]
@@ -98,14 +94,35 @@ def main():
         print("[]")
         return
 
-    dfs = [fetch_route_data(route) for route in ROUTE_IDS]
-    dfs = [df for df in dfs if not df.empty]
+    results = []
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        futures = {executor.submit(fetch_route_data, route): route for route in ROUTE_IDS}
+        for future in as_completed(futures):
+            route = futures[future]
+            try:
+                result = future.result()
+                results.append((route, result))
+            except Exception as e:
+                print(f"Error fetching Route {route}: {e}", file=sys.stderr)
+                results.append((route, (pd.DataFrame(), "error")))
+
+    train_counts = {}
+    dfs = []
+    for route, (df, status) in results:
+        if status == "success":
+            train_counts[route] = len(df)
+            dfs.append(df)
+        elif status == "no_data":
+            train_counts[route] = 0
 
     if not dfs:
         print("No train data available across any routes.", file=sys.stderr)
-        # Output an empty JSON array so the next script doesn't crash on empty input
         print("[]")
         return
+
+    summary = ", ".join(f"{route}={train_counts.get(route, 0)}" for route in ROUTE_IDS)
+    total = sum(train_counts.values())
+    print(f"Fetched trains: {summary} (total {total})", file=sys.stderr)
 
     master_df = pd.concat(dfs, ignore_index=True)
 

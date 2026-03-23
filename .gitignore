@@ -7,6 +7,9 @@ __pycache__/
 # Ruff
 .ruff_cache/
 
+# Pytest
+.pytest_cache/
+
 # IDE
 .idea/
 .vscode/

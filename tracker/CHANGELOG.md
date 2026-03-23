@@ -1,4 +1,10 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 0.9.7
+- Corrected output structure of station_frequency.csv: fixed duplicate nextStaId rows and added multi-color support (tracks composite key)
+- Reduced log verbosity: condensed 8 per-route messages to single summary line
+- Added parallelization to fetch_route_data: 8 routes now fetched concurrently using ThreadPoolExecutor
+- Added 3s timeouts to all HA API calls in graphicrefresh.py to prevent infinite hangs
+
 ## 0.9.6
 - Moved sleep delay from run.sh to graphicrefresh.py bypass_mode function - ensures pause occurs at end of bypass mode cycle specifically
 
