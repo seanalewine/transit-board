@@ -9,6 +9,7 @@ LIGHT_BOARD_BASEPRE=$(bashio::config 'light_board')
 export LIGHT_BOARD_BASE="${LIGHT_BOARD_BASEPRE}_"
 export BIDIRECTIONAL=$(bashio::config 'bidirectional')
 export TRAINS_PER_LINE=$(bashio::config 'trainsPerLine')
+export BYPASS_MODE=$(bashio::config 'bypass_mode')
 export DATA_REFRESH_INTERVAL_SEC=$(bashio::config 'data_refresh_interval_sec')
 export JSON_FILE="/data/active_train_summary.json"
 export RED_COLOR=$(bashio::config 'red_line_color')

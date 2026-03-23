@@ -1,4 +1,8 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 0.9.2
+- Added bypass mode: when enabled, skips API calls and displays all CTA stations as lit (useful for testing or when API is unavailable)
+- Config option `bypass_mode: bool` added to addon settings (default: false)
+
 ## 0.9.1
 - Stale light cleanup: compares actual HA light states to expected states and turns off any stale lights that should not be on.
 
