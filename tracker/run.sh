@@ -56,4 +56,6 @@ while true; do
         echo "--------------------------------------------------------"
         echo "Error: Python script failed."
     fi
+
+    sleep "$DATA_REFRESH_INTERVAL_SEC"
 done
