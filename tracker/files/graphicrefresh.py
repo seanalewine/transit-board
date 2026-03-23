@@ -235,6 +235,11 @@ def main():
     
     moved, new_trains, gone_trains = calculate_changes(prev_trains, active_trains)
     
+    currently_on = get_on_lights()
+    expected_on = {data['unifiedId'] for rn, data in active_trains.items()}
+    stale_lights = [sid for sid in currently_on if sid not in expected_on]
+    gone_trains = list(set(gone_trains + stale_lights))
+    
     board_refresh(moved, new_trains, gone_trains, refresh_interval)
     
     curr_trains = {rn: data['unifiedId'] for rn, data in active_trains.items()}
