@@ -274,6 +274,7 @@ def main():
 
             save_previous_trains({str(i): i for i in unique_ids})
             print(f"Bypass mode: {len(unique_ids)} stations lit, {len(new_on) + len(gone)} updates", file=sys.stderr)
+            time.sleep(refresh_interval)
         except Exception as e:
             print(f"ERROR: Bypass mode failed: {e}", file=sys.stderr)
 

@@ -1,4 +1,7 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 0.9.6
+- Moved sleep delay from run.sh to graphicrefresh.py bypass_mode function - ensures pause occurs at end of bypass mode cycle specifically
+
 ## 0.9.5
 - Fixed bypass mode infinite loop: added sleep between refresh cycles in run.sh
 - Reduced verbose logging during normal operation

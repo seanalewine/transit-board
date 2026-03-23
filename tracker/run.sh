@@ -39,5 +39,4 @@ while true; do
     mkdir -p "$PERSIST_DIR"
     python3 "/data/processor.py" | python3 "/data/graphicrefresh.py"
 
-    sleep "$DATA_REFRESH_INTERVAL_SEC"
 done
