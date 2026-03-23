@@ -1,4 +1,10 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 1.0.0
+- **Major version release** - stable, production-ready
+- Architecture: HA addon fetches CTA API → outputs JSON → graphicrefresh.py controls ESPHome lights via HA API
+- All core features complete: live train tracking, smart train transitions, bypass mode, station frequency logging, multi-line color support
+- This version will be deprecated in favor of v2.0.0 which moves core functionality to ESPHome device
+
 ## 0.9.8
 - Fixed frequency CSV error: added validation for required columns ("color", "nextStaId") when reading existing CSV, recreates file if columns are missing
 
@@ -96,5 +102,46 @@
 - Stable!
 - Allows user to set their personal CTA Data API Key
 -  Allows user to set train line colors, default are CTA specified.
- - Outputs interpreted train data at http://[Home Assistant URL]:[PORT]/active_train_summary.json
- - Future release to control ESPHome device via HA Core API
+- Outputs interpreted train data at http://[Home Assistant URL]:[PORT]/active_train_summary.json
+- Future release to control ESPHome device via HA Core API
+
+---
+
+# v2.0.0 Roadmap
+
+## Architecture Goal
+Move core functionality from HA addon to ESPHome device for standalone operation. ESPHome device fetches CTA API directly, processes train data, and controls lights without HA addon dependency.
+
+## Phase 1: Core ESPHome Migration
+- Add `http_request` component to fetch CTA API
+- Create C++ custom sensor with hardcoded station mapping array (192 entries)
+- Implement train tracking (`rn → unifiedId` mapping, detect moved/new/gone)
+- Convert partition lights to template lights with color action
+- Add config entities: `api_key`, `refresh_interval`, `trains_per_line`, `bidirectional`
+
+## Phase 2: Standalone Operation
+- Remove HA API dependency - ESPHome controls lights internally
+- Device operates fully without HA addon
+- HA addon becomes minimal: copy files, optional frequency logging to console
+
+## Phase 3: Multi-Board Support
+- Create `templates/base.yaml` with shared logic
+- Create `boards/kitchen.yaml` and `boards/living_room.yaml` as examples
+- Each board defines its own unifiedId array (set at compile time)
+- Structure supports adding more boards by copy + edit
+
+## Phase 4: Configuration & Features
+- Runtime-configurable entities via ESPHome native API to HA:
+  - `api_key` (secure text)
+  - `refresh_interval` (number)
+  - `trains_per_line` (number)
+  - `bidirectional` (switch)
+  - `bypass_mode` (switch)
+  - `brightness` (number - existing)
+  - 8 line color entities (select)
+  - `holiday_mode` (switch) - detects `rn=1225` (Holiday Train), cycles red/green at station
+
+## Out of Scope
+- Technical debt cleanup (deprecated code will be removed, not migrated)
+- Station frequency CSV persistence (separate "Board Diagnosis" app)
+- Web server on ESPHome
