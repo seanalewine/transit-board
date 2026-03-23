@@ -63,15 +63,13 @@ def get_on_lights():
     response = requests.get("http://supervisor/core/api/states", headers=headers)
     states_json = response.json()
 
-    # Filter entities and extract just the numerical IDs
-    on_ids = []
+    on_ids = set()
     for entity in states_json:
         if entity.get("entity_id", "").startswith(f"light.{boardname}"):
             if entity.get("state") == "on":
-                # Extract numerical ID using regex
                 match = re.search(r"_(\d+)$", entity.get("entity_id", ""))
                 if match:
-                    on_ids.append(int(match.group(1)))
+                    on_ids.add(int(match.group(1)))
 
     return on_ids
 
@@ -264,7 +262,7 @@ def main():
 
             currently_on = get_on_lights()
             new_on = set(unique_ids) - currently_on
-            gone = set(currently_on) - set(unique_ids)
+            gone = currently_on - set(unique_ids)
 
             for sid in gone:
                 turn_off_light(sid)
