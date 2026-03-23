@@ -95,7 +95,6 @@ signal.signal(signal.SIGPIPE, handle_broken_pipe)
 
 def main():
     if bypass_mode:
-        print("Bypass mode enabled, skipping API calls.", file=sys.stderr)
         print("[]")
         return
 

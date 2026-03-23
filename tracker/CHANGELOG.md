@@ -1,4 +1,9 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 0.9.5
+- Fixed bypass mode infinite loop: added sleep between refresh cycles in run.sh
+- Reduced verbose logging during normal operation
+- Added data refresh summary log output showing active trains and update count
+
 ## 0.9.3
 - Fixed bypass mode error: `get_on_lights()` now returns a set for proper set operations
 - Added test script for bypass mode validation

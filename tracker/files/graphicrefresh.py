@@ -56,8 +56,6 @@ def get_global_brightness():
 
 
 def get_on_lights():
-    print("Fetching current state of all light entities...")
-
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
     response = requests.get("http://supervisor/core/api/states", headers=headers)
@@ -232,7 +230,7 @@ def board_refresh(moved, new_trains, gone_trains, refresh_interval):
     total_units = moved_count + new_count + gone_count
 
     if total_units == 0:
-        return
+        return 0
 
     interval_sec = refresh_interval / total_units
 
@@ -252,17 +250,19 @@ def board_refresh(moved, new_trains, gone_trains, refresh_interval):
         if total_units > 1:
             time.sleep(interval_sec)
 
+    return total_units
+
 
 def main():
     if bypass_mode:
         csv_path = os.environ.get("CTA_STATION_LIST", "/data/ctastationlist.csv")
         try:
             df = pd.read_csv(csv_path)
-            unique_ids = df["unifiedId"].dropna().astype(int).unique()
+            unique_ids = set(df["unifiedId"].dropna().astype(int).tolist())
 
             currently_on = get_on_lights()
-            new_on = set(unique_ids) - currently_on
-            gone = currently_on - set(unique_ids)
+            new_on = unique_ids - currently_on
+            gone = currently_on - unique_ids
 
             for sid in gone:
                 turn_off_light(sid)
@@ -273,6 +273,7 @@ def main():
                 set_light_color(sid, rgb)
 
             save_previous_trains({str(i): i for i in unique_ids})
+            print(f"Bypass mode: {len(unique_ids)} stations lit, {len(new_on) + len(gone)} updates", file=sys.stderr)
         except Exception as e:
             print(f"ERROR: Bypass mode failed: {e}", file=sys.stderr)
 
@@ -288,10 +289,12 @@ def main():
     stale_lights = [sid for sid in currently_on if sid not in expected_on]
     gone_trains = list(set(gone_trains + stale_lights))
 
-    board_refresh(moved, new_trains, gone_trains, refresh_interval)
+    total_updates = board_refresh(moved, new_trains, gone_trains, refresh_interval)
 
     curr_trains = {rn: data["unifiedId"] for rn, data in active_trains.items()}
     save_previous_trains(curr_trains)
+
+    print(f"Data refresh complete: {len(active_trains)} active trains, {total_updates} updates", file=sys.stderr)
 
     sys.exit(0)
 

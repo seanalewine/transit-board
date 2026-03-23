@@ -35,27 +35,9 @@ fi
 # Start web server in background
 python3 /data/webserver.py &
 
-echo "Starting recurring data fetch loop..."
 while true; do
-    # Run the data refresh script
-    # The 'source' command is used to run the script in the current environment
-
-    echo "Starting CTA Route Position Fetcher"
-    echo "--------------------------------------------------------"
-    echo "Target Directory: $PERSIST_DIR"
-
-    # Ensure the output directory exists once before the loop
-    echo "Checking directory structure..."
     mkdir -p "$PERSIST_DIR"
     python3 "/data/processor.py" | python3 "/data/graphicrefresh.py"
-
-    if [ $? -eq 0 ]; then
-        echo "--------------------------------------------------------"
-        echo "Successfully completed processing and board refresh."
-    else
-        echo "--------------------------------------------------------"
-        echo "Error: Python script failed."
-    fi
 
     sleep "$DATA_REFRESH_INTERVAL_SEC"
 done
