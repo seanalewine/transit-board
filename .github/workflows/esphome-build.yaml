@@ -13,6 +13,7 @@ jobs:
     strategy:
       matrix:
         board: [transit-board-0001, transit-board-0002]
+        board_id: [0001, 0002]
     name: Build ${{ matrix.board }}
     steps:
       - name: Checkout repository
@@ -35,6 +36,11 @@ jobs:
           wifi_password: "ci_build_password"
           transition_length: 0.25s
           EOF
+
+      - name: Prepare station map
+        run: |
+          cp esphome-controller/boards/station_map.${{ matrix.board_id }}.h \
+             esphome-controller/boards/station_map.h
 
       - name: Build ESPHome firmware
         uses: esphome/build-action@v7
