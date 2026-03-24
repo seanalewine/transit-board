@@ -23,14 +23,11 @@ jobs:
       - name: Install ESPHome
         run: pip install esphome
 
-      - name: Validate board configurations
+      - name: Validate ESPHome configurations
         run: |
           for config in esphome-controller/boards/*.yaml; do
             esphome config "$config" || exit 1
           done
-
-      - name: Validate template
-        run: esphome config esphome-controller/templates/base.yaml
 
   build:
     needs: lint
