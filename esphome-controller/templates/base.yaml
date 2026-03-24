@@ -47,7 +47,7 @@ update:
   - platform: http_request
     name: Firmware Update
     id: firmware_update
-    source: https://github.com/${github_repo}/releases/latest/download/${board_name}/manifest.json
+    source: https://github.com/${github_repo}/releases/latest/download/${board_name}-manifest.json
     update_interval: 6h
     on_update_available:
       then:

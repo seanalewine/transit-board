@@ -18,6 +18,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
+      - name: Cache PlatformIO packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.platformio
+            ~/.cache/pip
+          key: ${{ runner.os }}-pio-${{ hashFiles('esphome-controller/**/*.yaml', '.github/workflows/esphome-build.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pio-
+
       - name: Create mock secrets for CI
         run: |
           cat > esphome-controller/boards/secrets.yaml << 'EOF'
@@ -64,6 +74,11 @@ jobs:
           name: living_room
           path: living_room
 
+      - name: Rename manifest files
+        run: |
+          mv kitchen/manifest.json kitchen/kitchen-manifest.json
+          mv living_room/manifest.json living_room/living_room-manifest.json
+
       - name: Get short SHA
         id: sha
         run: echo "short=${GITHUB_SHA:0:7}" >> $GITHUB_OUTPUT
@@ -84,8 +99,8 @@ jobs:
             - `manifest.json` files - Update manifests for each device
           files: |
             kitchen/*.bin
-            kitchen/manifest.json
+            kitchen/kitchen-manifest.json
             living_room/*.bin
-            living_room/manifest.json
+            living_room/living_room-manifest.json
           draft: false
           prerelease: false
