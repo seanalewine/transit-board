@@ -45,7 +45,7 @@ jobs:
       - name: Prepare station map
         run: |
           cp esphome-controller/boards/station_map.${{ steps.board_id.outputs.board_id }}.h \
-             esphome-controller/boards/station_map.h
+             esphome-controller/templates/station_map.h
 
       - name: Build ESPHome firmware
         uses: esphome/build-action@v7
