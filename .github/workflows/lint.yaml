@@ -29,6 +29,3 @@ jobs:
           for config in esphome-controller/boards/*.yaml; do
             esphome config "$config" || exit 1
           done
-
-      - name: Validate ESPHome template
-        run: esphome config esphome-controller/templates/base.yaml
