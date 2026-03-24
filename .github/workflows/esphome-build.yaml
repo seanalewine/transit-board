@@ -44,6 +44,7 @@ jobs:
 
       - name: Prepare station map
         run: |
+          mkdir -p esphome-controller/templates
           cp esphome-controller/boards/station_map.${{ steps.board_id.outputs.board_id }}.h \
              esphome-controller/templates/station_map.h
 

@@ -10,6 +10,7 @@ esphome:
   name_add_mac_suffix: false
   includes:
     - ../templates/train_processor.h
+    - ../templates/station_map.h
   on_boot:
     priority: 600
     then:
