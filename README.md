@@ -21,6 +21,58 @@ The board shows upcoming arrivals for configured stations, with each LED represe
 - Addressable RGB LED strip (WS2812B/NeoPixel)
 - 3D printed case (optional)
 
+## Board Configurations
+
+This project supports multiple LED boards. Each board has its own configuration in `esphome-controller/boards/`:
+
+- `transit-board-a.yaml` - Board A configuration
+- `transit-board-b.yaml` - Board B configuration
+
+## First-Time Setup
+
+On first boot, the ESP32 creates a WiFi Access Point named "Transit Board". Connect to it and navigate to `http://192.168.4.1` to enter your WiFi credentials and CTA API key.
+
+Follow instructions on using [ESPHome Web](https://web.esphome.io/) for installing the configuration onto your ESP32 microcontroller.
+
+### LED Strip Configuration
+
+In your board's YAML file, update the `esp32_rmt_led_strip` platform settings:
+
+```yaml
+- platform: esp32_rmt_led_strip
+  id: stop_indicators 
+  rgb_order: GRB
+  pin: GPIO0
+  internal: true
+  default_transition_length: 500ms
+  use_psram: false
+  num_leds: 320
+  chipset: WS2812
+  name: "Stop Indicators"
+```
+
+Update the `platform`, `pin`, `chipset`, `rgb_order`, and `num_leds` values to match your specific LED strip. See the [ESPHome Documentation](https://esphome.io/components/#light-components) for required variables.
+
+## Configurable Options
+
+All options are accessible via the ESPHome web interface or Home Assistant:
+
+| Option | Type | Description |
+|--------|------|-------------|
+| API Key | Text | Your CTA TrainTracker API key |
+| Global Brightness | Number (0-100) | Controls brightness of all LEDs |
+| Refresh Interval | Number (7-5000 sec) | Time between API fetches |
+| Trains Per Line | Number (0-20) | Max trains to display per line |
+| Bidirectional | Switch | Enable tracking in both directions |
+| Holiday Mode | Switch | Enable special holiday display mode |
+| Update Mode | Select | Quick Update, Gradual Update, or Bypass |
+
+### Update Modes
+
+- **Quick Update** - All LED changes happen instantly when new train data arrives. Best for real-time accuracy.
+- **Gradual Update** - LED changes are processed one at a time with smooth delays between each transition. Creates a flowing effect as trains appear to move across the board.
+- **Bypass** - Ignores live train data and lights up all station LEDs with their line colors. Useful for testing the display or as a demo mode.
+
 ## Deployment
 
 ### Standalone
