@@ -1,6 +1,7 @@
 substitutions:
   github_repo: "seanalewine/cta-location-tracker"
   project_version: "dev"
+  board_id: "0000"  # Override in board YAML
 
 esphome:
   name: ${board_name}
@@ -8,7 +9,6 @@ esphome:
   min_version: 2025.9.0
   name_add_mac_suffix: false
   includes:
-    - ../templates/station_map.h
     - ../templates/train_processor.h
   on_boot:
     priority: 600
@@ -16,7 +16,7 @@ esphome:
       - lambda: |-
           update_all_led_brightness();
   project:
-    name: "cta-location-tracker.${board_name}"
+    name: "cta-location-tracker.${board_id}"
     version: "${project_version}"
 
 json:
@@ -63,7 +63,7 @@ update:
   - platform: http_request
     name: Firmware Update
     id: firmware_update
-    source: https://github.com/${github_repo}/releases/latest/download/${board_name}-manifest.json
+    source: https://github.com/${github_repo}/releases/latest/download/${board_id}-manifest.json
     update_interval: 10min
     web_server:
       sorting_group_id: group_diagnostic
