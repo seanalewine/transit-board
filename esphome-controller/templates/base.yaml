@@ -14,7 +14,7 @@ esphome:
     priority: 600
     then:
       - lambda: |-
-          ESP_LOGI("train", "Boot complete, brightness: %d%%", (int)id(global_brightness).state);
+          update_all_led_brightness();
   project:
     name: "cta-location-tracker.${board_name}"
     version: "${project_version}"
@@ -29,15 +29,15 @@ esp32:
 
 logger:
   baud_rate: 0
+  level: ERROR
 
 wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
   power_save_mode: LIGHT
   ap:
     ssid: "Transit Board"
 
 captive_portal:
+  keep_user_credentials: true
 
 web_server:
   port: 80
@@ -71,7 +71,6 @@ update:
       sorting_weight: 20
     on_update_available:
       then:
-        - logger.log: "New firmware available, installing..."
         - update.perform: firmware_update
 
 http_request:
@@ -134,7 +133,6 @@ number:
     on_value:
       then:
         - lambda: |-
-            ESP_LOGI("train", "Brightness changed to: %d%%", (int)id(global_brightness).state);
             update_all_led_brightness();
 
   - platform: template
@@ -262,8 +260,6 @@ script:
     mode: restart
     then:
       - lambda: |-
-          ESP_LOGI("train", "Starting refresh cycle");
-          ESP_LOGI("train", "API key empty: %d, bypass: %d", id(api_key).state.empty(), id(update_mode).current_option() == "Bypass");
           clear_gradual_queue();
           id(gradual_queue_size) = 0;
       - if:

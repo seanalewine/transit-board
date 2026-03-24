@@ -64,7 +64,6 @@ void update_all_led_brightness() {
                                    apply_brightness(to_byte(color.b))));
     }
     light->schedule_show();
-    ESP_LOGI(TAG, "Updated brightness for %d LEDs", current_led_colors.size());
 }
 
 
@@ -125,7 +124,6 @@ void apply_transitions_immediately(const std::vector<TrainTransition>& departure
 }
 
 void activate_bypass_mode() {
-    ESP_LOGI(TAG, "Bypass mode: show all station colors");
     previous_trains.clear();
     current_led_colors.clear();
     auto light = static_cast<AddressableLight*>(id(stop_indicators).get_output());
@@ -246,8 +244,6 @@ void process_json_body(const std::string& body, const std::string& line) {
         pending_trains[t.rn] = t.unifiedId;
         pending_train_lines[t.rn] = line;
     }
-
-    ESP_LOGI(TAG, "%s: %d trains collected", line.c_str(), filtered_trains.size());
 }
 
 void process_all_trains() {
@@ -273,7 +269,6 @@ void process_all_trains() {
 
         pending_trains.clear();
         pending_train_lines.clear();
-        ESP_LOGI(TAG, "Initial state: %d trains", previous_trains.size());
         return;
     }
 
@@ -320,7 +315,7 @@ void process_all_trains() {
     int total_changes = filtered_departures.size() + transitions.size();
 
     if (total_changes == 0) {
-        ESP_LOGI(TAG, "No changes: %d trains", pending_trains.size());
+        // No changes
     } else if (is_gradual) {
         for (auto& dep : filtered_departures) {
             gradual_queue.push(dep);
@@ -340,14 +335,9 @@ void process_all_trains() {
         if (id(gradual_tick_interval) < 1) id(gradual_tick_interval) = 1;
         id(gradual_tick_count) = 0;
         id(gradual_queue_size) = queue_size;
-
-        ESP_LOGI(TAG, "Queued %d gradual updates, interval %d ticks", queue_size, id(gradual_tick_interval));
     } else {
         apply_transitions_immediately(filtered_departures, transitions);
     }
-
-    ESP_LOGI(TAG, "Refresh complete: %d trains, %d off, %d transitions",
-             pending_trains.size(), filtered_departures.size(), transitions.size());
 
     previous_trains = pending_trains;
     pending_trains.clear();
