@@ -1,9 +1,9 @@
 substitutions:
-  board_name: "living_room"
-  friendly_name: "Living Room L Tracker"
+  board_name: "transit-board_a"
+  friendly_name: "Transit Board A"
   transition_length: "500ms"
   cta_api_key: ""  # Set your CTA API key here for persistence across flashes
-  project_version: "1.0.8"
+  project_version: "1.0.9"
 
 packages:
   base: !include ../templates/base.yaml

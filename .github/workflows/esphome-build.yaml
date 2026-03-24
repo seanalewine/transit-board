@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        board: [kitchen, living_room]
+        board: [transit-board_a, transit-board_b]
     name: Build ${{ matrix.board }}
     steps:
       - name: Checkout repository
@@ -62,22 +62,22 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download kitchen artifact
+      - name: Download transit-board_a artifact
         uses: actions/download-artifact@v4
         with:
-          name: kitchen
-          path: kitchen
+          name: transit-board_a
+          path: transit-board_a
 
-      - name: Download living_room artifact
+      - name: Download transit-board_b artifact
         uses: actions/download-artifact@v4
         with:
-          name: living_room
-          path: living_room
+          name: transit-board_b
+          path: transit-board_b
 
       - name: Rename manifest files
         run: |
-          mv kitchen/manifest.json kitchen/kitchen-manifest.json
-          mv living_room/manifest.json living_room/living_room-manifest.json
+          mv transit-board_a/manifest.json transit-board_a/transit-board_a-manifest.json
+          mv transit-board_b/manifest.json transit-board_b/transit-board_b-manifest.json
 
       - name: Get short SHA
         id: sha
@@ -92,15 +92,15 @@ jobs:
             Automated firmware build from commit ${{ steps.sha.outputs.short }}
             
             ## Files
-            - `kitchen.ota.bin` - OTA update for kitchen device
-            - `kitchen.factory.bin` - Factory flash for kitchen device
-            - `living_room.ota.bin` - OTA update for living room device
-            - `living_room.factory.bin` - Factory flash for living room device
-            - `manifest.json` files - Update manifests for each device
+            - `transit-board_a.ota.bin` - OTA update for Transit Board A
+            - `transit-board_a.factory.bin` - Factory flash for Transit Board A
+            - `transit-board_b.ota.bin` - OTA update for Transit Board B
+            - `transit-board_b.factory.bin` - Factory flash for Transit Board B
+            - `*-manifest.json` files - Update manifests for each device
           files: |
-            kitchen/*.bin
-            kitchen/kitchen-manifest.json
-            living_room/*.bin
-            living_room/living_room-manifest.json
+            transit-board_a/*.bin
+            transit-board_a/transit-board_a-manifest.json
+            transit-board_b/*.bin
+            transit-board_b/transit-board_b-manifest.json
           draft: false
           prerelease: false
