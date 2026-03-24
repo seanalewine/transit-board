@@ -68,9 +68,6 @@ update:
     web_server:
       sorting_group_id: group_diagnostic
       sorting_weight: 20
-    on_update_available:
-      then:
-        - update.perform: firmware_update
 
 http_request:
   id: http_request_data
