@@ -8,7 +8,32 @@ on:
       - '.github/workflows/esphome-build.yaml'
 
 jobs:
+  lint:
+    name: Lint ESPHome configs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.0.0
+        with:
+          python-version: '3.11'
+
+      - name: Install ESPHome
+        run: pip install esphome
+
+      - name: Validate board configurations
+        run: |
+          for config in esphome-controller/boards/*.yaml; do
+            esphome config "$config" || exit 1
+          done
+
+      - name: Validate template
+        run: esphome config esphome-controller/templates/base.yaml
+
   build:
+    needs: lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -43,6 +68,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pio-
 
+      - name: Cache ESPHome
+        uses: actions/cache@v4
+        with:
+          path: .esphome
+          key: ${{ runner.os }}-esphome-${{ hashFiles('esphome-controller/**/*.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-esphome-
+
       - name: Create mock secrets for CI
         run: |
           cat > esphome-controller/boards/secrets.yaml << 'EOF'
@@ -70,7 +103,7 @@ jobs:
           retention-days: 7
 
   release:
-    needs: build
+    needs: [lint, build]
     runs-on: ubuntu-latest
     name: Create Release
     if: github.ref == 'refs/heads/main'
