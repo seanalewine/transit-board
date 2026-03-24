@@ -1,4 +1,14 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
+## 2.0.0
+- **Major version release** - Core functionality moved from HA addon to ESPHome device
+- ESPHome device fetches CTA API directly, processes train data, controls lights
+- HA addon no longer required for core operation (optional for frequency logging)
+- Added ESPHome web server for device configuration
+- Added automatic OTA updates via GitHub Releases
+- Multi-board support: transit-board-a, transit-board-b
+- Runtime configurable: api_key, refresh_interval, trains_per_line, bidirectional, holiday_mode, brightness
+- Uses captive portal for WiFi configuration without hardcoded credentials
+
 ## 1.0.0
 - **Major version release** - stable, production-ready
 - Architecture: HA addon fetches CTA API → outputs JSON → graphicrefresh.py controls ESPHome lights via HA API
@@ -119,27 +129,28 @@ Move core functionality from HA addon to ESPHome device for standalone operation
 - [x] Convert partition lights to template lights with color action
 - [x] Add config entities: `api_key`, `refresh_interval`, `trains_per_line`, `bidirectional`
 
-## Phase 2: Standalone Operation
+## Phase 2: Standalone Operation ✅
 - Remove HA API dependency - ESPHome controls lights internally
 - Device operates fully without HA addon
 - HA addon becomes minimal: copy files, optional frequency logging to console
 
-## Phase 3: Multi-Board Support
+## Phase 3: Multi-Board Support ✅
 - Create `templates/base.yaml` with shared logic
 - Create `boards/kitchen.yaml` and `boards/living_room.yaml` as examples
 - Each board defines its own unifiedId array (set at compile time)
 - Structure supports adding more boards by copy + edit
 
-## Phase 4: Configuration & Features
+## Phase 4: Configuration & Features ✅
 - Runtime-configurable entities via ESPHome native API to HA:
   - `api_key` (secure text)
   - `refresh_interval` (number)
   - `trains_per_line` (number)
   - `bidirectional` (switch)
-  - `bypass_mode` (switch)
+  - `bypass_mode` (switch) - implemented via "Update Mode" select (Quick/Gradual/Bypass)
   - `brightness` (number - existing)
-  - 8 line color entities (select)
+  - 8 line color entities (select) - uses hardcoded CTA colors (configurable at compile)
   - `holiday_mode` (switch) - detects `rn=1225` (Holiday Train), cycles red/green at station
+  - Web server - allows device configuration via web browser
 
 ## Out of Scope
 - Technical debt cleanup (deprecated code will be removed, not migrated)
