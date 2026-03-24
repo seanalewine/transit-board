@@ -37,7 +37,6 @@ wifi:
     ssid: "Transit Board"
 
 captive_portal:
-  keep_user_credentials: true
 
 web_server:
   port: 80
