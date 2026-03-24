@@ -126,14 +126,14 @@ jobs:
 
       - name: Download transit-board-a artifact
         if: steps.check.outputs.skip == 'false'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: transit-board-a
           path: transit-board-a
 
       - name: Download transit-board-b artifact
         if: steps.check.outputs.skip == 'false'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: transit-board-b
           path: transit-board-b
