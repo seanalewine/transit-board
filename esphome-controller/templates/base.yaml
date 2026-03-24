@@ -49,7 +49,7 @@ update:
     id: firmware_update
     source: https://github.com/${github_repo}/releases/latest/download/${board_name}/manifest.json
     update_interval: 6h
-    on_update:
+    on_update_available:
       then:
         - logger.log: "New firmware available, installing..."
         - update.apply: firmware_update
