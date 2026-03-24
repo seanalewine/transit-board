@@ -52,7 +52,7 @@ update:
     on_update_available:
       then:
         - logger.log: "New firmware available, installing..."
-        - update.apply: firmware_update
+        - update.perform: firmware_update
 
 http_request:
   id: http_request_data
