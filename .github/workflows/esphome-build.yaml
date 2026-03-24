@@ -14,9 +14,24 @@ jobs:
       matrix:
         board: [transit-board-a, transit-board-b]
     name: Build ${{ matrix.board }}
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+
+      - name: Validate versions match
+        id: version
+        run: |
+          VERSION_A=$(grep "project_version:" esphome-controller/boards/transit-board-a.yaml | sed 's/.*: *"\(.*\)"/\1/')
+          VERSION_B=$(grep "project_version:" esphome-controller/boards/transit-board-b.yaml | sed 's/.*: *"\(.*\)"/\1/')
+          
+          if [ "$VERSION_A" != "$VERSION_B" ]; then
+            echo "ERROR: Version mismatch between boards: transit-board-a=$VERSION_A, transit-board-b=$VERSION_B"
+            exit 1
+          fi
+          
+          echo "version=$VERSION_A" >> $GITHUB_OUTPUT
 
       - name: Cache PlatformIO packages
         uses: actions/cache@v4
@@ -62,34 +77,59 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Get version from board config
+        id: version
+        run: |
+          VERSION=$(grep "project_version:" esphome-controller/boards/transit-board-a.yaml | sed 's/.*: *"\(.*\)"/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get latest release tag
+        id: latest
+        run: |
+          TAG=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r '.tag_name // empty')
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Check version changed
+        id: check
+        run: |
+          if [ "${{ steps.latest.outputs.tag }}" == "v${{ steps.version.outputs.version }}" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+          echo "Version check: latest=${{ steps.latest.outputs.tag }}, current=v${{ steps.version.outputs.version }}, skip=${{ steps.check.outputs.skip }}"
+
       - name: Download transit-board-a artifact
+        if: steps.check.outputs.skip == 'false'
         uses: actions/download-artifact@v4
         with:
           name: transit-board-a
           path: transit-board-a
 
       - name: Download transit-board-b artifact
+        if: steps.check.outputs.skip == 'false'
         uses: actions/download-artifact@v4
         with:
           name: transit-board-b
           path: transit-board-b
 
       - name: Rename manifest files
+        if: steps.check.outputs.skip == 'false'
         run: |
           mv transit-board-a/manifest.json transit-board-a/transit-board-a-manifest.json
           mv transit-board-b/manifest.json transit-board-b/transit-board-b-manifest.json
 
-      - name: Get short SHA
-        id: sha
-        run: echo "short=${GITHUB_SHA:0:7}" >> $GITHUB_OUTPUT
-
-      - name: Create or update release
+      - name: Create Release
+        if: steps.check.outputs.skip == 'false'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: firmware-${{ steps.sha.outputs.short }}
-          name: Firmware Build ${{ steps.sha.outputs.short }}
+          tag_name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
           body: |
-            Automated firmware build from commit ${{ steps.sha.outputs.short }}
+            Firmware release v${{ steps.version.outputs.version }}
             
             ## Files
             - `transit-board-a.ota.bin` - OTA update for Transit Board A
@@ -104,3 +144,7 @@ jobs:
             transit-board-b/transit-board-b-manifest.json
           draft: false
           prerelease: false
+
+      - name: Skip Release
+        if: steps.check.outputs.skip == 'true'
+        run: echo "Version v${{ steps.version.outputs.version }} already released, skipping release creation"

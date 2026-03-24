@@ -1,211 +1,146 @@
 # Agent Coding Guidelines
 
-This document provides instructions for agents working on the CTA Location Tracker codebase.
+This document provides instructions for agents working on the Live Transit Board codebase.
 
 ## Project Overview
 
-This is a Home Assistant add-on that fetches live CTA train data and controls an ESPHome-powered LED light board. The project consists of:
+Live Transit Board is an ESPHome project that displays real-time CTA train arrival data on an LED board.
+The project fetches data from the CTA TrainTracker API and visualizes train arrivals on physical LED displays.
 
-- **`tracker/`** - Home Assistant add-on (Python + Bash)
-- **`esphome-controller/`** - ESPHome device configuration (YAML)
+### Current Structure
+
+```
+cta-location-tracker/
+├── esphome-controller/          # ESPHome firmware
+│   ├── boards/                   # Board configurations
+│   │   ├── transit-board-a.yaml
+│   │   ├── transit-board-b.yaml
+│   │   └── secrets.yaml          # WiFi/API credentials
+│   ├── templates/                # Shared C++ templates
+│   │   ├── base.yaml
+│   │   ├── station_map.h
+│   │   └── train_processor.h
+│   ├── script.yaml               # Main ESPHome config (legacy)
+│   └── secrets.yaml
+├── .github/workflows/            # CI/CD pipelines
+│   ├── lint.yaml                 # ESPHome config validation
+│   └── esphome-build.yaml        # Firmware builds
+└── README.md
+```
 
 ## Build/Lint/Test Commands
 
-### Home Assistant Add-on Linting
+### ESPHome Validation
 
 ```bash
-# Install the add-on linter (requires Docker)
-docker run --rm -v "$(pwd):/data" ghcr.io/home-assistant/amd64-base-debian:trixie \
-  python3 -m pip install home-assistant-addon-linter
+# Install ESPHome
+pip install esphome
 
-# Run linter on the tracker add-on
-docker run --rm -v "$(pwd)/tracker:/data" \
-  ghcr.io/frenck/action-addon-linter:latest /data
+# Validate a single board config
+esphome config esphome-controller/boards/transit-board-a.yaml
+
+# Validate all board configs
+for config in esphome-controller/boards/*.yaml; do
+  esphome config "$config"
+done
+
+# Validate template
+esphome config esphome-controller/templates/base.yaml
 ```
 
-### Docker Build (for testing locally)
+### Build Firmware
 
 ```bash
-# Build the tracker add-on for amd64
-docker build --build-arg BUILD_FROM=ghcr.io/home-assistant/amd64-base-debian:trixie \
-  -t cta-tracker:test tracker/
+# Build for a specific board
+esphome compile esphome-controller/boards/transit-board-a.yaml
 
-# Build for aarch64
-docker build --build-arg BUILD_FROM=ghcr.io/home-assistant/aarch64-base-debian:trixie \
-  -t cta-tracker:test-aarch64 tracker/
+# Upload to device (requires device on network)
+esphome upload esphome-controller/boards/transit-board-a.yaml
 ```
-
-### Python Code Quality
-
-```bash
-# Install dependencies
-pip install -r tracker/requirements.txt
-
-# Run Python syntax check on all files
-python3 -m py_compile tracker/files/processor.py tracker/files/graphicrefresh.py
-
-# Check Python style (ruff)
-pip install ruff
-ruff check tracker/files/*.py
-
-# Fix Python style issues
-ruff format tracker/files/*.py
-
-# Check/format with black (alternative)
-black --check tracker/files/*.py
-black tracker/files/*.py
-```
-
-### Testing
-
-There are currently no tests in this repository. When adding tests:
-- Use `pytest` as the test framework
-- Place tests in `tracker/files/test_*.py`
-- Run single test: `pytest tracker/files/test_processor.py::test_function_name`
-- Run all tests: `pytest tracker/files/`
 
 ### GitHub Actions CI
 
 The repository has two workflows:
-- **`lint.yaml`** - Runs add-on linter on push/PR to main
-- **`builder.yaml`** - Builds Docker images for aarch64/amd64 on main branch pushes
-
-Monitored files for build trigger: `build.yaml`, `config.yaml`, `Dockerfile`, `rootfs`
+- **`lint.yaml`** - Validates ESPHome YAML configs on push/PR
+- **`esphome-build.yaml`** - Builds and uploads firmware releases
 
 ## Code Style Guidelines
 
-### Python
+### ESPHome YAML
 
-- **Formatting**: Use standard PEP 8 style. 4-space indentation.
-- **Imports**: Standard library first, then third-party, then local imports.
-  ```python
-  # Standard library
-  import os
-  import sys
-  import json
-  
-  # Third-party (requests, pandas, numpy, dateutil)
-  import requests
-  import pandas as pd
-  from dateutil import parser
-  
-  # Local imports
-  from .utils import helper_function
-  ```
-- **String formatting**: Use f-strings for readability.
-- **Type hints**: Not currently used, but adding them is encouraged for new functions.
-- **Line length**: Target 100 characters max, 120 absolute max.
+- Use 2-space indentation
+- Use lowercase with hyphens for keys: `esphome:`, `sensor:`
+- Place secrets in `secrets.yaml` (never commit actual values)
+- Use YAML anchors (`&anchor` and `*alias`) for reusable config blocks
+- Document hardware-specific settings: chipset, pin, num_leds
+- Follow ESPHome v2025.9.0+ syntax
+
+### C++ (Templates)
+
+- Use standard C++17 features
+- 4-space indentation
+- Use `const` for immutable values
+- Name constants: `UPPER_SNAKE_CASE`
+- Name functions/variables: `snake_case`
+- Name classes: `PascalCase`
+- Include guards: `#ifndef FILENAME_H_`
 
 ### Error Handling
 
-- Use try/except blocks for external calls (API requests, file I/O).
-- Print errors to stderr: `print(f"Error: {e}", file=sys.stderr)`.
-- Never expose sensitive information (API keys, tokens) in error messages.
-- Always return safe default values (empty DataFrame, empty dict) on failure.
+- Return safe default values on failure (empty arrays, zero values)
+- Log errors to serial output: `ESP_LOGW(TAG, "Error: %s", error_msg)`
+- Never expose API keys or credentials in logs
 
-### Naming Conventions
+### API Requests (in C++)
 
-- **Functions**: `snake_case` (e.g., `fetch_route_data`, `get_on_lights`)
-- **Variables**: `snake_case` (e.g., `api_key`, `stationlist`)
-- **Constants**: `UPPER_SNAKE_CASE` (e.g., `COLORS`, `ROUTE_IDS`)
-- **Classes**: `PascalCase` (not currently used)
-
-### Logging
-
-- Use `print()` with `file=sys.stderr` for logging (to stdout for data pipeline).
-- Prefix errors with `ERROR:` or `WARNING:` for easy grep filtering.
-- Include relevant context: station IDs, route IDs, error types.
-
-### Environment Variables
-
-- Use `os.environ.get("VAR_NAME", default)` pattern.
-- Provide sensible defaults where possible.
-- Document required vs optional variables in comments.
-
-### Data Handling
-
-- Use pandas DataFrames for structured train data.
-- Filter invalid data explicitly before processing.
-- Use `.get()` for dict access to prevent KeyError.
-- Convert types explicitly: `df['col'].astype(str).str.strip()`
-
-### API Requests
-
-- Always set timeouts: `requests.get(url, timeout=3)`.
-- Check `response.status_code` before processing.
-- Include User-Agent header for HTTP requests.
-
-### Bash Scripts
-
-- Use `#!/usr/bin/with-contenv bashio` for Home Assistant addon environment.
-- Use `set -o pipefail` to catch pipe failures.
-- Use `bashio::config` for reading addon configuration.
-- Quote all variable expansions: `"$VAR"` not `$VAR`.
-
-## Configuration Files
-
-### config.yaml (Home Assistant Add-on)
-
-- Follow Home Assistant add-on schema format.
-- Define all options with types and defaults.
-- Use schema validation for user inputs.
-- Document required vs optional options.
-- Use `0?` for optional integers, `1?` for required integers.
-
-### ESPHome script.yaml
-
-- Follow ESPHome v2025.9.0+ syntax.
-- Use secrets for sensitive values (wifi, transitions).
-- Partition lights for individual control.
-- Document hardware-specific settings (chipset, pin, num_leds).
-- YAML anchors (`&anchor` and `*alias`) are preferred over Jinja2 macros for reusability.
+- Always set timeouts
+- Check HTTP status codes before processing
+- Include User-Agent header
+- Handle JSON parse errors gracefully
 
 ## Secrets Management
 
-- Store all secrets in `secrets.yaml` files (gitignored).
-- Never commit API keys, tokens, or passwords.
-- Use environment variable overrides where supported.
-- If a secret is accidentally committed, rotate it immediately.
+- Store all secrets in `secrets.yaml` files (gitignored)
+- Never commit API keys, tokens, or passwords
+- Use `!secret var_name` syntax in YAML to reference secrets
+- If a secret is accidentally committed, rotate it immediately
 
-## File Locations
+## Configuration Files
 
-| File | Purpose |
-|------|---------|
-| `tracker/run.sh` | Main entry point, reads config, runs data loop |
-| `tracker/files/processor.py` | Fetches CTA API data, outputs JSON to stdout |
-| `tracker/files/graphicrefresh.py` | Reads JSON, controls Home Assistant lights |
-| `tracker/files/ctastationlist.csv` | Maps station IDs to LED numbers |
-| `esphome-controller/script.yaml` | ESP32 device configuration |
-| `esphome-controller/secrets.yaml` | Device secrets (gitignored) |
+### Board Config (transit-board-*.yaml)
+
+- Define substitutions for board-specific values
+- Use `esp32` or `esp32-c3` as the platform
+- Configure WiFi with fallback AP mode
+- Define light components for each LED segment
+- Set up HTTP requests for CTA API calls
+
+### Station Map (station_map.h)
+
+- Map station IDs to LED indices
+- Define station names and routes
+- Order corresponds to physical LED strip layout
+
+### Train Processor (train_processor.h)
+
+- Parse CTA API JSON responses
+- Calculate arrival times and routes
+- Filter trains by destination station
 
 ## Development Notes
 
-- The pipeline is: `run.sh` -> `processor.py` (stdout) -> `graphicrefresh.py`
-- Both Python scripts receive config via environment variables.
-- The addon runs in a Docker container with Home Assistant API access.
-- Test API changes against the CTA TrainTracker API documentation.
-- When adding new train lines, update `ROUTE_IDS` and `COLORS` in processor.py.
-- Brightness is controlled via ESPHome `number.template` entity, not addon config.
+- Each board (transit-board-a, transit-board-b) has independent config
+- Station mapping is board-specific (different LED layouts)
+- CTA API key must be obtained from transit agency
+- Test API changes against CTA TrainTracker documentation
+- When adding new train lines, update route definitions
 
-## Directory Structure
+## Hardware Requirements
 
-```
-cta-location-tracker/
-├── tracker/                    # Home Assistant Add-on
-│   ├── Dockerfile
-│   ├── config.yaml             # Add-on configuration schema
-│   ├── requirements.txt        # Python dependencies
-│   ├── rootfs/                 # Files copied to /data in container
-│   │   └── etc/
-│   │       └── services/
-│   │           └── tracker/
-│   │               └── run.sh  # Entry point
-│   └── files/                  # Python source code
-│       ├── processor.py        # Fetches CTA API, outputs JSON to stdout
-│       ├── graphicrefresh.py   # Reads JSON, controls lights via HA API
-│       └── ctastationlist.csv  # Station ID to LED mapping
-├── esphome-controller/         # ESP32 firmware
-│   ├── script.yaml             # ESPHome configuration
-│   └── secrets.yaml            # Device secrets (gitignored)
-└── .github/workflows/          # CI/CD pipelines
-```
+- ESP32 or ESP32-C3 microcontroller
+- Addressable RGB LED strip (WS2812B/NeoPixel)
+- LED count: 58 per board (based on station count)
+
+## API Reference
+
+CTA TrainTracker API: https://www.transitchicago.com/developers/traintracker/

@@ -1,3 +1,13 @@
+# ESPHome
+.esphome/
+.esp32
+.esp32-c3
+.pio
+.pioenvs
+.piolibdeps
+.clang_complete
+.esp-idf
+
 # Python
 __pycache__/
 *.py[cod]

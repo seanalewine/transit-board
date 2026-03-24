@@ -1,4 +1,5 @@
-# https://developers.home-assistant.io/docs/add-ons/repository#repository-configuration
-name: CTA Live Train Tracker Server
+name: Live Transit Board
 url: 'https://github.com/seanalewine/cta-location-tracker/'
 maintainer: Sean Alewine <sean@seanalewine.app>
+topic: esp32
+content_in_root: false
