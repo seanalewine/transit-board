@@ -1,5 +1,28 @@
 # Live Train Tracker Server for CTA
 
+## Recommended: ESPHome Standalone Implementation
+
+**For new installations, use the ESPHome implementation in `esphome-controller/`**. This is the recommended approach - the device operates standalone without requiring the Home Assistant add-on.
+
+### Features
+- ESPHome device fetches CTA API directly
+- Full standalone operation without HA addon
+- Web-based configuration via built-in web server
+- Automatic OTA updates via GitHub Releases
+- Configurable via Home Assistant or web browser
+
+### Quick Start
+1. Flash ESPHome firmware to ESP32-C6 device
+2. Connect to "Transit Board" WiFi AP to configure WiFi
+3. Enter CTA API key via web interface or HA
+4. Device operates independently
+
+---
+
+## HA Add-on (Deprecated)
+
+The `tracker/` folder contains a deprecated Home Assistant add-on. See [tracker/README.md](tracker/README.md) for details.
+
 [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fseanalewine%2Fcta-location-tracker)
 
 ## About
@@ -23,8 +46,8 @@ Notes to developers after forking or using the github template feature:
 - When you merge to the 'main' branch of your repository a new build will be triggered.
   - Make sure you adjust the 'version' key in 'example/config.yaml' when you do that.
   - Make sure you update 'example/CHANGELOG.md' when you do that.
-  - The first time this runs you might need to adjust the image configuration on github container registry to make it public
-  - You may also need to adjust the github Actions configuration (Settings > Actions > General > Workflow > Read & Write)
+- The first time this runs you might need to adjust the image configuration on github container registry to make it public
+- You may also need to adjust the github Actions configuration (Settings > Actions > General > Workflow > Read & Write)
 - Adjust the 'image' key in 'example/config.yaml' so it points to your username instead of 'home-assistant'.
   - This is where the build images will be published to.
 - Rename the example directory.

@@ -2,7 +2,15 @@
 
 ---
 
-## How to Use
+## ⚠️ Deprecation Notice
+
+**This HA add-on is deprecated.** The recommended approach is now the standalone ESPHome device implementation which operates independently without requiring the HA add-on.
+
+**For new installations, please use the ESPHome implementation instead.** See the main project README for details.
+
+---
+
+## How to Use (Deprecated)
 
 Use of this add-on requires the following steps before it will do anything.
 
