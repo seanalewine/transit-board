@@ -11,21 +11,21 @@ The project fetches data from the CTA TrainTracker API and visualizes train arri
 
 ```
 cta-location-tracker/
-├── esphome-controller/          # ESPHome firmware
-│   ├── boards/                   # Board configurations
-│   │   ├── transit-board-a.yaml
-│   │   ├── transit-board-b.yaml
-│   │   └── secrets.yaml          # WiFi/API credentials
-│   ├── templates/                # Shared C++ templates
-│   │   ├── base.yaml
-│   │   ├── station_map.h
-│   │   └── train_processor.h
-│   ├── script.yaml               # Main ESPHome config (legacy)
-│   └── secrets.yaml
-├── .github/workflows/            # CI/CD pipelines
-│   ├── lint.yaml                 # ESPHome config validation
-│   └── esphome-build.yaml        # Firmware builds
-└── README.md
+|- esphome-controller/          # ESPHome firmware
+|   |- boards/                   # Board configurations
+|   |   |- transit-board-a.yaml
+|   |   |- transit-board-b.yaml
+|   |   |- secrets.yaml          # WiFi/API credentials
+|   |- templates/                # Shared C++ templates
+|   |   |- base.yaml
+|   |   |- station_map.h
+|   |   |- train_processor.h
+|   |- script.yaml               # Main ESPHome config (legacy)
+|   |- secrets.yaml
+|- .github/workflows/            # CI/CD pipelines
+|   |- lint.yaml                 # ESPHome config validation
+|   |- esphome-build.yaml        # Firmware builds
+|- README.md
 ```
 
 ## Build/Lint/Test Commands
