@@ -10,7 +10,7 @@ The project fetches data from the CTA TrainTracker API and visualizes train arri
 ### Current Structure
 
 ```
-cta-location-tracker/
+transit-board/
 |- esphome-controller/          # ESPHome firmware
 |   |- boards/                   # Board configurations
 |   |   |- transit-board-a.yaml

@@ -1,5 +1,5 @@
 substitutions:
-  github_repo: "seanalewine/cta-location-tracker"
+  github_repo: "seanalewine/transit-board"
   project_version: "dev"
 
 esphome:
@@ -16,7 +16,7 @@ esphome:
       - lambda: |-
           update_all_led_brightness();
   project:
-    name: "cta-location-tracker.${board_name}"
+    name: "transit-board.${board_name}"
     version: "${project_version}"
 # 
 json:
