@@ -62,9 +62,10 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.board }}
+          name: firmware-artifacts
           path: ${{ matrix.board }}
           retention-days: 7
+          merge-multiple: true
 
   release:
     needs: build
@@ -74,22 +75,17 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download transit-board-0001 artifact
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: transit-board-0001
-          path: transit-board-0001
-
-      - name: Download transit-board-0002 artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: transit-board-0002
-          path: transit-board-0002
+          name: firmware-artifacts
+          path: artifacts
+          merge-multiple: true
 
       - name: Rename manifest files
         run: |
-          mv transit-board-0001/manifest.json transit-board-0001/transit-board-0001-manifest.json
-          mv transit-board-0002/manifest.json transit-board-0002/transit-board-0002-manifest.json
+          mv artifacts/transit-board-0001/manifest.json artifacts/transit-board-0001/transit-board-0001-manifest.json
+          mv artifacts/transit-board-0002/manifest.json artifacts/transit-board-0002/transit-board-0002-manifest.json
 
       - name: Get short SHA
         id: sha
@@ -110,9 +106,9 @@ jobs:
             - `transit-board-0002.factory.bin` - Factory flash for Transit Board 0002
             - `*-manifest.json` files - Update manifests for each device
           files: |
-            transit-board-0001/*.bin
-            transit-board-0001/transit-board-0001-manifest.json
-            transit-board-0002/*.bin
-            transit-board-0002/transit-board-0002-manifest.json
+            artifacts/transit-board-0001/*.bin
+            artifacts/transit-board-0001/transit-board-0001-manifest.json
+            artifacts/transit-board-0002/*.bin
+            artifacts/transit-board-0002/transit-board-0002-manifest.json
           draft: false
           prerelease: false
