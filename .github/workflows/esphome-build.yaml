@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        board: [transit-board_a, transit-board_b]
+        board: [transit-board-a, transit-board-b]
     name: Build ${{ matrix.board }}
     steps:
       - name: Checkout repository
@@ -62,22 +62,22 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download transit-board_a artifact
+      - name: Download transit-board-a artifact
         uses: actions/download-artifact@v4
         with:
-          name: transit-board_a
-          path: transit-board_a
+          name: transit-board-a
+          path: transit-board-a
 
-      - name: Download transit-board_b artifact
+      - name: Download transit-board-b artifact
         uses: actions/download-artifact@v4
         with:
-          name: transit-board_b
-          path: transit-board_b
+          name: transit-board-b
+          path: transit-board-b
 
       - name: Rename manifest files
         run: |
-          mv transit-board_a/manifest.json transit-board_a/transit-board_a-manifest.json
-          mv transit-board_b/manifest.json transit-board_b/transit-board_b-manifest.json
+          mv transit-board-a/manifest.json transit-board-a/transit-board-a-manifest.json
+          mv transit-board-b/manifest.json transit-board-b/transit-board-b-manifest.json
 
       - name: Get short SHA
         id: sha
@@ -92,15 +92,15 @@ jobs:
             Automated firmware build from commit ${{ steps.sha.outputs.short }}
             
             ## Files
-            - `transit-board_a.ota.bin` - OTA update for Transit Board A
-            - `transit-board_a.factory.bin` - Factory flash for Transit Board A
-            - `transit-board_b.ota.bin` - OTA update for Transit Board B
-            - `transit-board_b.factory.bin` - Factory flash for Transit Board B
+            - `transit-board-a.ota.bin` - OTA update for Transit Board A
+            - `transit-board-a.factory.bin` - Factory flash for Transit Board A
+            - `transit-board-b.ota.bin` - OTA update for Transit Board B
+            - `transit-board-b.factory.bin` - Factory flash for Transit Board B
             - `*-manifest.json` files - Update manifests for each device
           files: |
-            transit-board_a/*.bin
-            transit-board_a/transit-board_a-manifest.json
-            transit-board_b/*.bin
-            transit-board_b/transit-board_b-manifest.json
+            transit-board-a/*.bin
+            transit-board-a/transit-board-a-manifest.json
+            transit-board-b/*.bin
+            transit-board-b/transit-board-b-manifest.json
           draft: false
           prerelease: false

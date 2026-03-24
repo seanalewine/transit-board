@@ -1,6 +1,6 @@
 substitutions:
-  board_name: "transit-board_b"
-  friendly_name: "Transit Board B"
+  board_name: "transit-board-b"
+  friendly_name: "Transit Board"
   transition_length: "500ms"
   cta_api_key: ""  # Set your CTA API key here for persistence across flashes
   project_version: "1.0.9"
