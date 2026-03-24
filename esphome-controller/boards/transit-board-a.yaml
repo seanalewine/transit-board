@@ -1,17 +1,16 @@
 substitutions:
-  board_name: "transit-board"
-  board_id: "0002"
+  board_name: "transit-board-a"
   friendly_name: "Transit Board"
   transition_length: "500ms"
   cta_api_key: ""  # Set your CTA API key here for persistence across flashes
-  project_version: "1.1.0"
+  project_version: "1.0.9"
 
 packages:
   base: !include ../templates/base.yaml
 
 esphome:
   includes:
-    - ./station_map.${board_id}.h
+    - ../templates/station_map.h
 
 light:
   - platform: esp32_rmt_led_strip

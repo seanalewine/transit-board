@@ -1,14 +1,6 @@
 # Live Train Tracker Server for CTA
 
-## ⚠️ Deprecation Notice
-
-**This HA add-on is deprecated.** The recommended approach is now the standalone ESPHome device implementation which operates independently without requiring the HA add-on.
-
-**For new installations, please use the ESPHome implementation instead.** See the main project README for details.
-
----
-
-## About (Deprecated)
+## About
 
 **This plugin is in active development and not meaningfully usable without modifying the base code and building your own Docker image each time. Installation not currently recomended.**
 **About 80% of this project was written with generative AI including Google Gemini Pro 2.5 and Qwen Coder.**

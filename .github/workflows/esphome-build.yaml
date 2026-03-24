@@ -12,17 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        board: [transit-board-0001, transit-board-0002]
+        board: [transit-board-a, transit-board-b]
     name: Build ${{ matrix.board }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-
-      - name: Extract board_id
-        id: board_id
-        run: |
-          BOARD_ID=$(echo "${{ matrix.board }}" | sed 's/transit-board-//')
-          echo "board_id=$BOARD_ID" >> $GITHUB_OUTPUT
 
       - name: Cache PlatformIO packages
         uses: actions/cache@v4
@@ -41,12 +35,6 @@ jobs:
           wifi_password: "ci_build_password"
           transition_length: 0.25s
           EOF
-
-      - name: Prepare station map
-        run: |
-          mkdir -p esphome-controller/templates
-          cp esphome-controller/boards/station_map.${{ steps.board_id.outputs.board_id }}.h \
-             esphome-controller/templates/station_map.h
 
       - name: Build ESPHome firmware
         uses: esphome/build-action@v7
@@ -74,17 +62,22 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download artifacts
+      - name: Download transit-board-a artifact
         uses: actions/download-artifact@v4
         with:
-          pattern: transit-board-*
-          path: artifacts
-          merge-multiple: true
+          name: transit-board-a
+          path: transit-board-a
+
+      - name: Download transit-board-b artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: transit-board-b
+          path: transit-board-b
 
       - name: Rename manifest files
         run: |
-          mv artifacts/transit-board-0001/manifest.json artifacts/transit-board-0001/transit-board-0001-manifest.json
-          mv artifacts/transit-board-0002/manifest.json artifacts/transit-board-0002/transit-board-0002-manifest.json
+          mv transit-board-a/manifest.json transit-board-a/transit-board-a-manifest.json
+          mv transit-board-b/manifest.json transit-board-b/transit-board-b-manifest.json
 
       - name: Get short SHA
         id: sha
@@ -99,15 +92,15 @@ jobs:
             Automated firmware build from commit ${{ steps.sha.outputs.short }}
             
             ## Files
-            - `transit-board-0001.ota.bin` - OTA update for Transit Board 0001
-            - `transit-board-0001.factory.bin` - Factory flash for Transit Board 0001
-            - `transit-board-0002.ota.bin` - OTA update for Transit Board 0002
-            - `transit-board-0002.factory.bin` - Factory flash for Transit Board 0002
+            - `transit-board-a.ota.bin` - OTA update for Transit Board A
+            - `transit-board-a.factory.bin` - Factory flash for Transit Board A
+            - `transit-board-b.ota.bin` - OTA update for Transit Board B
+            - `transit-board-b.factory.bin` - Factory flash for Transit Board B
             - `*-manifest.json` files - Update manifests for each device
           files: |
-            artifacts/transit-board-0001/*.bin
-            artifacts/transit-board-0001/transit-board-0001-manifest.json
-            artifacts/transit-board-0002/*.bin
-            artifacts/transit-board-0002/transit-board-0002-manifest.json
+            transit-board-a/*.bin
+            transit-board-a/transit-board-a-manifest.json
+            transit-board-b/*.bin
+            transit-board-b/transit-board-b-manifest.json
           draft: false
           prerelease: false
