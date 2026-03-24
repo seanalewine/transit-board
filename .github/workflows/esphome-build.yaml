@@ -13,11 +13,16 @@ jobs:
     strategy:
       matrix:
         board: [transit-board-0001, transit-board-0002]
-        board_id: [0001, 0002]
     name: Build ${{ matrix.board }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+
+      - name: Extract board_id
+        id: board_id
+        run: |
+          BOARD_ID=$(echo "${{ matrix.board }}" | sed 's/transit-board-//')
+          echo "board_id=$BOARD_ID" >> $GITHUB_OUTPUT
 
       - name: Cache PlatformIO packages
         uses: actions/cache@v4
@@ -39,7 +44,7 @@ jobs:
 
       - name: Prepare station map
         run: |
-          cp esphome-controller/boards/station_map.${{ matrix.board_id }}.h \
+          cp esphome-controller/boards/station_map.${{ steps.board_id.outputs.board_id }}.h \
              esphome-controller/boards/station_map.h
 
       - name: Build ESPHome firmware
