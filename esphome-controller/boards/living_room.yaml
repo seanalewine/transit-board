@@ -3,7 +3,7 @@ substitutions:
   friendly_name: "Living Room L Tracker"
   transition_length: "500ms"
   cta_api_key: ""  # Set your CTA API key here for persistence across flashes
-  project_version: "1.0.3"
+  project_version: "1.0.4"
 
 packages:
   base: !include ../templates/base.yaml
