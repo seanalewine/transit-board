@@ -1,5 +1,5 @@
 name: Live Transit Board
-url: 'https://github.com/seanalewine/cta-location-tracker/'
+url: 'https://github.com/seanalewine/transit-board'
 maintainer: Sean Alewine <sean@seanalewine.app>
 topic: esp32
 content_in_root: false
