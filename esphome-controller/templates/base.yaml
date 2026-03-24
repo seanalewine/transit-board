@@ -1,0 +1,354 @@
+substitutions:
+  github_repo: "seanalewine/cta-location-tracker"
+  project_version: "dev"
+
+esphome:
+  name: ${board_name}
+  friendly_name: ${friendly_name}
+  min_version: 2025.9.0
+  name_add_mac_suffix: false
+  includes:
+    - ../templates/station_map.h
+    - ../templates/train_processor.h
+  on_boot:
+    priority: 600
+    then:
+      - lambda: |-
+          ESP_LOGI("train", "Boot complete, brightness: %d%%", (int)id(global_brightness).state);
+  project:
+    name: "cta-location-tracker.${board_name}"
+    version: "${project_version}"
+
+json:
+
+esp32:
+  variant: esp32c6
+  framework:
+    type: esp-idf
+  cpu_frequency: 160MHz
+
+logger:
+  baud_rate: 0
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: LIGHT
+
+captive_portal:
+
+api:
+
+ota:
+  - platform: esphome
+  - platform: http_request
+
+update:
+  - platform: http_request
+    name: Firmware Update
+    id: firmware_update
+    source: https://github.com/${github_repo}/releases/latest/download/${board_name}/manifest.json
+    update_interval: 6h
+    on_update:
+      then:
+        - logger.log: "New firmware available, installing..."
+        - update.apply: firmware_update
+
+http_request:
+  id: http_request_data
+  verify_ssl: false
+  timeout: 5s
+  buffer_size_rx: 16384
+  buffer_size_tx: 4096
+  useragent: CTA-TrainTracker/ESPHome
+
+sensor:
+  - platform: template
+    name: "Active Trains"
+    id: active_trains
+    unit_of_measurement: "trains"
+    accuracy_decimals: 0
+    lambda: return id(active_train_count);
+
+text_sensor:
+  - platform: template
+    name: "Firmware Version"
+    id: firmware_version
+    icon: "mdi:information"
+    entity_category: diagnostic
+    lambda: |-
+      return {"${project_version}"};
+
+text:
+  - platform: template
+    name: "API Key"
+    id: api_key
+    mode: password
+    optimistic: true
+    initial_value: "${cta_api_key}"
+    restore_value: true
+
+number:
+  - platform: template
+    name: "Global Brightness"
+    id: global_brightness
+    min_value: 0
+    max_value: 100
+    step: 1
+    mode: slider
+    optimistic: true
+    initial_value: 100
+    restore_value: true
+    on_value:
+      then:
+        - lambda: |-
+            ESP_LOGI("train", "Brightness changed to: %d%%", (int)id(global_brightness).state);
+            update_all_led_brightness();
+
+  - platform: template
+    name: "Refresh Interval (sec)"
+    id: refresh_interval
+    min_value: 7
+    max_value: 5000
+    step: 1
+    optimistic: true
+    initial_value: 60
+    restore_value: true
+
+  - platform: template
+    name: "Trains Per Line"
+    id: trains_per_line
+    min_value: 0
+    max_value: 20
+    step: 1
+    optimistic: true
+    initial_value: 0
+    restore_value: true
+
+switch:
+   - platform: template
+     name: "Bidirectional"
+     id: bidirectional
+     optimistic: true
+     assumed_state: true
+     restore_mode: RESTORE_DEFAULT_OFF
+
+   - platform: template
+     name: "Holiday Mode"
+     id: holiday_mode
+     optimistic: true
+     assumed_state: true
+     restore_mode: RESTORE_DEFAULT_OFF
+
+select:
+   - platform: template
+     name: "Update Mode"
+     id: update_mode
+     optimistic: true
+     restore_value: true
+     options:
+       - "Quick Update"
+       - "Gradual Update"
+       - "Bypass"
+     initial_option: "Quick Update"
+     on_value:
+       then:
+         - lambda: |-
+             pending_mode_change = true;
+
+globals:
+  - id: active_train_count
+    type: int
+    restore_value: false
+    initial_value: "0"
+
+  - id: last_holiday_train_station
+    type: int
+    restore_value: false
+    initial_value: "-1"
+
+  - id: refresh_counter
+    type: int
+    restore_value: false
+    initial_value: "0"
+
+  - id: gradual_queue_size
+    type: int
+    restore_value: false
+    initial_value: "0"
+
+  - id: gradual_tick_interval
+    type: int
+    restore_value: false
+    initial_value: "5"
+
+  - id: gradual_tick_count
+    type: int
+    restore_value: false
+    initial_value: "0"
+
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          process_pending_mode_change();
+          id(refresh_counter)++;
+          if (id(refresh_counter) >= id(refresh_interval).state) {
+            id(refresh_counter) = 0;
+            id(fetch_all_routes).execute();
+          }
+
+  - interval: 200ms
+    then:
+      - lambda: |-
+          if (id(gradual_queue_size) > 0) {
+            id(gradual_tick_count)++;
+            if (id(gradual_tick_count) >= id(gradual_tick_interval)) {
+              id(gradual_tick_count) = 0;
+              process_gradual_update();
+              id(gradual_queue_size) = gradual_queue.size();
+            }
+          }
+
+script:
+  - id: fetch_all_routes
+    mode: restart
+    then:
+      - lambda: |-
+          ESP_LOGI("train", "Starting refresh cycle");
+          ESP_LOGI("train", "API key empty: %d, bypass: %d", id(api_key).state.empty(), id(update_mode).current_option() == "Bypass");
+          clear_gradual_queue();
+          id(gradual_queue_size) = 0;
+      - if:
+          condition:
+            lambda: return !id(api_key).state.empty();
+          then:
+            - if:
+                condition:
+                  lambda: return id(update_mode).current_option() != "Bypass";
+                then:
+                  - http_request.get:
+                      id: http_request_data
+                      url: !lambda |-
+                        return "http://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=" + id(api_key).state + "&rt=red&outputType=JSON";
+                      capture_response: true
+                      max_response_buffer_size: 10kB
+                      on_response:
+                        then:
+                          - lambda: |-
+                              process_json_body(body, "red");
+                      on_error:
+                        then:
+                          - lambda: ESP_LOGE("train", "Request failed for red");
+
+                  - http_request.get:
+                      id: http_request_data
+                      url: !lambda |-
+                        return "http://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=" + id(api_key).state + "&rt=blue&outputType=JSON";
+                      capture_response: true
+                      max_response_buffer_size: 10kB
+                      on_response:
+                        then:
+                          - lambda: |-
+                              process_json_body(body, "blue");
+                      on_error:
+                        then:
+                          - lambda: ESP_LOGE("train", "Request failed for blue");
+
+                  - http_request.get:
+                      id: http_request_data
+                      url: !lambda |-
+                        return "http://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=" + id(api_key).state + "&rt=brn&outputType=JSON";
+                      capture_response: true
+                      max_response_buffer_size: 10kB
+                      on_response:
+                        then:
+                          - lambda: |-
+                              process_json_body(body, "brn");
+                      on_error:
+                        then:
+                          - lambda: ESP_LOGE("train", "Request failed for brn");
+
+                  - http_request.get:
+                      id: http_request_data
+                      url: !lambda |-
+                        return "http://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=" + id(api_key).state + "&rt=g&outputType=JSON";
+                      capture_response: true
+                      max_response_buffer_size: 10kB
+                      on_response:
+                        then:
+                          - lambda: |-
+                              process_json_body(body, "g");
+                      on_error:
+                        then:
+                          - lambda: ESP_LOGE("train", "Request failed for g");
+
+                  - http_request.get:
+                      id: http_request_data
+                      url: !lambda |-
+                        return "http://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=" + id(api_key).state + "&rt=org&outputType=JSON";
+                      capture_response: true
+                      max_response_buffer_size: 10kB
+                      on_response:
+                        then:
+                          - lambda: |-
+                              process_json_body(body, "org");
+                      on_error:
+                        then:
+                          - lambda: ESP_LOGE("train", "Request failed for org");
+
+                  - http_request.get:
+                      id: http_request_data
+                      url: !lambda |-
+                        return "http://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=" + id(api_key).state + "&rt=p&outputType=JSON";
+                      capture_response: true
+                      max_response_buffer_size: 10kB
+                      on_response:
+                        then:
+                          - lambda: |-
+                              process_json_body(body, "p");
+                      on_error:
+                        then:
+                          - lambda: ESP_LOGE("train", "Request failed for p");
+
+                  - http_request.get:
+                      id: http_request_data
+                      url: !lambda |-
+                        return "http://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=" + id(api_key).state + "&rt=pink&outputType=JSON";
+                      capture_response: true
+                      max_response_buffer_size: 10kB
+                      on_response:
+                        then:
+                          - lambda: |-
+                              process_json_body(body, "pink");
+                      on_error:
+                        then:
+                          - lambda: ESP_LOGE("train", "Request failed for pink");
+
+                  - http_request.get:
+                      id: http_request_data
+                      url: !lambda |-
+                        return "http://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=" + id(api_key).state + "&rt=y&outputType=JSON";
+                      capture_response: true
+                      max_response_buffer_size: 10kB
+                      on_response:
+                        then:
+                          - lambda: |-
+                              process_json_body(body, "y");
+                      on_error:
+                        then:
+                          - lambda: ESP_LOGE("train", "Request failed for y");
+
+                  # All lines fetched - now process and queue transitions
+                  - lambda: |-
+                      process_all_trains();
+                else:
+                  - lambda: |-
+                      activate_bypass_mode();
+
+      - if:
+          condition:
+            lambda: return id(update_mode).current_option() == "Bypass";
+          then:
+            - lambda: |-
+                activate_bypass_mode();

@@ -1,0 +1,25 @@
+substitutions:
+  board_name: "kitchen"
+  friendly_name: "Kitchen L Tracker"
+  transition_length: "500ms"
+  cta_api_key: ""  # Set your CTA API key here for persistence across flashes
+  project_version: "1.0.0"
+
+packages:
+  base: !include ../templates/base.yaml
+
+esphome:
+  includes:
+    - ../templates/station_map.h
+
+light:
+  - platform: esp32_rmt_led_strip
+    id: stop_indicators
+    rgb_order: GRB
+    pin: GPIO0
+    internal: true
+    default_transition_length: !secret transition_length
+    use_psram: false
+    num_leds: 320
+    chipset: WS2812
+    name: "Stop Indicators"

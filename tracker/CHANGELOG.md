@@ -112,12 +112,12 @@
 ## Architecture Goal
 Move core functionality from HA addon to ESPHome device for standalone operation. ESPHome device fetches CTA API directly, processes train data, and controls lights without HA addon dependency.
 
-## Phase 1: Core ESPHome Migration
-- Add `http_request` component to fetch CTA API
-- Create C++ custom sensor with hardcoded station mapping array (192 entries)
-- Implement train tracking (`rn → unifiedId` mapping, detect moved/new/gone)
-- Convert partition lights to template lights with color action
-- Add config entities: `api_key`, `refresh_interval`, `trains_per_line`, `bidirectional`
+## Phase 1: Core ESPHome Migration ✅
+- [x] Add `http_request` component to fetch CTA API
+- [x] Create C++ custom sensor with hardcoded station mapping array (192 entries)
+- [x] Implement train tracking (`rn → unifiedId` mapping, detect moved/new/gone)
+- [x] Convert partition lights to template lights with color action
+- [x] Add config entities: `api_key`, `refresh_interval`, `trains_per_line`, `bidirectional`
 
 ## Phase 2: Standalone Operation
 - Remove HA API dependency - ESPHome controls lights internally

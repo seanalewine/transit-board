@@ -1,0 +1,91 @@
+name: ESPHome Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'esphome-controller/**'
+      - '.github/workflows/esphome-build.yaml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        board: [kitchen, living_room]
+    name: Build ${{ matrix.board }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Create mock secrets for CI
+        run: |
+          cat > esphome-controller/boards/secrets.yaml << 'EOF'
+          wifi_ssid: "CI_BUILD"
+          wifi_password: "ci_build_password"
+          transition_length: 0.25s
+          EOF
+
+      - name: Build ESPHome firmware
+        uses: esphome/build-action@v7
+        with:
+          yaml-file: esphome-controller/boards/${{ matrix.board }}.yaml
+          version: latest
+          complete-manifest: true
+
+      - name: Rename output folder
+        run: |
+          mv ${{ matrix.board }}-esp32c6 ${{ matrix.board }} || true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.board }}
+          path: ${{ matrix.board }}
+          retention-days: 7
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    name: Create Release
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    steps:
+      - name: Download kitchen artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: kitchen
+          path: kitchen
+
+      - name: Download living_room artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: living_room
+          path: living_room
+
+      - name: Get short SHA
+        id: sha
+        run: echo "short=${GITHUB_SHA:0:7}" >> $GITHUB_OUTPUT
+
+      - name: Create or update release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: firmware-${{ steps.sha.outputs.short }}
+          name: Firmware Build ${{ steps.sha.outputs.short }}
+          body: |
+            Automated firmware build from commit ${{ steps.sha.outputs.short }}
+            
+            ## Files
+            - `kitchen.ota.bin` - OTA update for kitchen device
+            - `kitchen.factory.bin` - Factory flash for kitchen device
+            - `living_room.ota.bin` - OTA update for living room device
+            - `living_room.factory.bin` - Factory flash for living room device
+            - `manifest.json` files - Update manifests for each device
+          files: |
+            kitchen/*.bin
+            kitchen/manifest.json
+            living_room/*.bin
+            living_room/manifest.json
+          draft: false
+          prerelease: false

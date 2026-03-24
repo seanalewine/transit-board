@@ -20,3 +20,7 @@ __pycache__/
 # Test files
 test_*.py
 *_test.py
+
+# ESPHome secrets
+esphome-controller/secrets.yaml
+esphome-controller/boards/secrets.yaml
