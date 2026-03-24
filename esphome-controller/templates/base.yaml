@@ -39,6 +39,21 @@ wifi:
 
 captive_portal:
 
+web_server:
+  port: 80
+  version: 3
+  local: true
+  sorting_groups:
+    - id: group_settings
+      name: "Settings"
+      sorting_weight: 10
+    - id: group_status
+      name: "Status"
+      sorting_weight: 20
+    - id: group_diagnostic
+      name: "Diagnostic"
+      sorting_weight: 30
+
 api:
 
 ota:
@@ -51,6 +66,9 @@ update:
     id: firmware_update
     source: https://github.com/${github_repo}/releases/latest/download/${board_name}-manifest.json
     update_interval: 10min
+    web_server:
+      sorting_group_id: group_diagnostic
+      sorting_weight: 20
     on_update_available:
       then:
         - logger.log: "New firmware available, installing..."
@@ -70,6 +88,9 @@ sensor:
     id: active_trains
     unit_of_measurement: "trains"
     accuracy_decimals: 0
+    web_server:
+      sorting_group_id: group_status
+      sorting_weight: 10
     lambda: return id(active_train_count);
 
 text_sensor:
@@ -78,6 +99,9 @@ text_sensor:
     id: firmware_version
     icon: "mdi:information"
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: group_diagnostic
+      sorting_weight: 10
     lambda: |-
       return {"${project_version}"};
 
@@ -89,6 +113,9 @@ text:
     optimistic: true
     initial_value: "${cta_api_key}"
     restore_value: true
+    web_server:
+      sorting_group_id: group_settings
+      sorting_weight: 10
 
 number:
   - platform: template
@@ -101,6 +128,9 @@ number:
     optimistic: true
     initial_value: 100
     restore_value: true
+    web_server:
+      sorting_group_id: group_settings
+      sorting_weight: 20
     on_value:
       then:
         - lambda: |-
@@ -116,6 +146,9 @@ number:
     optimistic: true
     initial_value: 60
     restore_value: true
+    web_server:
+      sorting_group_id: group_settings
+      sorting_weight: 30
 
   - platform: template
     name: "Trains Per Line"
@@ -126,6 +159,9 @@ number:
     optimistic: true
     initial_value: 0
     restore_value: true
+    web_server:
+      sorting_group_id: group_settings
+      sorting_weight: 40
 
 switch:
    - platform: template
@@ -134,6 +170,9 @@ switch:
      optimistic: true
      assumed_state: true
      restore_mode: RESTORE_DEFAULT_OFF
+     web_server:
+       sorting_group_id: group_settings
+       sorting_weight: 50
 
    - platform: template
      name: "Holiday Mode"
@@ -141,6 +180,9 @@ switch:
      optimistic: true
      assumed_state: true
      restore_mode: RESTORE_DEFAULT_OFF
+     web_server:
+       sorting_group_id: group_settings
+       sorting_weight: 60
 
 select:
    - platform: template
@@ -153,6 +195,9 @@ select:
        - "Gradual Update"
        - "Bypass"
      initial_option: "Quick Update"
+     web_server:
+       sorting_group_id: group_settings
+       sorting_weight: 70
      on_value:
        then:
          - lambda: |-
