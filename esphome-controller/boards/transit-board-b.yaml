@@ -18,7 +18,7 @@ light:
     rgb_order: GRB
     pin: GPIO0
     internal: true
-    default_transition_length: !secret transition_length
+    default_transition_length: ${transition_length}
     use_psram: false
     num_leds: 320
     chipset: WS2812

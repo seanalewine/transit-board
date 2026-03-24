@@ -76,14 +76,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-esphome-
 
-      - name: Create mock secrets for CI
-        run: |
-          cat > esphome-controller/boards/secrets.yaml << 'EOF'
-          wifi_ssid: "CI_BUILD"
-          wifi_password: "ci_build_password"
-          transition_length: 0.25s
-          EOF
-
       - name: Build ESPHome firmware
         uses: esphome/build-action@v7
         with:
