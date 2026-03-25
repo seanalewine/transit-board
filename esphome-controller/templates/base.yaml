@@ -88,6 +88,28 @@ sensor:
       sorting_weight: 10
     lambda: return id(active_train_count);
 
+  - platform: template
+    name: "Power Draw"
+    id: power_draw
+    unit_of_measurement: "mA"
+    accuracy_decimals: 0
+    device_class: current
+    web_server:
+      sorting_group_id: group_status
+      sorting_weight: 15
+    lambda: return calculate_power_draw();
+
+  - platform: template
+    name: "Wattage"
+    id: wattage
+    unit_of_measurement: "W"
+    accuracy_decimals: 1
+    device_class: power
+    web_server:
+      sorting_group_id: group_status
+      sorting_weight: 16
+    lambda: return calculate_power_draw() * 5.0 / 1000.0;
+
 text_sensor:
   - platform: template
     name: "Firmware Version"

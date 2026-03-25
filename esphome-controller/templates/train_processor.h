@@ -246,6 +246,15 @@ void process_json_body(const std::string& body, const std::string& line) {
     }
 }
 
+float calculate_power_draw() {
+    float brightness = id(global_brightness).state / 100.0f;
+    float total = 0.0f;
+    for (auto& pair : current_led_colors) {
+        total += (pair.second.r + pair.second.g + pair.second.b) * brightness;
+    }
+    return total * 20.0f;  // 20mA per channel
+}
+
 void process_all_trains() {
     auto light = static_cast<AddressableLight*>(id(stop_indicators).get_output());
     light_initialized = true;
