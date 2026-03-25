@@ -1,0 +1,207 @@
+/* Transit Board - Dark Theme for ESPHome Web Server v3 */
+
+:root {
+  --primary-color: #03a9f4;
+}
+
+html, body {
+  background-color: #0d1117;
+  color: #e6edf3;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 8px;
+}
+
+body {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+esp-app {
+  display: block;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+a {
+  color: var(--primary-color);
+}
+
+h1, h2, h3 {
+  color: #e6edf3;
+  border-bottom-color: #21262d;
+}
+
+h1 {
+  text-align: center;
+  font-size: 1.4em;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.group {
+  background: #161b22;
+  border: 1px solid #21262d;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.group-header {
+  background-color: #1c2128 !important;
+  color: #e6edf3;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 10px 12px;
+  border-bottom: 1px solid #21262d;
+  user-select: none;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 12px;
+  background: #161b22;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #21262d;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 10px 12px;
+  cursor: pointer;
+  color: #8b949e;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+  background: transparent;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.tab:hover {
+  color: #e6edf3;
+  background-color: rgba(3, 169, 244, 0.08);
+}
+
+.tab.active {
+  color: var(--primary-color);
+  background-color: rgba(3, 169, 244, 0.12);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.tab-container {
+  background-color: rgba(127, 127, 127, 0.3) !important;
+  border-radius: 8px 8px 0 0 !important;
+  margin-top: 0 !important;
+}
+
+.entity-row {
+  border-bottom-color: #21262d;
+}
+
+.entity-row:nth-child(2n) {
+  background-color: rgba(22, 27, 34, 0.6) !important;
+}
+
+.entity-row:nth-child(2n+1) {
+  background-color: transparent;
+}
+
+.entity-row>:nth-child(1) {
+  color: #58a6ff !important;
+}
+
+.entity-row>:nth-child(2) {
+  color: #e6edf3;
+}
+
+.btn, button {
+  color: var(--primary-color) !important;
+  border: 1px solid #30363d !important;
+  background-color: #21262d !important;
+  border-radius: 6px !important;
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.3px !important;
+  transition: background-color 0.15s, border-color 0.15s !important;
+  cursor: pointer;
+}
+
+.btn:hover, button:hover {
+  background-color: #30363d !important;
+  border-color: #484f58 !important;
+}
+
+.btn:active, button:active {
+  background-image: none !important;
+  background-color: #03a9f4 !important;
+  color: #fff !important;
+}
+
+.abuttonIsState {
+  background-color: #238636 !important;
+  color: #fff !important;
+  border: 1px solid rgba(240,246,252,0.1) !important;
+}
+
+input[type="text"], input[type="number"], input[type="password"] {
+  background-color: #0d1117 !important;
+  color: #e6edf3 !important;
+  border: 1px solid #30363d !important;
+  border-radius: 6px !important;
+  padding: 6px 10px !important;
+}
+
+input[type="text"]:focus, input[type="number"]:focus, input[type="password"]:focus {
+  border-color: var(--primary-color) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(3, 169, 244, 0.2) !important;
+}
+
+input[type="range"] {
+  accent-color: var(--primary-color);
+}
+
+select {
+  background-color: #0d1117 !important;
+  color: #e6edf3 !important;
+  border: 1px solid #30363d !important;
+  border-radius: 6px !important;
+  padding: 6px 10px !important;
+}
+
+select option {
+  background-color: #161b22;
+  color: #e6edf3;
+}
+
+#log {
+  background-color: #0d1117 !important;
+  border: 1px solid #21262d;
+  border-radius: 6px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 12px;
+  color: #8b949e;
+}
+
+#log .v { color: #484f58 }
+#log .d { color: #58a6ff }
+#log .c { color: #d2a8ff }
+#log .i { color: #3fb950 }
+#log .w { color: #d29922 }
+#log .e { color: #f85149; font-weight: bold }
+
+.binary_sensor_off {
+  color: #484f58 !important;
+}
+
+::placeholder {
+  color: #484f58;
+}

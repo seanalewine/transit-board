@@ -42,6 +42,8 @@ web_server:
   port: 80
   version: 3
   local: true
+  css_url: ""
+  css_include: "../templates/webserver.css"
   sorting_groups:
     - id: group_settings
       name: "Settings"
@@ -58,6 +60,7 @@ api:
 ota:
   - platform: esphome
   - platform: http_request
+  - platform: web_server
 
 update:
   - platform: http_request
@@ -89,7 +92,7 @@ sensor:
     lambda: return id(active_train_count);
 
   - platform: template
-    name: "Power Draw"
+    name: "LED Power Draw"
     id: power_draw
     unit_of_measurement: "mA"
     accuracy_decimals: 0

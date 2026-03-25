@@ -249,18 +249,36 @@ void process_json_body(const std::string& body, const std::string& line) {
 static std::string cached_arrivals = "No station selected";
 
 void update_station_options(const std::string& display_line) {
+    static std::vector<std::string> stored_options;
+    static esphome::FixedVector<const char*> option_ptrs;
+
     std::string line = get_line_code(display_line);
     if (line.empty()) {
-        std::vector<std::string> placeholder = {"Select a line"};
-        id(arrivals_station).set_options(placeholder, "Select a line");
+        stored_options = {"Select a line"};
+        option_ptrs.init(1);
+        option_ptrs.clear();
+        option_ptrs.push_back(stored_options[0].c_str());
+        id(arrivals_station).traits.set_options(option_ptrs);
+        id(arrivals_station).publish_state("Select a line");
         return;
     }
     auto stations = get_station_names_for_line(line);
     if (stations.empty()) {
-        std::vector<std::string> placeholder = {"No stations found"};
-        id(arrivals_station).set_options(placeholder, "No stations found");
+        stored_options = {"No stations found"};
+        option_ptrs.init(1);
+        option_ptrs.clear();
+        option_ptrs.push_back(stored_options[0].c_str());
+        id(arrivals_station).traits.set_options(option_ptrs);
+        id(arrivals_station).publish_state("No stations found");
     } else {
-        id(arrivals_station).set_options(stations, stations[0]);
+        stored_options = stations;
+        option_ptrs.init(stations.size());
+        option_ptrs.clear();
+        for (auto &s : stored_options) {
+            option_ptrs.push_back(s.c_str());
+        }
+        id(arrivals_station).traits.set_options(option_ptrs);
+        id(arrivals_station).publish_state(stations[0]);
         int mapid = get_mapid_from_station_str(stations[0]);
         if (mapid > 0) {
             id(arrivals_mapid) = mapid;
