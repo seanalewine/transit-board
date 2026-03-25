@@ -122,6 +122,16 @@ text_sensor:
     lambda: |-
       return {"${project_version}"};
 
+  - platform: template
+    name: "Next Arrivals"
+    id: next_arrivals
+    icon: "mdi:train"
+    web_server:
+      sorting_group_id: group_status
+      sorting_weight: 20
+    lambda: |-
+      return {cached_arrivals};
+
 text:
   - platform: template
     name: "API Key"
@@ -219,6 +229,49 @@ select:
          - lambda: |-
              pending_mode_change = true;
 
+   - platform: template
+     name: "Arrivals Line"
+     id: arrivals_line
+     optimistic: true
+     restore_value: true
+     options:
+       - "None"
+       - "Red"
+       - "Blue"
+       - "Brown"
+       - "Green"
+       - "Orange"
+       - "Purple"
+       - "Pink"
+       - "Yellow"
+     initial_option: "None"
+     web_server:
+       sorting_group_id: group_settings
+       sorting_weight: 80
+     on_value:
+       then:
+         - lambda: |-
+             update_station_options(x);
+
+   - platform: template
+     name: "Arrivals Station"
+     id: arrivals_station
+     optimistic: true
+     restore_value: true
+     options:
+       - "Select a line"
+     initial_option: "Select a line"
+     web_server:
+       sorting_group_id: group_settings
+       sorting_weight: 90
+     on_value:
+       then:
+         - lambda: |-
+             int mapid = get_mapid_from_station_str(x);
+             if (mapid > 0) {
+               id(arrivals_mapid) = mapid;
+             }
+
 globals:
   - id: active_train_count
     type: int
@@ -249,6 +302,11 @@ globals:
     type: int
     restore_value: false
     initial_value: "0"
+
+  - id: arrivals_mapid
+    type: int
+    restore_value: false
+    initial_value: "-1"
 
 interval:
   - interval: 1s
@@ -403,6 +461,26 @@ script:
                   # All lines fetched - now process and queue transitions
                   - lambda: |-
                       process_all_trains();
+
+                  # Fetch arrivals if station selected
+                  - if:
+                      condition:
+                        lambda: return id(arrivals_mapid) > 0;
+                      then:
+                        - http_request.get:
+                            id: http_request_data
+                            url: !lambda |-
+                              return "http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx?key=" + id(api_key).state + "&mapid=" + to_string(id(arrivals_mapid)) + "&max=5&outputType=JSON";
+                            capture_response: true
+                            max_response_buffer_size: 16kB
+                            on_response:
+                              then:
+                                - lambda: |-
+                                    process_arrivals_response(body);
+                            on_error:
+                              then:
+                                - lambda: ESP_LOGE("arrivals", "Request failed");
+
                 else:
                   - lambda: |-
                       activate_bypass_mode();
@@ -413,3 +491,20 @@ script:
           then:
             - lambda: |-
                 activate_bypass_mode();
+            - if:
+                condition:
+                  lambda: return id(arrivals_mapid) > 0 && !id(api_key).state.empty();
+                then:
+                  - http_request.get:
+                      id: http_request_data
+                      url: !lambda |-
+                        return "http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx?key=" + id(api_key).state + "&mapid=" + to_string(id(arrivals_mapid)) + "&max=5&outputType=JSON";
+                      capture_response: true
+                      max_response_buffer_size: 16kB
+                      on_response:
+                        then:
+                          - lambda: |-
+                              process_arrivals_response(body);
+                      on_error:
+                        then:
+                          - lambda: ESP_LOGE("arrivals", "Request failed");

@@ -220,4 +220,196 @@ int lookup_unified_id(int nextStaId, const std::string& line) {
     return -1;
 }
 
+struct StationWithName {
+    int mapid;
+    std::string line;
+    std::string name;
+};
+
+const StationWithName STATIONS_WITH_NAMES[] = {
+    {40900, "red", "Howard"},
+    {41190, "red", "Jarvis"},
+    {40560, "red", "Morse"},
+    {40100, "red", "Loyola"},
+    {40650, "red", "Granville"},
+    {40340, "red", "Thorndale"},
+    {40190, "red", "Bryn Mawr"},
+    {40240, "red", "Berwyn"},
+    {40990, "red", "Argyle"},
+    {40910, "red", "Lawrence"},
+    {41380, "red", "Wilson"},
+    {41230, "red", "Sheridan"},
+    {41000, "red", "Addison"},
+    {41170, "red", "Belmont"},
+    {40630, "red", "Fullerton"},
+    {40880, "red", "North/Clybourn"},
+    {41300, "red", "Clark/Division"},
+    {40760, "red", "Chicago"},
+    {41450, "red", "Grand"},
+    {41420, "red", "Lake"},
+    {41200, "red", "Monroe"},
+    {41320, "red", "Jackson"},
+    {40770, "red", "Harrison"},
+    {40540, "red", "Roosevelt"},
+    {40080, "red", "Cermak-Chinatown"},
+    {41660, "red", "Sox-35th"},
+    {41090, "red", "47th"},
+    {40720, "g", "47th"},
+    {40020, "g", "51st"},
+    {41260, "g", "Garfield"},
+    {41230, "red", "Garfield"},
+    {41140, "g", "King Drive"},
+    {41690, "g", "Cottage Grove"},
+    {40010, "blue", "O'Hare"},
+    {40970, "blue", "Rosemont"},
+    {40430, "blue", "Cumberland"},
+    {41410, "blue", "Harlem"},
+    {40590, "blue", "Jefferson Park"},
+    {40320, "blue", "Montrose"},
+    {40380, "blue", "Irving Park"},
+    {40550, "blue", "Addison"},
+    {40060, "blue", "Belmont"},
+    {41240, "blue", "Logan Square"},
+    {40920, "blue", "California"},
+    {40250, "blue", "Western"},
+    {40820, "blue", "Damen"},
+    {40470, "blue", "Division"},
+    {40890, "blue", "Chicago"},
+    {40180, "blue", "Grand"},
+    {41280, "blue", "Clark/Lake"},
+    {40750, "blue", "Washington"},
+    {40790, "blue", "LaSalle"},
+    {40230, "blue", "Clinton"},
+    {40670, "blue", "UIC-Halsted"},
+    {41340, "blue", "Racine"},
+    {41330, "blue", "Illinois Medical District"},
+    {40390, "blue", "Western"},
+    {40090, "brn", "Kimball"},
+    {41290, "brn", "Kedzie"},
+    {41180, "brn", "Francisco"},
+    {41440, "brn", "Rockwell"},
+    {41500, "brn", "Western"},
+    {40870, "brn", "Damen"},
+    {41010, "brn", "Montrose"},
+    {41310, "brn", "Irving Park"},
+    {41480, "brn", "Addison"},
+    {40260, "brn", "Southport"},
+    {40530, "brn", "Paulina"},
+    {40660, "brn", "Addison"},
+    {40360, "brn", "Belmont"},
+    {41460, "brn", "Wellington"},
+    {40710, "brn", "Diversey"},
+    {40040, "brn", "Armitage"},
+    {41210, "brn", "Sedgwick"},
+    {41220, "brn", "Chicago"},
+    {41320, "brn", "Merchandise Mart"},
+    {41360, "g", "Harlem/Lake"},
+    {41070, "g", "Oak Park"},
+    {41120, "g", "Ridgeland"},
+    {41270, "g", "Austin"},
+    {41080, "g", "Central"},
+    {40130, "g", "Laramie"},
+    {40280, "g", "Cicero"},
+    {40290, "g", "Pulaski"},
+    {40480, "g", "Conservatory"},
+    {41160, "g", "Kedzie"},
+    {40030, "g", "California"},
+    {40170, "g", "Ashland"},
+    {41710, "g", "Morgan"},
+    {40510, "g", "Clinton"},
+    {40940, "g", "UIC-Halsted"},
+    {41400, "g", "Ashland/63rd"},
+    {41150, "org", "Midway"},
+    {40930, "org", "Pulaski"},
+    {40960, "org", "Kedzie"},
+    {40310, "org", "Western"},
+    {41060, "org", "35th/Archer"},
+    {40120, "org", "Ashland"},
+    {41130, "org", "Halsted"},
+    {40680, "org", "Clark/Lake"},
+    {40850, "org", "State/Lake"},
+    {40040, "org", "Washington/Wells"},
+    {40160, "org", "LaSalle/Van Buren"},
+    {40730, "org", "Harold Washington Library"},
+    {40260, "org", "Adams/Wabash"},
+    {40380, "org", "Roosevelt"},
+    {40900, "p", "Linden"},
+    {40690, "p", "Central"},
+    {40050, "p", "Noyes"},
+    {41250, "p", "Foster"},
+    {40520, "p", "Davis"},
+    {40270, "p", "Dempster"},
+    {41050, "p", "Main"},
+    {40840, "p", "South Blvd"},
+    {40400, "p", "Howard"},
+    {40530, "p", "Belmont"},
+    {40660, "p", "Wellington"},
+    {40710, "p", "Diversey"},
+    {41210, "p", "Armitage"},
+    {41320, "p", "Merchandise Mart"},
+    {41220, "p", "Chicago"},
+    {40160, "p", "LaSalle/Van Buren"},
+    {40730, "p", "Harold Washington Library"},
+    {40260, "p", "Adams/Wabash"},
+    {40040, "p", "Washington/Wells"},
+    {40800, "p", "Clark/Lake"},
+    {40680, "p", "State/Lake"},
+    {40580, "pink", "54th/Cermak"},
+    {40420, "pink", "Cicero"},
+    {40440, "pink", "Kostner"},
+    {40150, "pink", "Pulaski"},
+    {40600, "pink", "Central Park"},
+    {40780, "pink", "Kedzie"},
+    {40830, "pink", "California"},
+    {41040, "pink", "Western"},
+    {40210, "pink", "Damen"},
+    {41030, "pink", "18th"},
+    {41160, "pink", "Ashland"},
+    {40170, "pink", "Morgan"},
+    {41510, "pink", "Clinton"},
+    {40380, "pink", "Roosevelt"},
+    {40680, "pink", "Clark/Lake"},
+    {40850, "pink", "State/Lake"},
+    {40040, "pink", "Washington/Wells"},
+    {40160, "pink", "LaSalle/Van Buren"},
+    {40730, "pink", "Harold Washington Library"},
+    {40260, "pink", "Adams/Wabash"},
+    {40140, "y", "Dempster-Skokie"},
+    {41680, "y", "Oakton-Skokie"},
+    {40900, "y", "Howard"},
+};
+
+const int STATIONS_WITH_NAMES_SIZE = sizeof(STATIONS_WITH_NAMES) / sizeof(STATIONS_WITH_NAMES[0]);
+
+std::vector<std::string> get_station_names_for_line(const std::string& line) {
+    std::vector<std::string> result;
+    for (int i = 0; i < STATIONS_WITH_NAMES_SIZE; i++) {
+        if (STATIONS_WITH_NAMES[i].line == line) {
+            result.push_back(STATIONS_WITH_NAMES[i].name + " (" + std::to_string(STATIONS_WITH_NAMES[i].mapid) + ")");
+        }
+    }
+    return result;
+}
+
+int get_mapid_from_station_str(const std::string& station_str) {
+    size_t open = station_str.rfind('(');
+    size_t close = station_str.rfind(')');
+    if (open != std::string::npos && close != std::string::npos && close > open) {
+        return std::stoi(station_str.substr(open + 1, close - open - 1));
+    }
+    return -1;
+}
+
+std::string get_line_code(const std::string& display_line) {
+    if (display_line == "Red")    return "red";
+    if (display_line == "Blue")   return "blue";
+    if (display_line == "Brown")  return "brn";
+    if (display_line == "Green")  return "g";
+    if (display_line == "Orange") return "org";
+    if (display_line == "Purple") return "p";
+    if (display_line == "Pink")   return "pink";
+    if (display_line == "Yellow") return "y";
+    return "";
+}
+
 #endif

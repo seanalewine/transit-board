@@ -246,6 +246,108 @@ void process_json_body(const std::string& body, const std::string& line) {
     }
 }
 
+static std::string cached_arrivals = "No station selected";
+
+void update_station_options(const std::string& display_line) {
+    std::string line = get_line_code(display_line);
+    if (line.empty()) {
+        std::vector<std::string> placeholder = {"Select a line"};
+        id(arrivals_station).set_options(placeholder, "Select a line");
+        return;
+    }
+    auto stations = get_station_names_for_line(line);
+    if (stations.empty()) {
+        std::vector<std::string> placeholder = {"No stations found"};
+        id(arrivals_station).set_options(placeholder, "No stations found");
+    } else {
+        id(arrivals_station).set_options(stations, stations[0]);
+        int mapid = get_mapid_from_station_str(stations[0]);
+        if (mapid > 0) {
+            id(arrivals_mapid) = mapid;
+        }
+    }
+}
+
+void process_arrivals_response(const std::string& body) {
+    JsonDocument doc;
+    DeserializationError error = deserializeJson(doc, body);
+
+    if (error) {
+        ESP_LOGE("arrivals", "JSON parse error: %s", error.c_str());
+        cached_arrivals = "API error";
+        id(next_arrivals).publish_state(cached_arrivals);
+        return;
+    }
+
+    if (!doc["ctatt"].is<JsonObject>()) {
+        cached_arrivals = "No arrivals data";
+        id(next_arrivals).publish_state(cached_arrivals);
+        return;
+    }
+
+    JsonObject ctatt = doc["ctatt"];
+    if (!ctatt["eta"].is<JsonArray>()) {
+        cached_arrivals = "No arrivals available";
+        id(next_arrivals).publish_state(cached_arrivals);
+        return;
+    }
+
+    JsonArray etas = ctatt["eta"];
+    if (etas.isNull() || etas.size() == 0) {
+        cached_arrivals = "No arrivals available";
+        id(next_arrivals).publish_state(cached_arrivals);
+        return;
+    }
+
+    std::string result;
+    int count = 0;
+
+    for (JsonObject eta : etas) {
+        if (count >= 3) break;
+
+        const char* arrT = eta["arrT"] | "";
+        const char* destNm = eta["destNm"] | "";
+        const char* rt = eta["rt"] | "";
+        const char* isApp = eta["isApp"] | "0";
+        const char* isSch = eta["isSch"] | "0";
+        const char* isDly = eta["isDly"] | "0";
+
+        if (strlen(arrT) < 16) continue;
+
+        int arr_hour = std::stoi(std::string(arrT).substr(11, 2));
+        int arr_min  = std::stoi(std::string(arrT).substr(14, 2));
+
+        time_t now = ::time(nullptr);
+        struct tm* local = ::localtime(&now);
+        int now_total = local->tm_hour * 60 + local->tm_min;
+        int arr_total = arr_hour * 60 + arr_min;
+        int minutes = arr_total - now_total;
+        if (minutes < 0) minutes += 1440;
+
+        char line[64];
+        if (std::string(isApp) == "1") {
+            snprintf(line, sizeof(line), "%s - Approaching", destNm);
+        } else if (std::string(isDly) == "1") {
+            snprintf(line, sizeof(line), "%s - %d min (Delayed)", destNm, minutes);
+        } else if (std::string(isSch) == "1") {
+            snprintf(line, sizeof(line), "%s - %d min (Sched)", destNm, minutes);
+        } else {
+            snprintf(line, sizeof(line), "%s - %d min", destNm, minutes);
+        }
+
+        if (!result.empty()) result += "\n";
+        result += line;
+        count++;
+    }
+
+    if (result.empty()) {
+        result = "No arrivals available";
+    }
+
+    cached_arrivals = result;
+    id(next_arrivals).publish_state(cached_arrivals);
+}
+
 float calculate_power_draw() {
     float brightness = id(global_brightness).state / 100.0f;
     float total = 0.0f;
