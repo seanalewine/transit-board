@@ -87,6 +87,10 @@ Integrate via the ESPHome addon in Home Assistant for seamless monitoring and co
 
 You will need to request your own API key from the CTA to use this project. Visit [CTA TrainTracker](https://www.transitchicago.com/developers/traintracker/) for more information.
 
+## Future Goals
+- Multiple transit agency API intake capability so future boards can display other transit networks than the CTA while still supporting the same core functionality.
+- Make the Upcoming Trains Sensor that is user selectable more readable.
+
 ## License
 
 [MIT](LICENSE)
