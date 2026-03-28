@@ -2,6 +2,8 @@
 
 Real-time transit arrival display using ESPHome and the CTA TrainTracker API.
 
+*This project is not affiliated with the Chicago Transit Authority, but relies on publically available API data provided by the CTA.*
+
 ## About
 
 Live Transit Board pulls real-time train arrival data from the Chicago Transit Authority (CTA) TrainTracker API and displays it via LED light strip powered by an ESP32 microcontroller running ESPHome.
