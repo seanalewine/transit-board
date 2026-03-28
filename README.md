@@ -25,9 +25,9 @@ The board shows the next arrival stations, for each train, with each LED represe
 
   ![Photo of a framed CTA Map where each stop is connected to an LED and some of the stops are lit with the corresponding train line color.](/CTAMap.jpeg)
 
-| [![VideoBlocks](/CTAMap.jpeg)  | [![AudioBlocks](/CTAMap.jpeg)](http://audioblocks.com) | [![GraphicStock](/CTAMap.jpeg)](http://graphicstock.com) |
+| [![Photo of a framed CTA Map where each stop is connected to an LED and some of the stops are lit with the corresponding train line color.](/CTAMap.jpeg)]  | [![Photo of back of train poster where fiber optic cables are glued to the light strip and pierce through the poster to display on the front side, for each stop.](/CTAMap.jpeg)](http://audioblocks.com) | [![A video of the transition effect where trains move from one station to the next.](/CTAMap.jpeg)](http://graphicstock.com) |
 |:---:|:---:|:---:|
-| http://videoblocks.com | http://audioblocks.com | http://graphicstock.com |
+| The map where stops are lit when a train is inbound to that station. | The back of the poster to show how each light is connected to the stop on the front. | A GIF displaying the train movement animation. |
 
 ## Board Configurations
 
