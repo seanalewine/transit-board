@@ -97,4 +97,4 @@ You will need to request your own API key from the CTA to use this project. Visi
 
 ## License
 
-[MIT](LICENSE)
+[Creative Commons BY-NC-SA 4.0](LICENSE)
