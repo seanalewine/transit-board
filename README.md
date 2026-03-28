@@ -24,6 +24,17 @@ The board shows the next arrival stations, for each train, with each LED represe
 - Method to connect LEDs to a map
 
   ![Photo of a framed CTA Map where each stop is connected to an LED and some of the stops are lit with the corresponding train line color.](/CTAMap.jpeg)
+<div class="grid" markdown>
+
+![Image title](https://dummyimage.com/600x400/f5f5f5/aaaaaa?text=1)
+
+![Image title](https://dummyimage.com/600x400/f5f5f5/aaaaaa?text=2)
+
+![Image title](https://dummyimage.com/600x400/f5f5f5/aaaaaa?text=3)
+
+![Image title](https://dummyimage.com/600x400/f5f5f5/aaaaaa?text=4)
+
+</div>
 
 ## Board Configurations
 
