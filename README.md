@@ -9,6 +9,7 @@ Real-time transit arrival display using ESPHome and the CTA TrainTracker API.
 Live Transit Board pulls real-time train arrival data from the Chicago Transit Authority (CTA) TrainTracker API and displays it via LED light strip powered by an ESP32 microcontroller running ESPHome.
 
 The board shows the next arrival stations, for each train, with each LED representing a station stop. When a train approaches, the corresponding LED lights up.
+
 I was inspired by [this](https://www.reddit.com/r/arduino/comments/1hi4ymv/realtime_subway_map_driven_by_an_esp32/) project but built my own control script and fiber optic cable attachment method.
 
 ## Features
