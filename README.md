@@ -25,7 +25,7 @@ The board shows the next arrival stations, for each train, with each LED represe
 
   ![Photo of a framed CTA Map where each stop is connected to an LED and some of the stops are lit with the corresponding train line color.](/CTAMap.jpeg)
 
-| [![VideoBlocks](https://d1ow200m9i3wyh.cloudfront.net/img/assets/videoblocks/images/logo.png)](http://videoblocks.com)  | [![AudioBlocks](https://dtyn3c8zjrx01.cloudfront.net/img/assets/audioblocks/images/logo.png)](http://audioblocks.com) | [![GraphicStock](http://www.graphicstock.com/images/logo.jpg)](http://graphicstock.com) |
+| [![VideoBlocks](/CTAMap.jpeg)  | [![AudioBlocks](/CTAMap.jpeg)](http://audioblocks.com) | [![GraphicStock](/CTAMap.jpeg)](http://graphicstock.com) |
 |:---:|:---:|:---:|
 | http://videoblocks.com | http://audioblocks.com | http://graphicstock.com |
 
