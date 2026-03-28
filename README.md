@@ -4,26 +4,26 @@ Real-time transit arrival display using ESPHome and the CTA TrainTracker API.
 
 ## About
 
-Live Transit Board pulls real-time train arrival data from the Chicago Transit Authority (CTA) TrainTracker API and displays it on a physical LED display powered by an ESP32 microcontroller running ESPHome.
+Live Transit Board pulls real-time train arrival data from the Chicago Transit Authority (CTA) TrainTracker API and displays it via LED light strip powered by an ESP32 microcontroller running ESPHome.
 
-The board shows upcoming arrivals for configured stations, with each LED representing a station stop. When a train approaches, the corresponding LED lights up.
+The board shows the next arrival stations, for each train, with each LED representing a station stop. When a train approaches, the corresponding LED lights up.
 
 ## Features
 
 - Real-time CTA train arrival data
-- Configurable station mapping
+- Configurable station mapping (for custom implementations)
 - Standalone deployment (runs on ESP32 directly)
 - Home Assistant integration (managed via ESPHome addon)
 
 ## Hardware
 
-- ESP32 or ESP32-C3 microcontroller
-- Addressable RGB LED strip (WS2812B/NeoPixel)
-- 3D printed case (optional)
+- ESP32-C3 or ESP32-C6 microcontroller
+- Addressable RGB LED strip (WS2812B/NeoPixel/etc.)
+- Method to connect LEDs to a map
 
 ## Board Configurations
 
-This project supports multiple LED boards. Each board has its own configuration in `esphome-controller/boards/`:
+This project supports multiple deployable boards. Each board has its own configuration in `esphome-controller/boards/` so each board uses the correct stop to LED map.
 
 - `transit-board-a.yaml` - Board A configuration
 - `transit-board-b.yaml` - Board B configuration
@@ -69,7 +69,7 @@ All options are accessible via the ESPHome web interface or Home Assistant:
 
 ### Update Modes
 
-- **Quick Update** - All LED changes happen instantly when new train data arrives. Best for real-time accuracy.
+- **Quick Update** - All LED changes happen instantly when new train data arrives at the interval configured in settings.
 - **Gradual Update** - LED changes are processed one at a time with smooth delays between each transition. Creates a flowing effect as trains appear to move across the board.
 - **Bypass** - Ignores live train data and lights up all station LEDs with their line colors. Useful for testing the display or as a demo mode.
 
