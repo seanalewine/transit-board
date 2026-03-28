@@ -23,6 +23,8 @@ The board shows the next arrival stations, for each train, with each LED represe
 - Addressable RGB LED strip (WS2812B/NeoPixel/etc.)
 - Method to connect LEDs to a map
 
+  ![Photo of a framed CTA Map where each stop is connected to an LED and some of the stops are lit with the corresponding train line color.](/CTAMap.jpeg)
+
 ## Board Configurations
 
 This project supports multiple deployable boards. Each board has its own configuration in `esphome-controller/boards/` so each board uses the correct stop to LED map.
