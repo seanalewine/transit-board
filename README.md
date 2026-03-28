@@ -23,7 +23,7 @@ The board shows the next arrival stations, for each train, with each LED represe
 - Addressable RGB LED strip (WS2812B/NeoPixel/etc.)
 - Method to connect LEDs to a map
 
-| <img src="/CTAMap.jpeg" width="25%" alt="Photo of a framed CTA Map where each stop is connected to an LED and some of the stops are lit with the corresponding train line color." /> | [![Photo of back of train poster where fiber optic cables are glued to the light strip and pierce through the poster to display on the front side, for each stop.](/TrainMapBack.jpeg)](#) | [![A video of the transition effect where trains move from one station to the next.](/trainmovement.gif)](#) |
+| <img src="/CTAMap.jpeg" width="50%" alt="Photo of a framed CTA Map where each stop is connected to an LED and some of the stops are lit with the corresponding train line color." /> | [![Photo of back of train poster where fiber optic cables are glued to the light strip and pierce through the poster to display on the front side, for each stop.](/TrainMapBack.jpeg)](#) | [![A video of the transition effect where trains move from one station to the next.](/trainmovement.gif)](#) |
 |:---:|:---:|:---:|
 | The map where stops are lit when a train is inbound to that station. | The back of the poster to show how each light is connected to the stop on the front. | A GIF displaying the train movement animation. |
 
