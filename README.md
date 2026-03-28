@@ -70,7 +70,7 @@ All options are accessible via the ESPHome web interface or Home Assistant:
 | Refresh Interval | Number (7-5000 sec) | Time between API fetches |
 | Trains Per Line | Number (0-20) | Max trains to display per line |
 | Bidirectional | Switch | Enable tracking in both directions |
-| Holiday Mode | Switch | Enable special holiday display mode |
+| Holiday Mode | Switch | The Holiday Train will flash green/red if it is running. |
 | Update Mode | Select | Quick Update, Gradual Update, or Bypass |
 
 ### Update Modes
@@ -83,11 +83,11 @@ All options are accessible via the ESPHome web interface or Home Assistant:
 
 ### Standalone
 
-Flash the ESPHome firmware directly to your device and configure your WiFi credentials. The board will fetch data directly from the CTA API.
+The board will fetch data directly from the CTA API.
 
 ### Home Assistant
 
-Integrate via the ESPHome addon in Home Assistant for seamless monitoring and control alongside your other smart home devices.
+Integrate via the ESPHome addon in Home Assistant.
 
 ## API Key
 
@@ -96,6 +96,7 @@ You will need to request your own API key from the CTA to use this project. Visi
 ## Future Goals
 - Multiple transit agency API intake capability so future boards can display other transit networks than the CTA while still supporting the same core functionality.
 - Make the Upcoming Trains Sensor that is user selectable more readable.
+- Make Holiday Mode work (still have some time until we'll see it again)
 
 ## License
 
