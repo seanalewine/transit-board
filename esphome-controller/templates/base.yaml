@@ -1,14 +1,12 @@
 substitutions:
-  github_repo: "seanalewine/transit-board"
-  project_version: "dev"
+  release_tag: "!lambda return \"${release_type}\" == \"dev\" ? \"tags/${project_version}\" : \"latest\";"
 
 esphome:
-  name: ${board_name}
+  name: "transit-board"
   friendly_name: ${friendly_name}
   min_version: 2025.9.0
   name_add_mac_suffix: false
   includes:
-    - ../templates/station_map.h
     - ../templates/train_processor.h
   on_boot:
     priority: 600
@@ -16,16 +14,10 @@ esphome:
       - lambda: |-
           update_all_led_brightness();
   project:
-    name: "transit-board.${board_name}"
+    name: "transit-board"
     version: "${project_version}"
 # 
 json:
-
-esp32:
-  variant: esp32c6
-  framework:
-    type: esp-idf
-  cpu_frequency: 160MHz
 
 logger:
   baud_rate: 0
@@ -66,7 +58,7 @@ update:
   - platform: http_request
     name: Firmware Update
     id: firmware_update
-    source: https://github.com/${github_repo}/releases/latest/download/${board_name}-manifest.json
+    source: https://github.com/${github_repo}/releases/${release_tag}/download/${board_name}-manifest.json
     update_interval: 10min
     web_server:
       sorting_group_id: group_diagnostic

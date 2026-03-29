@@ -15,17 +15,18 @@ transit-board/
 |   |- boards/                   # Board configurations
 |   |   |- transit-board-a.yaml
 |   |   |- transit-board-b.yaml
-|   |   |- secrets.yaml          # WiFi/API credentials
+|   |   |- .gitignore
 |   |- templates/                # Shared C++ templates
-|   |   |- base.yaml
-|   |   |- station_map.h
-|   |   |- train_processor.h
-|   |- script.yaml               # Main ESPHome config (legacy)
-|   |- secrets.yaml
+|       |- base.yaml
+|       |- station_map.h
+|       |- train_processor.h
+|       |- webserver.css
 |- .github/workflows/            # CI/CD pipelines
-|   |- lint.yaml                 # ESPHome config validation
 |   |- esphome-build.yaml        # Firmware builds
+|- .devcontainer.json
 |- README.md
+|- LICENSE
+|- repository.yaml
 ```
 
 ## Build/Lint/Test Commands
@@ -60,9 +61,13 @@ esphome upload esphome-controller/boards/transit-board-a.yaml
 
 ### GitHub Actions CI
 
-The repository has two workflows:
-- **`lint.yaml`** - Validates ESPHome YAML configs on push/PR
-- **`esphome-build.yaml`** - Builds and uploads firmware releases
+The repository has one workflow:
+- **`esphome-build.yaml`** - Runs on push to `main` or `dev` branches when ESPHome files change
+
+The workflow has four jobs:
+1. **lint** - Validates ESPHome YAML configs
+3. **build** - Builds firmware (only runs if board version changed)
+4. **release** - Creates GitHub releases (only if version changed)
 
 ## Code Style Guidelines
 
@@ -100,8 +105,6 @@ The repository has two workflows:
 
 ## Secrets Management
 
-- Store all secrets in `secrets.yaml` files (gitignored)
-- Never commit API keys, tokens, or passwords
 - Use `!secret var_name` syntax in YAML to reference secrets
 - If a secret is accidentally committed, rotate it immediately
 
@@ -126,6 +129,11 @@ The repository has two workflows:
 - Parse CTA API JSON responses
 - Calculate arrival times and routes
 - Filter trains by destination station
+
+### Web Server (webserver.css)
+
+- Custom CSS for the ESPHome web server interface
+- Styling for the LED control panel
 
 ## Development Notes
 

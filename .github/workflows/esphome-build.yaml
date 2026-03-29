@@ -2,7 +2,7 @@ name: ESPHome Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
     paths:
       - 'esphome-controller/**'
       - '.github/workflows/esphome-build.yaml'
@@ -29,18 +29,64 @@ jobs:
             esphome config "$config" || exit 1
           done
 
-  build:
+  check-version:
     needs: lint
     runs-on: ubuntu-latest
+    name: Check if build needed
+    outputs:
+      build_needed: ${{ steps.check.outputs.build_needed }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Get current version from config
+        id: version
+        run: |
+          VERSION=$(grep "project_version:" esphome-controller/boards/transit-board-a.yaml | sed 's/.*: *"\(.*\)"/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get latest release tag
+        id: latest
+        run: |
+          TAG=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r '.tag_name // empty')
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Check if version changed
+        id: check
+        run: |
+          CURRENT="v${{ steps.version.outputs.version }}"
+          LATEST="${{ steps.latest.outputs.tag }}"
+          echo "Current: $CURRENT, Latest: $LATEST"
+          if [ "$CURRENT" != "$LATEST" ]; then
+            echo "build_needed=true" >> $GITHUB_OUTPUT
+          else
+            echo "build_needed=false" >> $GITHUB_OUTPUT
+          fi
+
+  build:
+    needs: check-version
+    runs-on: ubuntu-latest
+    if: needs.check-version.outputs.build_needed == 'true'
     strategy:
       matrix:
         board: [transit-board-a, transit-board-b]
     name: Build ${{ matrix.board }}
     outputs:
-      version: ${{ steps.version.outputs.version }}
+      version: ${{ needs.check-version.outputs.version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+
+      - name: Set dev version with timestamp
+        if: github.ref == 'refs/heads/dev'
+        run: |
+          VERSION="dev-$(date +%Y%m%d-%H%M%S)"
+          sed -i "s/project_version: \"dev\"/project_version: \"$VERSION\"/" esphome-controller/boards/transit-board-a.yaml
+          sed -i "s/project_version: \"dev\"/project_version: \"$VERSION\"/" esphome-controller/boards/transit-board-b.yaml
+          echo "Generated dev version: $VERSION"
 
       - name: Validate versions match
         id: version
@@ -85,10 +131,10 @@ jobs:
           retention-days: 7
 
   release:
-    needs: [lint, build]
+    needs: [lint, check-version, build]
     runs-on: ubuntu-latest
     name: Create Release
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
     permissions:
       contents: write
     steps:
@@ -100,6 +146,15 @@ jobs:
         run: |
           VERSION=$(grep "project_version:" esphome-controller/boards/transit-board-a.yaml | sed 's/.*: *"\(.*\)"/\1/')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check if dev branch
+        id: dev
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+            echo "is_dev=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_dev=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Get latest release tag
         id: latest
@@ -158,7 +213,7 @@ jobs:
             transit-board-b/*.bin
             transit-board-b/transit-board-b-manifest.json
           draft: false
-          prerelease: false
+          prerelease: ${{ steps.dev.outputs.is_dev == 'true' }}
 
       - name: Skip Release
         if: steps.check.outputs.skip == 'true'
