@@ -2,28 +2,36 @@
 
 Real-time transit arrival display using ESPHome and the CTA TrainTracker API.
 
+*This project is not affiliated with the Chicago Transit Authority, but relies on publically available API data provided by the CTA.*
+
 ## About
 
-Live Transit Board pulls real-time train arrival data from the Chicago Transit Authority (CTA) TrainTracker API and displays it on a physical LED display powered by an ESP32 microcontroller running ESPHome.
+Live Transit Board pulls real-time train arrival data from the Chicago Transit Authority (CTA) TrainTracker API and displays it via LED light strip powered by an ESP32 microcontroller running ESPHome.
 
-The board shows upcoming arrivals for configured stations, with each LED representing a station stop. When a train approaches, the corresponding LED lights up.
+The board shows the next arrival stations, for each train, with each LED representing a station stop. When a train approaches, the corresponding LED lights up.
+
+I was inspired by [this](https://www.reddit.com/r/arduino/comments/1hi4ymv/realtime_subway_map_driven_by_an_esp32/) project but built my own control script and fiber optic cable attachment method.
 
 ## Features
 
 - Real-time CTA train arrival data
-- Configurable station mapping
+- Configurable station mapping (for custom implementations)
 - Standalone deployment (runs on ESP32 directly)
 - Home Assistant integration (managed via ESPHome addon)
 
 ## Hardware
 
-- ESP32 or ESP32-C3 microcontroller
-- Addressable RGB LED strip (WS2812B/NeoPixel)
-- 3D printed case (optional)
+- ESP32-C3 or ESP32-C6 microcontroller
+- Addressable RGB LED strip (WS2812B/NeoPixel/etc.)
+- Method to connect LEDs to a map
+
+| <img src="/CTAMap.jpeg" width="50%" alt="Photo of a framed CTA Map where each stop is connected to an LED and some of the stops are lit with the corresponding train line color." /> | [![Photo of back of train poster where fiber optic cables are glued to the light strip and pierce through the poster to display on the front side, for each stop.](/TrainMapBack.jpeg)](#) | [![A video of the transition effect where trains move from one station to the next.](/trainmovement.gif)](#) |
+|:---:|:---:|:---:|
+| The map where stops are lit when a train is inbound to that station. | The back of the poster to show how each light is connected to the stop on the front. | A GIF displaying the train movement animation. |
 
 ## Board Configurations
 
-This project supports multiple LED boards. Each board has its own configuration in `esphome-controller/boards/`:
+This project supports multiple deployable boards. Each board has its own configuration in `esphome-controller/boards/` so each board uses the correct stop to LED map.
 
 - `transit-board-a.yaml` - Board A configuration
 - `transit-board-b.yaml` - Board B configuration
@@ -64,12 +72,12 @@ All options are accessible via the ESPHome web interface or Home Assistant:
 | Refresh Interval | Number (7-5000 sec) | Time between API fetches |
 | Trains Per Line | Number (0-20) | Max trains to display per line |
 | Bidirectional | Switch | Enable tracking in both directions |
-| Holiday Mode | Switch | Enable special holiday display mode |
+| Holiday Mode | Switch | The Holiday Train will flash green/red if it is running. |
 | Update Mode | Select | Quick Update, Gradual Update, or Bypass |
 
 ### Update Modes
 
-- **Quick Update** - All LED changes happen instantly when new train data arrives. Best for real-time accuracy.
+- **Quick Update** - All LED changes happen instantly when new train data arrives at the interval configured in settings.
 - **Gradual Update** - LED changes are processed one at a time with smooth delays between each transition. Creates a flowing effect as trains appear to move across the board.
 - **Bypass** - Ignores live train data and lights up all station LEDs with their line colors. Useful for testing the display or as a demo mode.
 
@@ -77,16 +85,21 @@ All options are accessible via the ESPHome web interface or Home Assistant:
 
 ### Standalone
 
-Flash the ESPHome firmware directly to your device and configure your WiFi credentials. The board will fetch data directly from the CTA API.
+The board will fetch data directly from the CTA API.
 
 ### Home Assistant
 
-Integrate via the ESPHome addon in Home Assistant for seamless monitoring and control alongside your other smart home devices.
+Integrate via the ESPHome addon in Home Assistant.
 
 ## API Key
 
 You will need to request your own API key from the CTA to use this project. Visit [CTA TrainTracker](https://www.transitchicago.com/developers/traintracker/) for more information.
 
+## Future Goals
+- Multiple transit agency API intake capability so future boards can display other transit networks than the CTA while still supporting the same core functionality.
+- Make the Upcoming Trains Sensor that is user selectable more readable.
+- Make Holiday Mode work (still have some time until we'll see it again)
+
 ## License
 
-[MIT](LICENSE)
+[Creative Commons BY-NC-SA 4.0](LICENSE)
